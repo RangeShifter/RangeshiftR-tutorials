@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Tutorial 3: Evolution of dispersal during range shifting</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RangeshiftR tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">About RangeshiftR</a>
+</li>
+<li>
+  <a href="installing.html">Installing RangeshiftR</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RangeshiftR tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tutorial_1.html">1. Range expansion</a>
+    </li>
+    <li>
+      <a href="tutorial_2.html">2. Patch connectivity</a>
+    </li>
+    <li>
+      <a href="tutorial_3.html">3. Evolution of dispersal</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="mailto:damaris@zurell.de">
+    <span class="fa fa-envelope"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://damariszurell.github.io">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/ZurellLab">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Tutorial 3: Evolution of dispersal during range shifting</h1>
+
+</div>
+
+
+<p>In this tutorial, we will revisit the third example provided in <span class="citation">Bocedi et al. (2014)</span>. We will use the same parameters as the original publication and the accompanying tutorial based on the Windows GUI.</p>
+<p>With this example, we show how <code>RangeshiftR</code> can be used for theoretical applications exploring eco-evolutionary dynamics. Specifically, we model the evolution of dispersal strategies (emigration probability, dispersal distance or both) across the geographic range of a hypothetical species. The species’ range is assumed to be structured along a linear environmental gradient, which is shifted northwards for a period of time at a constant rate. This illustrates phenomena such as evolution of dispersal along stationary gradients <span class="citation">(Dytham 2009)</span>, evolutionary rescue of the species’ range during environmental changes through evolution of dispersal <span class="citation">(Henry, Bocedi, and Travis 2013)</span>, correlation between the evolution of two dispersal traits, and how the latter can influence the extent and pattern of the rescue process.</p>
+<p>The simulations are run within artificial landscapes with a North-South gradient. The population is initialised in the southern part of the landscape and dispersal traits evolve under equilibrium conditions for 500 years. Then, the suitable habitat is shifting northwards with a fixed rate per year. In consequence, we should see a stronger selection towards increased dispersal. After another 300 years, the habitat remains constant again and the individuals can adapt to equilibrium conditions once again.</p>
+<p>We will run three experiments:</p>
+<ol style="list-style-type: lower-alpha">
+<li>only emigration probability evolves,</li>
+<li>only dispersal distance evolves, and</li>
+<li>both traits evolve.</li>
+</ol>
+<div id="getting-started" class="section level1">
+<h1><span class="header-section-number">1</span> Getting started</h1>
+<div id="create-a-rs-directory" class="section level2">
+<h2><span class="header-section-number">1.1</span> Create a RS directory</h2>
+<p>First of all, load the package and set the relative path from your current working directory to the RS directory.</p>
+<pre class="r"><code>library(RangeshiftR)
+library(raster)
+library(RColorBrewer)
+library(rasterVis)
+library(latticeExtra)
+library(viridis)
+library(grid)
+library(gridExtra)
+
+# relative path from working directory:
+dirpath = &quot;Tutorial_03/&quot;
+
+dir.create(paste0(dirpath,&quot;Inputs&quot;), showWarnings = TRUE)
+dir.create(paste0(dirpath,&quot;Outputs&quot;), showWarnings = TRUE)
+dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code></pre>
+<p>This tutorial does not need any additional input files as the simulations are set within an artificial landscape.</p>
+</div>
+</div>
+<div id="scenario-a-evolution-of-emigration-probability" class="section level1">
+<h1><span class="header-section-number">2</span> Scenario a: evolution of emigration probability</h1>
+<div id="landscape-parameters" class="section level2">
+<h2><span class="header-section-number">2.1</span> Landscape parameters</h2>
+<p>We use the in-built landscape generator to create artificial random discrete landscapes of 50 columns (<em>x</em>) and 800 rows (<em>y</em>), with 30% of the cells being suitable habitat and the rest being unsuitable for the species. We set a (maximum) carrying capacity of <em>100 inds/ha</em> and leave the resolution at its default of <em>100m</em>. A new random landscape will be created for each replicate run.</p>
+<pre class="r"><code>carrycap &lt;- c(0, 0, 0, 5, 0, 0)
+land &lt;- ArtificialLandscape(propSuit = 0.3,
+                            K = 100,
+                            dimX = 50,
+                            dimY = 800,
+                            continuous = FALSE)</code></pre>
+</div>
+<div id="simulation-parameters" class="section level2">
+<h2><span class="header-section-number">2.2</span> Simulation parameters</h2>
+<p>Next, we specify the simulation module, which not only defines the basic simulation and output parameters, but also holds the options to set an <em>Environmental gradient</em>. For this tutorial, we choose a <em>shifting</em> gradient in carrying capacity.</p>
+<p>The required parameters are the gradient steepness defined as fraction of local carrying capacity <em>K(x,y)</em> per cell, the (initial) location of the optimum given as <em>y</em>-coordinate, the shifting rate defined as cells per year (in <em>y</em>-direction) as well as the start and end years of the gradient shift.</p>
+<p>Overall, we simulate <em>20</em> replications for <em>1300</em> years each. As outputs we store information on the range, the individuals and the (mean) ‘traits by rows’ in 50-year intervals:</p>
+<pre class="r"><code>sim_0 &lt;- Simulation(Simulation = 0,
+                    Replicates = 20,
+                    Years = 1300,
+                    Gradient = 1, # in carrying capacity
+                    GradSteep = 0.02,
+                    Optimum = 100,
+                    f = 0.0, # turn off local heterogeneity
+                    Shifting = TRUE,
+                    ShiftRate = 1,
+                    ShiftStart = 500,
+                    ShiftEnd = 800,
+                    OutIntPop = 0,
+                    OutIntInd = 50,
+                    OutIntRange = 5,
+                    OutIntTraitRow = 50)</code></pre>
+<p>Note that we have to actively disable population output (<em>OutIntPop = 0</em>) since it is switched on by default.</p>
+</div>
+<div id="species-parameters" class="section level2">
+<h2><span class="header-section-number">2.3</span> Species parameters</h2>
+<p>Next, we set up our model species. We assume a simple asexual model:</p>
+<pre class="r"><code>demo &lt;- Demography(Rmax = 4.0)</code></pre>
+<p>In the dispersal module, we enable inter-individual variability in emigration probability. Therefore, we need to set the mean and standard deviation of the initial distribution of this trait, as well as the scaling factor for mutations.</p>
+<p>We leave the default options for <code>Settlement()</code>, and in <code>Transfer()</code> we only set the kernel mean to <em>200m</em> while keeping the defaults for the other options.</p>
+<pre class="r"><code>emig_a &lt;- Emigration(IndVar = TRUE,
+                   EmigProb = matrix(c(0.15, 0.05), ncol = 2),
+                   MutationScales = 0.05)
+
+disp_a &lt;- Dispersal(Emigration = emig_a, 
+                   Transfer = DispersalKernel(Distances = 200), 
+                   Settlement = Settlement() )</code></pre>
+</div>
+<div id="genetic-parameters" class="section level2">
+<h2><span class="header-section-number">2.4</span> Genetic parameters</h2>
+<p>We use a simple genetics setup to make the emigration probability a heritable trait. It defines one chromosome with three loci that code for this trait as well as the mutation and crossover probability.</p>
+<pre class="r"><code>gene &lt;- Genetics(Architecture = 0, 
+                 NLoci = 3,
+                 ProbMutn = 0.001,
+                 ProbCross = 0.3,
+                 AlleleSD = 0.1,
+                 MutationSD = 1.0)</code></pre>
+</div>
+<div id="initialisation-parameters" class="section level2">
+<h2><span class="header-section-number">2.5</span> Initialisation parameters</h2>
+<p>We initialise the population in the southern part of the landscape up to <em>y=200</em>; all suitable cells within that range are initialised at their carrying capacity:</p>
+<pre class="r"><code>init &lt;- Initialise(InitDens = 0,
+                   maxY = 200)</code></pre>
+</div>
+<div id="run-the-simulation" class="section level2">
+<h2><span class="header-section-number">2.6</span> Run the simulation</h2>
+<p>Create the simulation parameter master from the single modules:</p>
+<pre class="r"><code>s &lt;- RSsim(land = land, demog = demo, dispersal = disp_a, simul = sim_0, gene = gene, init = init)</code></pre>
+<p>Before we run the simulation, let’s get an overview of the settings:</p>
+<pre class="r"><code>s</code></pre>
+<pre><code>##  Simulation # 0 
+##  -----------------
+##    Replicates =  20 
+##    Years      =  1300 
+##    Absorbing  =  FALSE 
+##  Shifting Environmental Gradient in K:
+##    G = 0.02, y_opt = 100
+##    f = 0 
+##    ShiftRate = 1 rows per year; from year 500 to 800 
+##  File Outputs:
+##    Range,       every 5 years
+##    Individuals, every 50 years, starting year 0 
+##    Traits/row,  every 50 years, starting year 0 
+## 
+##  Artificial landscape: random structure, binary habitat/matrix code
+##    Size              : 50 x 800 cells
+##    Resolution        :       100 meters
+##    Proportion of suitable habitat: 0.3 
+##    Carrying capacity : 100 
+## 
+##  Demography:
+##   Unstructured population:
+##    Rmax : 4 
+##    bc   : 1 
+##   Reproduction Type : 0 (female only)
+## 
+##  Dispersal: 
+##   Emigration:
+##    IndVar = TRUE 
+##    Emigration probabilities:
+##      [,1] [,2]
+## [1,] 0.15 0.05
+##    MutationScales = 0.05 
+## 
+##   Transfer:
+##    Dispersal Kernel
+##    Dispersal kernel traits:
+##      [,1]
+## [1,]  200
+##    Constant mortality prob = 0 
+## 
+##   Settlement:
+##    Settlement conditions:
+##      [,1]
+## [1,]    0
+##    FindMate = FALSE 
+## 
+##  Genetics: 
+##    Architecture = 0 : One chromosome per trait 
+##    with 3 loci per chromosome.
+##    ProbMutn = 0.001 
+##    ProbCross = 0.3 
+##    AlleleSD = 0.1 
+##    MutationSD = 1 
+## 
+## 
+##  Initialisation: 
+##    InitType = 0 : Free initialisation 
+##                   of all suitable cells/patches.
+##    InitDens = 0 : At carrying capacity K 
+##    MaxY = 200</code></pre>
+<p>If everything looks alright, we are ready to run the simulation (in the specified RS directory):</p>
+<pre class="r"><code>RunRS(s, dirpath)</code></pre>
+</div>
+<div id="plot-results" class="section level2">
+<h2><span class="header-section-number">2.7</span> Plot results</h2>
+<p>To get a first impression of our simulation results, we look at the timeseries for total abundance and the number of occupied cells.</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+plotAbundance(s, dirpath, rep=F, sd=T)
+plotOccupancy(s, dirpath,rep=F, sd=T)</code></pre>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>We observe an initial stabilisation phase in the first 500 years, since we initialised all suitable cells at carrying capacity. During the shift in habitat / carrying capacity between years 500 and 800, we see a drastic decline in both abundance and occupancy, which recovers quickly after the shifting stopped.</p>
+<p>In order to analyse the evolution of heritable traits - in this case the emigration probability - we need to process the <em>individuals</em> output. It contains information about the position and trait values (among other things) of all individuals at specified time intervals. Since this can amount to quite large amounts of data, a separate output file is generated for each replicate.</p>
+<p>Like demonstrated in <span class="citation">(Bocedi et al. 2014)</span>, we will create a time series of maps showing the mean trait value in each cell. For simplicity, we focus on a single replicate only, although it is straightforward to calculate the trait average over all replicates.</p>
+<p>Let’s read the data file and turn it into a raster stack. The values of the emigration probability trait are listed in the column named <em>EP</em>:</p>
+<p>Plot the maps:</p>
+<pre class="r"><code>levelplot(inds_stack,
+          col.regions=hcl.colors(20, palette = &quot;viridis&quot;, rev = TRUE),
+          between = list(x=0),
+          names.attr = as.character(seq(0,1250,by = 50)),
+          scales=list(x=list(draw=F)), 
+          par.strip.text=list(cex=.6)
+)</code></pre>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>In equilibrium conditions, when the potential range is stationary, selection against dispersal prevails across the species’ range except near the margin, where the emigration probability evolves to be higher. When the environmental gradient starts to shift, the species lags behind its suitable environmental space mainly due the very low emigration probability that evolved throughout most of the range. At the same time, selection for increased dispersal occurs, especially at the leading edge. In consequence, emigration probability evolves to be higher, and the trait surfs back towards the centre and rear edge of the range. This ‘rescue’ effect enables the species to keep up with the shifting environment. After the shifting stops, high emigration is not advantageous anymore, and the trait gradually evolves back to values observed prior to environmental change.</p>
+<p>We can also map the mean dispersal distances per cell, which can be extracted from the individuals output file under the column name <em>DistMoved</em>. It gives similar results: <img src="tutorial_3_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>To yield a summary of the trait evolution, we can simply use the aggregated information stored in the ‘mean traits by rows’ output file. It contains a time series of the heritable trait values, averaged over the <em>x</em>-coordinates. This can be useful to avoid the large storage amount for the individuals output.</p>
+<pre class="r"><code># load &#39;traits by rows&#39; output file
+trait_ts &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch1_Sim0_Land1_TraitsXrow.txt&quot;), header = T)
+# plot the time series for the replicate chosen above:
+trait_ts_07 &lt;- subset.data.frame(trait_ts, Rep==7)</code></pre>
+<pre class="r"><code>plot(NULL, type = &quot;n&quot;, ylab = &quot;Emigration Prob.&quot;, xlab = &quot;y coordinate&quot;, xlim=c(0, 500), ylim=c(0,.2), main = &quot;Trait time-series (Replicate 7)&quot;)
+years &lt;-  c(500, 650, 800, 1200)
+cols &lt;- hcl.colors(length(years), palette = &quot;Dark 3&quot;, alpha = 1, rev = FALSE)
+leg.txt &lt;- c()
+for(i in 1:length(years)) {
+    trait_ts_07_yr &lt;- subset.data.frame(trait_ts_07, Year==years[i])
+    polygon(c(trait_ts_07_yr$y,rev(trait_ts_07_yr$y)),
+            c((trait_ts_07_yr$meanEP+trait_ts_07_yr$stdEP), rev(pmax(0,trait_ts_07_yr$meanEP-trait_ts_07_yr$stdEP))),
+            border=NA, col=&#39;grey80&#39;)
+    lines(trait_ts_07_yr$y, trait_ts_07_yr$meanEP, type = &quot;l&quot;, lwd = 1, col = cols[i])
+    leg.txt &lt;- c(leg.txt, paste(&quot;Year&quot;, years[i]))
+}
+legend(&quot;topleft&quot;, leg.txt, col = cols, lwd = 1.5)</code></pre>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>We see that the population moves towards norther latitudes (higher <em>y</em>) with increasing time. During range shifting (here, years 650 and 800), the emigration probabilities are generally higher than before (year 500) and after (year 1200) the shift. Moreoer, the variation in emigration probability is much lower during range shifting as selection for dispersal is high. In contrast, before and after the shift we observe large variation in emigration probability, with lower emigration in the range core and higher emigration towards the range margins.</p>
+</div>
+</div>
+<div id="scenario-b-evolution-of-dispersal-distance" class="section level1">
+<h1><span class="header-section-number">3</span> Scenario b: evolution of dispersal distance</h1>
+<p>We now investigate the same eco-evolutionary process of range shifting, but this time we keep the emigration probability fixed and instead let the mean dispersal distance evolve.</p>
+<div id="dispersal-parameters" class="section level2">
+<h2><span class="header-section-number">3.1</span> Dispersal parameters</h2>
+<p>To achieve this, we can leave the demography and other modules as they are, but we have to define a new dispersal object. This time, we activate the inter-individual variation in the Transfer module, which is again a simple Dispersal kernel, and we set the mean and standard deviation for the mean dispersal distance. Also, we set the emigration probability to a constant and leave the default options for settlement.</p>
+<pre class="r"><code>trans_b &lt;- DispersalKernel(IndVar = TRUE,
+                           Distances = matrix(c(250, 50), ncol = 2),
+                           MutationScales = 50)
+
+disp_b &lt;- Dispersal(Emigration = Emigration(EmigProb = 0.1), 
+                   Transfer = trans_b, 
+                   Settlement = Settlement() )</code></pre>
+<p>In addition, we change the simulation index to 1 in the simulation parameter object, in order to avoid overwriting the previous output. (All other options stay the same. You can disable the <em>individuals</em> output with <code>OutIntInd = 0</code> to speed up the computation, and in case you are only interested in the summary).</p>
+<pre class="r"><code>sim_1 &lt;- Simulation(Simulation = 1,
+                    Replicates = 20,
+                    Years = 1300,
+                    Gradient = 1,
+                    GradSteep = 0.02,
+                    Optimum = 100,
+                    f = 0.0,
+                    Shifting = TRUE,
+                    ShiftRate = 1,
+                    ShiftStart = 500,
+                    ShiftEnd = 800,
+                    OutIntPop = 0,
+                    OutIntInd = 50,
+                    OutIntRange = 5,
+                    OutIntTraitRow = 50)</code></pre>
+<p>Finally, the new modules are added to the old parameter master to define a new one, <em>s_b</em>.</p>
+<pre class="r"><code>s_b &lt;- s + disp_b + sim_1</code></pre>
+</div>
+<div id="run-the-simulation-and-plot-summary" class="section level2">
+<h2><span class="header-section-number">3.2</span> Run the simulation and plot summary</h2>
+<p>Run the new simulation:</p>
+<pre class="r"><code>RunRS(s_b, dirpath)</code></pre>
+<p>Using similar plots as in scenario (a), we can see how dispersal distances evolve in a similar way as emigration probability, with generally higher mean dispersal distances evolving during range shifting, and higher dispersal distances towards the leading range edge.</p>
+<p>In the output files, the heritable trait of dispersal distance is named <em>distI</em>. We plot the trait values averaged over <em>x</em> for the same time steps as we did for scenario (a):</p>
+<pre class="r"><code># load &#39;traits by rows&#39; output file
+trait_ts &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch1_Sim1_Land1_TraitsXrow.txt&quot;), header = T)
+# plot the time series for the replicate chosen above:
+trait_ts_07 &lt;- subset.data.frame(trait_ts, Rep==7)</code></pre>
+<p>Plot the average trait values along latitude:</p>
+<pre class="r"><code>plot(NULL, type = &quot;n&quot;, ylab = &quot;Mean dispersal distance [m]&quot;, xlab = &quot;y coordinate&quot;, xlim=c(0, 500), ylim=c(150,450), main = &quot;Trait time-series (Replicate 7)&quot;)
+years &lt;-  c(500, 650, 800, 1200)
+cols &lt;- hcl.colors(length(years), palette = &quot;Dark 3&quot;, alpha = 1, rev = FALSE)
+leg.txt &lt;- c()
+for(i in 1:length(years)) {
+    trait_ts_07_yr &lt;- subset.data.frame(trait_ts_07, Year==years[i])
+    polygon(c(trait_ts_07_yr$y,rev(trait_ts_07_yr$y)),
+            c((trait_ts_07_yr$mean_distI+trait_ts_07_yr$std_distI), rev(pmax(0,trait_ts_07_yr$mean_distI-trait_ts_07_yr$std_distI))),
+            border=NA, col=&#39;grey80&#39;)
+    lines(trait_ts_07_yr$y, trait_ts_07_yr$mean_distI, type = &quot;l&quot;, lwd = 1, col = cols[i])
+    leg.txt &lt;- c(leg.txt, paste(&quot;Year&quot;, years[i]))
+}
+legend(&quot;bottomright&quot;, leg.txt, col = cols, lwd = 1.5)</code></pre>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>Dispersal distances for the years 800 and 1200 are very similar and the lines largely overlap, indicating no substantial change in the trait values after range shifting. With a fixed emigration probability of <em>0.1</em>, dispersal distances are not under such strong selection as emigration probability was, and more variability is maintained under a stationary range. This might explain why, when the environment starts to shift, the species does not decline as much as when only emigration probability evolves (see below, and Figure 4e in the paper). Moreover, after the shifting stops, the mean distances stay at the new level for a long time and do not evolve back towards lower values over the course of the simulation.</p>
+</div>
+</div>
+<div id="scenario-c-simultaneous-evolution-of-emigration-probability-and-dispersal-distance" class="section level1">
+<h1><span class="header-section-number">4</span> Scenario c: simultaneous evolution of emigration probability and dispersal distance</h1>
+<p>Lastly, we want to model the simultaneous evolution of emigration probabilities and dispersal distances, as dispersal strategies in reality are likely to be determined by a suite of traits that come under selection. However, limited theoretical work has been done to look at the evolution of such ‘dispersal syndromes’ (Travis et al. 2012).</p>
+<div id="dispersal-parameters-1" class="section level2">
+<h2><span class="header-section-number">4.1</span> Dispersal parameters</h2>
+<p>Again, we create a new dispersal module. We can re-use the emigration and transfer modules from scenarios (a) and (b):</p>
+<pre class="r"><code>disp_c &lt;- Dispersal(Emigration = emig_a, 
+                    Transfer = trans_b, 
+                    Settlement = Settlement() )</code></pre>
+<p>The new simulation module:</p>
+<pre class="r"><code>sim_2 &lt;- Simulation(Simulation = 2,
+                    Replicates = 20,
+                    Years = 1300,
+                    Gradient = 1,
+                    GradSteep = 0.02,
+                    Optimum = 100,
+                    f = 0.0,
+                    Shifting = TRUE,
+                    ShiftRate = 1,
+                    ShiftStart = 500,
+                    ShiftEnd = 800,
+                    OutIntPop = 0,
+                    OutIntInd = 50,
+                    OutIntRange = 5,
+                    OutIntTraitRow = 50)</code></pre>
+<p>The new parameter master <em>s_c</em>:</p>
+<pre class="r"><code>s_c &lt;- s + disp_c + sim_2</code></pre>
+</div>
+<div id="compare-population-dynamics" class="section level2">
+<h2><span class="header-section-number">4.2</span> Compare population dynamics</h2>
+<pre class="r"><code>RunRS(s_c, dirpath)</code></pre>
+<p>Let’s compare the time series for total abundance and the proportion of occupied habitat for all three scenarios (Fig. 4b in <span class="citation">Bocedi et al. (2014)</span>):</p>
+<pre class="r"><code>cols &lt;- hcl.colors(3, palette = &quot;Dark 2&quot;, alpha = 1, rev = FALSE)
+par(mfrow=c(1,2))
+
+rep_means_a &lt;- aggregate(NInds~Year, data = readRange(s  , dirpath), FUN = &quot;mean&quot;)
+rep_means_b &lt;- aggregate(NInds~Year, data = readRange(s_b, dirpath), FUN = &quot;mean&quot;)
+rep_means_c &lt;- aggregate(NInds~Year, data = readRange(s_c, dirpath), FUN = &quot;mean&quot;)
+
+plot(NInds~Year, data=rep_means_a, type = &quot;l&quot;, lwd = 2, col = cols[1], ylab = &quot;Total abundance&quot;, xlab = &quot;Year&quot;)
+lines(NInds~Year, data=rep_means_b, type = &quot;l&quot;, lwd = 2, col = cols[2])
+lines(NInds~Year, data=rep_means_c, type = &quot;l&quot;, lwd = 2, col = cols[3])
+
+leg.txt &lt;- c(&quot;Scenario a&quot;,&quot;Scenario b&quot;,&quot;Scenario c&quot;)
+legend(&quot;topright&quot;, leg.txt, col = cols, lwd = 1.5, bty=&#39;n&#39;)
+
+rep_means_a &lt;- aggregate(Occup.Suit~Year, data = readRange(s  , dirpath), FUN = &quot;mean&quot;)
+rep_means_b &lt;- aggregate(Occup.Suit~Year, data = readRange(s_b, dirpath), FUN = &quot;mean&quot;)
+rep_means_c &lt;- aggregate(Occup.Suit~Year, data = readRange(s_c, dirpath), FUN = &quot;mean&quot;)
+
+plot(Occup.Suit~Year, data=rep_means_a, type = &quot;l&quot;, lwd = 2, col = cols[1], ylab = &quot;Proportion of occupied habitat&quot;, xlab = &quot;Year&quot;)
+lines(Occup.Suit~Year, data=rep_means_b, type = &quot;l&quot;, lwd = 2, col = cols[2])
+lines(Occup.Suit~Year, data=rep_means_c, type = &quot;l&quot;, lwd = 2, col = cols[3])</code></pre>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p>Notably, the three different scenarios resulted in large differences in total population abundance and occupancy, changing the range dynamics during the shifting phase. The largest decrease in population size during range shifting was observed in scenario (a). In fact, when both traits evolved in scenario (c), the rescue of the species was much quicker than when only one trait evolved. Clearly, more work is needed to understand the role of simultaneous trait evolution in driving spatial population dynamics, for example in response to climate change.</p>
+</div>
+<div id="compare-trait-values" class="section level2">
+<h2><span class="header-section-number">4.3</span> Compare trait values</h2>
+<p>The individuals output and the mean traits output files will now report values for both traits, named <em>EP</em> and <em>distI</em>.</p>
+<pre class="r"><code># load &#39;traits by rows&#39; output file
+trait_ts &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch1_Sim2_Land1_TraitsXrow.txt&quot;), header = T)
+# plot the time series for the replicate chosen above:
+trait_ts_07 &lt;- subset.data.frame(trait_ts, Rep==7)</code></pre>
+<p>Plot the average trait values along latitude:</p>
+<pre class="r"><code>par(mar=c(5, 4, 4, 5) + 0.1)
+plot(NULL, type = &quot;n&quot;, ylab = &quot;Emigration Prob.&quot;, xlab = &quot;y coordinate&quot;, xlim=c(50, 600), ylim=c(0,.45), main = &quot;Trait time-series (Replicate 7)&quot;)
+years &lt;-  c(500, 650, 800, 1200)
+cols &lt;- hcl.colors(length(years), palette = &quot;Dark 3&quot;, alpha = 1, rev = FALSE)
+leg.txt &lt;- c()
+for(i in 1:length(years)) {
+    trait_ts_07_yr &lt;- subset.data.frame(trait_ts_07, Year==years[i])
+    polygon(c(trait_ts_07_yr$y,rev(trait_ts_07_yr$y)),
+            c((trait_ts_07_yr$meanEP+trait_ts_07_yr$stdEP), rev(pmax(0,trait_ts_07_yr$meanEP-trait_ts_07_yr$stdEP))),
+            border=NA, col=&#39;grey80&#39;)
+    lines(trait_ts_07_yr$y, trait_ts_07_yr$meanEP, type = &quot;l&quot;, lwd = 1, col = cols[i])
+    leg.txt &lt;- c(leg.txt, paste(&quot;Year&quot;, years[i]))
+}
+
+par(new = T)
+plot(NULL, type = &quot;n&quot;, xlab=&quot;&quot;, ylab=&quot;&quot;, xlim=c(0, 600), ylim=c(0,450), axes = F)
+for(i in 1:length(years)) {
+    trait_ts_07_yr &lt;- subset.data.frame(trait_ts_07, Year==years[i])
+    polygon(c(trait_ts_07_yr$y,rev(trait_ts_07_yr$y)),
+            c((trait_ts_07_yr$mean_distI+trait_ts_07_yr$std_distI), rev(pmax(0,trait_ts_07_yr$mean_distI-trait_ts_07_yr$std_distI))),
+            border=NA, col=&#39;grey90&#39;, axes=F)
+    lines(trait_ts_07_yr$y, trait_ts_07_yr$mean_distI, type = &quot;l&quot;, lwd = 1, lty = 3, col = cols[i])
+}
+axis(side = 4, ylim=c(0,700))
+mtext(&quot;Mean dispersal distance&quot;, side = 4, line = 3)
+legend(&quot;topright&quot;, leg.txt, col = cols, lwd = 1.5)</code></pre>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p>In this plot, the solid lines (bottom graphs) show the emigration probability and the dashed lines (top graphs) show the mean dispersal distances. For the years 800 and 1200, the latter ones largely overlap. The distribution of trait values across latitude and over time is very similar to the previous two scenarios. Notably, when the two traits evolve simultaneously, the maximum dispersal distances evolving during range shifting remain slightly lower than in scenario (b) when emigration probability was fixed <span class="citation">(cf. Bocedi et al. 2014)</span>.</p>
+<p>You may also have noted that emigration probability and dispersal distances tend to be negatively correlated, which is more pronounced during the range shifting period. However, there is high variability between simulations, and some runs can even show positive correlations. This indicates that also processes other than evolution by mutation and selection play a role, including stochastic founder effects at the leading edge and surfing of genotypes backwards from the front. For this reason, the graphs depicted in Figure 4a-d of <span class="citation">Bocedi et al. (2014)</span> were computed from a single replicate run. More work is needed to tease apart these different processes and understand their relative roles under environmental changes.</p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-Bocedi2014">
+<p>Bocedi, G., S.C.F. Palmer, G. Pe’er, R.K. Heikkinen, Y.G. Matsinos, K. Watts, and J.M.J. Travis. 2014. “RangeShifter: A Platform for Modelling Spatial Eco-Evolutionary Dynamics and Species’ Responses to Environmental Changes.” <em>Methods in Ecology and Evolution</em> 5 (4): 388–96. <a href="https://doi.org/10.1111/2041-210X.12162">https://doi.org/10.1111/2041-210X.12162</a>.</p>
+</div>
+<div id="ref-Dytham2009">
+<p>Dytham, Calvin. 2009. “Evolved Dispersal Strategies at Range Margins.” <em>Proceedings of the Royal Society B</em> 276 (1661): 1407–13. <a href="https://doi.org/10.1098/rspb.2008.1535">https://doi.org/10.1098/rspb.2008.1535</a>.</p>
+</div>
+<div id="ref-Henry2013">
+<p>Henry, Roslyn C., Greta Bocedi, and Justin M.J. Travis. 2013. “Eco-Evolutionary Dynamics of Range Shifts: Elastic Margins and Critical Thresholds.” <em>Journal of Theoretical Biology</em> 321: 1–7. <a href="https://doi.org/10.1016/j.jtbi.2012.12.004">https://doi.org/10.1016/j.jtbi.2012.12.004</a>.</p>
+</div>
+</div>
+</div>
+
+<!DOCTYPE html>
+<html>
+
+<br>
+<hr />
+<div id="footer">
+<p>Anne-Kathleen Malchow, Greta Bocedi, Justin Travis & Damaris Zurell <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" >(CC BY-NC-ND 4.0)</a>.  </p>
+</div>
+
+</html>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

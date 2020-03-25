@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Tutorial 1: Range expansion, long-distance dispersal and environmental stochasticity</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RangeshiftR tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">About RangeshiftR</a>
+</li>
+<li>
+  <a href="installing.html">Installing RangeshiftR</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RangeshiftR tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tutorial_1.html">1. Range expansion</a>
+    </li>
+    <li>
+      <a href="tutorial_2.html">2. Patch connectivity</a>
+    </li>
+    <li>
+      <a href="tutorial_3.html">3. Evolution of dispersal</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="mailto:damaris@zurell.de">
+    <span class="fa fa-envelope"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://damariszurell.github.io">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/ZurellLab">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Tutorial 1: Range expansion, long-distance dispersal and environmental stochasticity</h1>
+
+</div>
+
+
+<p>This is an example of how RangeShifter can be used at national scale for modelling species range dynamics <span class="citation">(Bocedi et al. 2014)</span>. We model a hypothetical grassland species distributed initially in the South-West of England, and assume that from the start of the simulation the species is free to expand its range. This could be the case for alien species that naturally start to expand after having gone through an establishment phase, alien or native species that have been released from natural enemies or competitors, or species for which a previously prohibiting climate has become suitable. We assume that we have data about the current species distribution and use it as a starting point. The objective is to investigate how different assumptions about the dispersal ability of the species and about temporal environmental stochasticity can affect the modelled range expansion. We start with the basic setting of a single dispersal kernel and no environmental stochasticity.</p>
+<div id="simulating-range-expansions" class="section level1">
+<h1><span class="header-section-number">1</span> Simulating range expansions</h1>
+<div id="create-an-rs-directory" class="section level2">
+<h2><span class="header-section-number">1.1</span> Create an RS directory</h2>
+<p>The directory in which we run RangeShifter needs to have a certain folder structure. It should contain 3 sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’. We can create them from R:</p>
+<pre class="r"><code>library(RangeshiftR)
+library(raster)
+library(RColorBrewer)
+library(rasterVis)
+library(latticeExtra)
+library(viridis)
+library(grid)
+library(gridExtra)
+
+# relative path from working directory:
+dirpath = &quot;Tutorial_01/&quot;
+
+dir.create(paste0(dirpath,&quot;Inputs&quot;), showWarnings = TRUE)
+dir.create(paste0(dirpath,&quot;Outputs&quot;), showWarnings = TRUE)
+dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code></pre>
+<p>Copy the map files provided for exercise 1 into the ‘Inputs’ folder. The files are available from the original <span class="citation">Bocedi et al. (2014)</span> <a href="https://besjournals.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2F2041-210X.12162&amp;file=mee312162-sup-0001-AppendixS1.zip">tutorials</a>.</p>
+</div>
+<div id="landscape-parameters" class="section level2">
+<h2><span class="header-section-number">1.2</span> Landscape parameters</h2>
+<p>We use a land-cover map of Great Britain at 1km resolution. Six dominant aggregated habitat types were derived from LandCover Map 2007 <span class="citation">(Morton et al. 2011)</span>. The map, <em>UKmap_1km.txt</em>, is a ASCII in the standard text format, where each cell holds the code of its dominant habitat type. For simplicity, the codes are set as sequential numbers:</p>
+<ul>
+<li>1 = woodland (broadleaved and conifer)</li>
+<li>2 = arable</li>
+<li>3 = improved grassland</li>
+<li>4 = semi-natural grassland (acid, neutral and calcareous grassland)</li>
+<li>5 = heath and bog</li>
+<li>6 = other (urban, water &amp; coastal habitats)</li>
+</ul>
+<p>Furthermore, we are provided with a map that defines the (initial) species distribution, named <em>Species_Distribution_10km.txt</em>. It is given at a larger resolution of 10km.</p>
+<p>We can plot the landscape map and overlay it with the initial species distribution:</p>
+<pre class="r"><code>UKmap &lt;- raster(paste0(dirpath, &quot;Inputs/UKmap_1km.txt&quot;))
+SpDist &lt;- raster(paste0(dirpath, &quot;Inputs/Species_Distribution_10km.txt&quot;))
+values(SpDist)[values(SpDist) &lt; 1] &lt;- NA
+
+# Plot land cover map and highlight cells with initial species distribution - option 1:
+plot(UKmap, col=brewer.pal(n = 6, name = &quot;Spectral&quot;), axes=F)
+plot(rasterToPolygons(SpDist, dissolve=F), add=T)</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>For prettier mapping with a legend specifying the different land cover categories, we need a little work around:</p>
+<pre class="r"><code># Plot land cover map and highlight cells with initial species distribution - option 2 with categorical legend:
+UKmap.f &lt;- as.factor(UKmap)
+# add the land cover classes to the raster attribute table (rat)
+rat &lt;- levels(UKmap.f)[[1]]
+rat[[&quot;landcover&quot;]] &lt;- c(&quot;woodland&quot;, &quot;arable&quot;, &quot;improved grassland&quot;, &quot;semi-natural grassland&quot;, &quot;heath and bog&quot;, &quot;other&quot;)
+levels(UKmap.f) &lt;- rat
+
+custom.pal &lt;- c(&quot;#1A9850&quot;, &quot;#91CF60&quot;, &quot;#D9EF8B&quot;, &quot;#FEE08B&quot;, &quot;#D8B365&quot;, &quot;#777777&quot;)
+levelplot(UKmap.f, margin=F, scales=list(draw=FALSE), col.regions=custom.pal)  +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;black&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>In order to use the habitat and distribution maps in <em>RangeShiftR</em>, we need to set up a landscape parameter object. It takes the path to the map files along with some other parameters, like their resolutions (given in meters) and the number of habitats. Additionally, for each habitat type we have to specify the carrying capacity for our target species, given in individuals per hectare. In this example, we assume that the species can reproduce only in semi-natural grassland, which has the code 4. Set the carrying capacity for this habitat equal to 5 inds/ha and all others to 0, by defining a vector (<em>carrycap</em>) that contains these numbers in order of increasing habitat codes:</p>
+<pre class="r"><code># carrying capacitíes and landscape parameter object
+carrycap &lt;- c(0, 0, 0, 5, 0, 0)
+land &lt;- ImportedLandscape(LandscapeFile = &quot;UKmap_1km.txt&quot;, 
+                          Resolution = 1000, 
+                          Nhabitats = 6, 
+                          K = carrycap, 
+                          SpDistFile = &quot;Species_Distribution_10km.txt&quot;, 
+                          SpDistResolution = 10000)</code></pre>
+</div>
+<div id="species-parameters" class="section level2">
+<h2><span class="header-section-number">1.3</span> Species parameters</h2>
+<p>Next, we specify the species parameters for demography and dispersal kernel. In this first example, we choose the most simple model options for both: the population dynamics are described by an only-female model with non-overlapping generations. It has one compulsory argument, the maximum growth rate <em>Rmax</em>, that we set to 1.5.</p>
+<pre class="r"><code>demo &lt;- Demography(Rmax = 1.5)</code></pre>
+<p>The dispersal module comprises three sub-modules for Emigration, Transport and Settlement. We assume a constant emigration probability of 0.1. The transfer phase is modelled with a dispersal kernel, whose mean distance we set to 2,000m. For the Settlement sub-module, we use the default options, which assume that an individual will die if it arrives in an unsuitable cell.</p>
+<pre class="r"><code>disp &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1), 
+                   Transfer = DispersalKernel(Distances = 2000), 
+                   Settlement = Settlement() )
+
+# Alternative notation:
+# disp &lt;-  Dispersal() + Emigration(EmigProb = 0.1) + DispersalKernel(Distances = 2000) + Settlement()</code></pre>
+</div>
+<div id="initialisation-parameters" class="section level2">
+<h2><span class="header-section-number">1.4</span> Initialisation parameters</h2>
+<p>In order to control the initial distribution of individuals in the landscape at year 0, we set initialisation rules. We want to initialise all the habitat cells that are present inside the 10km x 10km cells of the loaded species distribution map; and we want each of those cells to be initialised at its carrying capacity. These options are encoded in numeric arguments, for a list of possible settings see the documentation:</p>
+<pre class="r"><code>?Initialise
+init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species distribution map
+                   SpType = 0,   # = all suitable cells within all distribution presence cells
+                   InitDens = 0) # = at carrying capacity</code></pre>
+</div>
+<div id="simulation-parameters" class="section level2">
+<h2><span class="header-section-number">1.5</span> Simulation parameters</h2>
+<p>Lastly, we set some basic simulation parameters, i.e. the simulation number, number of replicates and number of years to be simulated. Furthermore, we specify what file output will be generated. In this example, we choose to output the population, occupancy and range data for every 5 years.</p>
+<pre class="r"><code>sim_0 &lt;- Simulation(Simulation = 0, 
+                  Replicates = 20, 
+                  Years = 100,
+                  OutIntPop = 5,
+                  OutIntOcc = 5,
+                  OutIntRange = 5)</code></pre>
+</div>
+<div id="parameter-master" class="section level2">
+<h2><span class="header-section-number">1.6</span> Parameter master</h2>
+<p>All the settings we have made so far are contained in their respective modules. They have to be combined in a parameter master object, which is needed to run the simulation.</p>
+<pre class="r"><code>s &lt;- RSsim(land = land, demog = demo, dispersal = disp, simul = sim_0, init = init)
+
+# Alternative notation:
+# s &lt;- RSsim() + land + demo + disp + sim_0 + init</code></pre>
+<p>Before we run the simulation, let’s get an overview of the settings we have made by simply typing</p>
+<pre class="r"><code>s</code></pre>
+<pre><code>##  Simulation # 0 
+##  -----------------
+##    Replicates =  20 
+##    Years      =  100 
+##    Absorbing  =  FALSE 
+##  File Outputs:
+##    Range,       every 5 years
+##    Occupancy,   every 5 years
+##    Populations, every 5 years, starting year 0
+## 
+##  Landscape imported from file:
+##    UKmap_1km.txt 
+##    with 6 unique integer habitat code(s)
+##    Carrying capacities K = 0 0 0 5 0 0 .
+##    Resolution      : 1000 
+##  Initial Species Distribution imported from file:
+##    Species_Distribution_10km.txt 
+##    Resolution      : 10000 
+## 
+##  Demography:
+##   Unstructured population:
+##    Rmax : 1.5 
+##    bc   : 1 
+##   Reproduction Type : 0 (female only)
+## 
+##  Dispersal: 
+##   Emigration:
+##    Emigration probabilities:
+##      [,1]
+## [1,]  0.1
+## 
+##   Transfer:
+##    Dispersal Kernel
+##    Dispersal kernel traits:
+##      [,1]
+## [1,] 2000
+##    Constant mortality prob = 0 
+## 
+##   Settlement:
+##    Settlement conditions:
+##      [,1]
+## [1,]    0
+##    FindMate = FALSE 
+## 
+##  Initialisation: 
+##    InitType = 1 : Initialisation from loaded species distribution map
+##                   all presence cells/patches.
+##    InitDens = 0 : At carrying capacity K</code></pre>
+<p>At any stage, you can check for parameter validity of any module or the master:</p>
+<pre class="r"><code>validateRSparams(s)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Also, before actually running the simulation, the <code>RSsim()</code> function (see next section) will always check the validity of all settings and give error messages in case something doesn’t match up.</p>
+</div>
+<div id="run-the-simulation" class="section level2">
+<h2><span class="header-section-number">1.7</span> Run the simulation</h2>
+<p>Once all parameters are set and a parameter master object has been defined, we can run the simulations in the specified RS directory.</p>
+<pre class="r"><code>RunRS(s, dirpath)</code></pre>
+</div>
+<div id="plot-results" class="section level2">
+<h2><span class="header-section-number">1.8</span> Plot results</h2>
+<p>For convenience and for compliance with the RangeShifter Windows GUI, the <em>RangeshiftR</em> package contains a few plotting functions to inspect the population trajectories of the replicate simulations.</p>
+<pre class="r"><code>range_df &lt;- readRange(s, dirpath)
+
+# Plot trajectories of all individual runs and overlay with mean:
+par(mfrow=c(1,2))
+plotAbundance(range_df)
+plotOccupancy(range_df)</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre class="r"><code># Or plot mean and standard deviation:
+par(mfrow=c(1,2))
+plotAbundance(range_df, rep=F, sd=T)
+plotOccupancy(range_df, rep=F, sd=T)</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<p>The population output file contains the local abundance for all cells, timesteps and replicates. We can convert this dataframe into raster maps and plot the spatial abundance distribution.</p>
+<pre class="r"><code># read population output file into a dataframe
+pop_df &lt;- readPop(s, dirpath)
+
+# Not all years have the same number of cells. For later stacking, we need a common extent. This is a quick &amp; dirty solution:
+ext &lt;- c(min(pop_df$x)-500,max(pop_df$x)+500,min(pop_df$y)-500,max(pop_df$y)+500)
+
+# Make stack of different raster layers for each year and for only one repetition (Rep==0):
+pop_wide_rep0 &lt;- reshape(subset(pop_df,Rep==0)[,c(&#39;Year&#39;,&#39;x&#39;,&#39;y&#39;,&#39;NInd&#39;)], timevar=&#39;Year&#39;, v.names=c(&#39;NInd&#39;), idvar=c(&#39;x&#39;,&#39;y&#39;), direction=&#39;wide&#39;)
+r_years_rep0 &lt;- rasterFromXYZ(pop_wide_rep0)
+
+# Overlay with UK mask
+r_years_rep0 &lt;- extend(r_years_rep0, UKmap)
+values(r_years_rep0)[is.na(values(r_years_rep0))] &lt;- 0
+r_years_rep0 &lt;- mask(r_years_rep0, UKmap)
+
+# Map abundance
+levelplot(r_years_rep0[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df$NInd), length=20)),
+          col.regions=c(&#39;grey&#39;,rev(inferno(20)))) +
+    layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>We can make similar maps showing the average abundance over all replicate runs. For convenience, we define a small function for this, which we can re-use later. When calling this function, we can choose whether all replicates should be averaged (the default) or whether a specific replicate should be extracted. Also, we can optionally overlay a mask, e.g. the UK map.</p>
+<pre class="r"><code>stack_pop &lt;- function(pop_df, ext, rep=NULL, mask=NULL){
+  # This function takes the population data frame output from RangeShiftR and turns this into a raster stack of abundance maps.
+  # If the ID of the Replicate (&quot;rep&quot;) is not provided, it will return the mean abundance over all replicates.
+  
+  if (!is.null(rep)){
+    pop_wide &lt;- reshape(subset(pop_df,Rep==rep)[,c(&#39;Year&#39;,&#39;x&#39;,&#39;y&#39;,&#39;NInd&#39;)], timevar=&#39;Year&#39;, v.names=c(&#39;NInd&#39;), idvar=c(&#39;x&#39;,&#39;y&#39;), direction=&#39;wide&#39;)
+    r_years &lt;- rasterFromXYZ(pop_wide)
+    
+    if (!is.null(mask)){
+      r_years &lt;- extend(r_years, mask)
+      values(r_years)[is.na(values(r_years))] &lt;- 0
+      r_years &lt;- mask(r_years, mask)
+    }
+    
+  } else {
+    pop_wide &lt;- lapply(unique(pop_df$Year),FUN=function(year){reshape(subset(pop_df,Year==year)[,c(&#39;Rep&#39;,&#39;x&#39;,&#39;y&#39;,&#39;NInd&#39;)], timevar=&#39;Rep&#39;, v.names=c(&#39;NInd&#39;), idvar=c(&#39;x&#39;,&#39;y&#39;), direction=&#39;wide&#39;)})
+    r_years &lt;- stack(sapply(pop_wide, FUN=function(i){mean(extend(rasterFromXYZ(i),ext))}))
+    names(r_years) &lt;- paste0(&#39;mean.NInd.&#39;,unique(pop_df$Year))
+    
+    if (!is.null(mask)){
+      r_years &lt;- extend(r_years, mask)
+      values(r_years)[is.na(values(r_years))] &lt;- 0
+      r_years &lt;- mask(r_years, mask)
+    }
+  }
+  return(r_years)
+}</code></pre>
+<p>Extracing the maps is much easier now:</p>
+<pre class="r"><code># Extract maps of single replicate run:
+r_years_rep0 &lt;- stack_pop(pop_df, ext, rep=0, mask=UKmap)
+names(r_years_rep0)</code></pre>
+<pre><code>##  [1] &quot;NInd.0&quot;   &quot;NInd.5&quot;   &quot;NInd.10&quot;  &quot;NInd.15&quot;  &quot;NInd.20&quot;  &quot;NInd.25&quot; 
+##  [7] &quot;NInd.30&quot;  &quot;NInd.35&quot;  &quot;NInd.40&quot;  &quot;NInd.45&quot;  &quot;NInd.50&quot;  &quot;NInd.55&quot; 
+## [13] &quot;NInd.60&quot;  &quot;NInd.65&quot;  &quot;NInd.70&quot;  &quot;NInd.75&quot;  &quot;NInd.80&quot;  &quot;NInd.85&quot; 
+## [19] &quot;NInd.90&quot;  &quot;NInd.95&quot;  &quot;NInd.100&quot;</code></pre>
+<pre class="r"><code># Extract maps with averaged abundances over all replicates: 
+r_years &lt;- stack_pop(pop_df, ext, mask=UKmap)
+names(r_years)</code></pre>
+<pre><code>##  [1] &quot;mean.NInd.0&quot;   &quot;mean.NInd.5&quot;   &quot;mean.NInd.10&quot;  &quot;mean.NInd.15&quot; 
+##  [5] &quot;mean.NInd.20&quot;  &quot;mean.NInd.25&quot;  &quot;mean.NInd.30&quot;  &quot;mean.NInd.35&quot; 
+##  [9] &quot;mean.NInd.40&quot;  &quot;mean.NInd.45&quot;  &quot;mean.NInd.50&quot;  &quot;mean.NInd.55&quot; 
+## [13] &quot;mean.NInd.60&quot;  &quot;mean.NInd.65&quot;  &quot;mean.NInd.70&quot;  &quot;mean.NInd.75&quot; 
+## [17] &quot;mean.NInd.80&quot;  &quot;mean.NInd.85&quot;  &quot;mean.NInd.90&quot;  &quot;mean.NInd.95&quot; 
+## [21] &quot;mean.NInd.100&quot;</code></pre>
+<pre class="r"><code># Map abundance of single replicate run:
+levelplot(r_years_rep0[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20)))) +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code># Map mean abundance:
+levelplot(r_years[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20)))) +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+</div>
+</div>
+<div id="change-simulations" class="section level1">
+<h1><span class="header-section-number">2</span> Change simulations</h1>
+<p>We can easily change certain aspects of the simulations by changing the various modules. Here, we explore the different simulations as shown in Fig. 2 of <span class="citation">Bocedi et al. (2014)</span>. Firstly, we add long-distance dispersal. Secondly, we add environmental stochasticity without and with temporal autocorrelation.</p>
+<div id="add-rare-long-distance-dispersal" class="section level2">
+<h2><span class="header-section-number">2.1</span> Add rare long-distance dispersal</h2>
+<p>To explore the effect of rare long-distance dispersal events on the range expansion, we only need to change the dispersal module. More specifically, we define a new transfer sub-module with the option <em>DoubleKernel</em> enabled, to use the double negative exponential kernel (Mixed kernel). This means that in addition to the standard dispersal kernel, an individual has a certain probability of dispersing with a second - a long-distance - dispersal kernel.</p>
+<pre class="r"><code>trans_long &lt;- DispersalKernel(DoubleKernel = T, Distances = matrix(c(2000, 10000, 0.99), ncol = 3)) #Distances = c(MeanDistance-I, MeanDistance-II, probability of dispersing with Kernel-I)
+
+disp_long &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1),
+                        Transfer = trans_long,
+                        Settlement = Settlement() )</code></pre>
+<p>Moreover we change the simulation number to 1 in the corresponding parameter object, in order to avoid overwriting the previous output.</p>
+<pre class="r"><code>sim_1 &lt;- Simulation(Simulation = 1, 
+                    Replicates = 20, 
+                    Years = 100,
+                    OutIntPop = 5,
+                    OutIntOcc = 5,
+                    OutIntRange = 5)</code></pre>
+<p>Finally, the new modules are added to the old parameter master to define a new one, <em>s_long</em>.</p>
+<pre class="r"><code>s_long &lt;- s + disp_long + sim_1</code></pre>
+<p>With this, run the new simulation:</p>
+<pre class="r"><code>RunRS(s_long, dirpath)</code></pre>
+<p>We can now compare the result plots. The number of occupied cells as well as the total abundance is much higher in this scenario.</p>
+<pre class="r"><code># Get range results
+range_df_long &lt;- readRange(s_long, dirpath)
+
+# Plot total abundance and number of occupied cells:
+par(mfrow=c(1,2))
+plotAbundance(range_df_long)
+plotOccupancy(range_df_long)</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre class="r"><code># Map mean abundance:
+pop_df_long &lt;- readPop(s_long, dirpath)
+ext_long &lt;- c(min(pop_df_long$x)-500,max(pop_df_long$x)+500,min(pop_df_long$y)-500,max(pop_df_long$y)+500)
+
+r_years_long &lt;- stack_pop(pop_df_long, ext_long, mask=UKmap)
+
+levelplot(r_years_long[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_long$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20)))) +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>When comparing the maps of mean abundance between the first and second scenario, these look quite similar. One reason might be that successful long-distance dispersal is highly stochastic and, thus, high occupancy only occurs for a few but not for all runs. So, let’s try and map only the replicate run with the highest occupancy.</p>
+<pre class="r"><code># Which replicate had highest occupancy?
+head(subset(range_df_long,Year==95)[order(subset(range_df_long,Year==95)$NOccupCells,decreasing=T),])</code></pre>
+<pre><code>##     Rep Year RepSeason  NInds NOccupCells Occup.Suit  min_X  max_X min_Y
+## 419  19   95         0 949724        2841  0.1195460 211000 569000 45000
+## 167   7   95         0 895927        2826  0.1189140 211000 569000 45000
+## 398  18   95         0 929092        2720  0.1144540 211000 569000 58000
+## 335  15   95         0 683409        2665  0.1121400 211000 569000 37000
+## 377  17   95         0 759546        2208  0.0929097 185000 569000 45000
+## 125   5   95         0 693928        2198  0.0924890 211000 569000 45000
+##      max_Y
+## 419 325000
+## 167 295000
+## 398 282000
+## 335 312000
+## 377 279000
+## 125 277000</code></pre>
+<pre class="r"><code>rep_x = subset(range_df_long,Year==95)$Rep[which.max(subset(range_df_long,Year==95)$NOccupCells)]
+
+r_years_long_1 &lt;- stack_pop(pop_df_long, ext_long, rep=rep_x, mask=UKmap)
+names(r_years_long_1)</code></pre>
+<pre><code>##  [1] &quot;NInd.0&quot;   &quot;NInd.5&quot;   &quot;NInd.10&quot;  &quot;NInd.15&quot;  &quot;NInd.20&quot;  &quot;NInd.25&quot; 
+##  [7] &quot;NInd.30&quot;  &quot;NInd.35&quot;  &quot;NInd.40&quot;  &quot;NInd.45&quot;  &quot;NInd.50&quot;  &quot;NInd.55&quot; 
+## [13] &quot;NInd.60&quot;  &quot;NInd.65&quot;  &quot;NInd.70&quot;  &quot;NInd.75&quot;  &quot;NInd.80&quot;  &quot;NInd.85&quot; 
+## [19] &quot;NInd.90&quot;  &quot;NInd.95&quot;  &quot;NInd.100&quot;</code></pre>
+<pre class="r"><code>levelplot(r_years_long_1[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_long$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20))))  +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+</div>
+<div id="add-temporal-environmental-stochasticity" class="section level2">
+<h2><span class="header-section-number">2.2</span> Add temporal environmental stochasticity</h2>
+<p>Lastly, we incorporate temporal environmental stochasticity, which is recognized to be fundamental for both ecological and evolutionary processes and is expected to increase in frequency and become more auto-correlated with climate change.</p>
+<p>The options for the environmental stochasticity are set in the Simulation parameters object. For this example we use <em>global</em> (referring to the spatial extent) stochasticity in <em>growth rate</em>. We explore two types of stochasticity: temporally uncorrelated (white noise) and positively correlated (red noise), by setting the autocorrelation coefficient <em>ac</em>:</p>
+<pre class="r"><code>sim_2 &lt;- Simulation(Simulation = 2, 
+                    Replicates = 20, 
+                    Years = 100,
+                    EnvStoch = 1,     # global environmental stochasticity
+                    EnvStochType = 0, # in growth rate:
+                    std = 0.25,       # magnitude of stochastic fluctuations
+                    ac = 0.0,         # temporal autocorrelation
+                    minR = 0.5,       # minimum growth rate
+                    maxR = 2.5,       # maximum growth rate
+                    OutIntPop = 5,
+                    OutIntOcc = 5,
+                    OutIntRange = 5)
+
+s_envstoch_white &lt;- s_long + sim_2</code></pre>
+<pre class="r"><code>sim_3 &lt;- Simulation(Simulation = 3, 
+                    Replicates = 20, 
+                    Years = 100,
+                    EnvStoch = 1,     # global environmental stochasticity
+                    EnvStochType = 0, # in growth rate:
+                    std = 0.25,       # magnitude of stochastic fluctuations
+                    ac = 0.7,         # temporal autocorrelation
+                    minR = 0.5,       # minimum growth rate
+                    maxR = 2.5,       # maximum growth rate
+                    OutIntPop = 5,
+                    OutIntOcc = 5,
+                    OutIntRange = 5)
+
+s_envstoch_red &lt;- s_long + sim_3</code></pre>
+<pre class="r"><code>RunRS(s_envstoch_white, dirpath)
+RunRS(s_envstoch_red, dirpath)</code></pre>
+<p>Comparing the results of all four simulation runs:</p>
+<pre class="r"><code># Get results:
+range_df_envstoch_white &lt;- readRange(s_envstoch_white, dirpath)
+range_df_envstoch_red &lt;- readRange(s_envstoch_red, dirpath)
+
+par(mfrow=c(2,2),mar=c(3,3,1,1)+.1, tcl=-.1, mgp=c(1.6,.3,0))
+# Get common y-range of all 4 simulations
+ylim &lt;- c(min(min(range_df$NInds),min(range_df_long$NInds), min(range_df_envstoch_white$NInds), min(range_df_envstoch_red$NInds)), max(max(range_df$NInds),max(range_df_long$NInds), max(range_df_envstoch_white$NInds), max(range_df_envstoch_red$NInds)))
+
+plotAbundance(range_df, ylim = ylim)
+plotAbundance(range_df_long, ylim = ylim)
+plotAbundance(range_df_envstoch_white, ylim = ylim)
+plotAbundance(range_df_envstoch_red, ylim = ylim)</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<pre class="r"><code>par(mfrow=c(2,2),mar=c(3,3,1,1)+.1, tcl=-.1, mgp=c(1.6,.3,0))
+ylim &lt;- c(min(min(range_df$NOccupCells),min(range_df_long$NOccupCells), min(range_df_envstoch_white$NOccupCells), min(range_df_envstoch_red$NOccupCells)), max(max(range_df$NOccupCells),max(range_df_long$NOccupCells), max(range_df_envstoch_white$NOccupCells), max(range_df_envstoch_red$NOccupCells)))
+
+plotOccupancy(range_df, ylim = ylim)
+plotOccupancy(range_df_long, ylim = ylim)
+plotOccupancy(range_df_envstoch_white, ylim = ylim)
+plotOccupancy(range_df_envstoch_red, ylim = ylim)</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<pre class="r"><code># Map mean abundance scenario 3
+pop_df_envstoch_white &lt;- readPop(s_envstoch_white, dirpath)
+ext_envstoch_white &lt;- c(min(pop_df_envstoch_white$x)-500,max(pop_df_envstoch_white$x)+500,min(pop_df_envstoch_white$y)-500,max(pop_df_envstoch_white$y)+500)
+
+r_years_envstoch_white &lt;- stack_pop(pop_df_envstoch_white, ext_envstoch_white, mask=UKmap)
+
+levelplot(r_years_envstoch_white[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_envstoch_white$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20))))  +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<pre class="r"><code># Which replicate had highest occupancy?
+rep_x = subset(range_df_envstoch_white,Year==95)$Rep[which.max(subset(range_df_envstoch_white,Year==95)$NOccupCells)]
+
+r_years_envstoch_white_1 &lt;- stack_pop(pop_df_envstoch_white, ext_envstoch_white, rep=rep_x, mask=UKmap)
+
+levelplot(r_years_envstoch_white_1[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_envstoch_white$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20))))  +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-30-2.png" width="672" /></p>
+<pre class="r"><code># Map mean abundance scenario 4
+pop_df_envstoch_red &lt;- readPop(s_envstoch_red, dirpath)
+ext_envstoch_red &lt;- c(min(pop_df_envstoch_red$x)-500,max(pop_df_envstoch_red$x)+500,min(pop_df_envstoch_red$y)-500,max(pop_df_envstoch_red$y)+500)
+
+r_years_envstoch_red &lt;- stack_pop(pop_df_envstoch_red, ext_envstoch_red, mask=UKmap)
+
+levelplot(r_years_envstoch_red[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_envstoch_red$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20))))  +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-30-3.png" width="672" /></p>
+<pre class="r"><code># Which replicate had highest occupancy?
+rep_x = subset(range_df_envstoch_red,Year==95)$Rep[which.max(subset(range_df_envstoch_red,Year==95)$NOccupCells)]
+
+r_years_envstoch_red_1 &lt;- stack_pop(pop_df_envstoch_red, ext_envstoch_red, rep=rep_x, mask=UKmap)
+
+levelplot(r_years_envstoch_red_1[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_envstoch_red$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20))))  +
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
+<p><img src="tutorial_1_files/figure-html/unnamed-chunk-30-4.png" width="672" /></p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-Bocedi2014">
+<p>Bocedi, G., S.C.F. Palmer, G. Pe’er, R.K. Heikkinen, Y.G. Matsinos, K. Watts, and J.M.J. Travis. 2014. “RangeShifter: A Platform for Modelling Spatial Eco-Evolutionary Dynamics and Species’ Responses to Environmental Changes.” <em>Methods in Ecology and Evolution</em> 5 (4): 388–96. <a href="https://doi.org/10.1111/2041-210X.12162">https://doi.org/10.1111/2041-210X.12162</a>.</p>
+</div>
+<div id="ref-Morton2011">
+<p>Morton, D., C. Rowland, C. Wood, L. Meek, C. Marston, G. Smith, R. Wadsworth, and I.. Simpson. 2011. “Final Report for Lcm2007 - the New Uk Land Cover Map.” Countryside Survey Technical Report No 11/07. NERC/Centre for Ecology &amp; Hydrology.</p>
+</div>
+</div>
+</div>
+
+<!DOCTYPE html>
+<html>
+
+<br>
+<hr />
+<div id="footer">
+<p>Anne-Kathleen Malchow, Greta Bocedi, Justin Travis & Damaris Zurell <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" >(CC BY-NC-ND 4.0)</a>.  </p>
+</div>
+
+</html>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
