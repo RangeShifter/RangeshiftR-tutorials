@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -89,7 +88,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -238,6 +236,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -266,6 +265,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -579,6 +584,20 @@ plotOccupancy(s, dirpath,rep=F, sd=T)</code></pre>
 <p>In order to analyse the evolution of heritable traits - in this case the emigration probability - we need to process the <em>individuals</em> output. It contains information about the position and trait values (among other things) of all individuals at specified time intervals. Since this can amount to quite large amounts of data, a separate output file is generated for each replicate.</p>
 <p>Like demonstrated in <span class="citation">(Bocedi et al. 2014)</span>, we will create a time series of maps showing the mean trait value in each cell. For simplicity, we focus on a single replicate only, although it is straightforward to calculate the trait average over all replicates.</p>
 <p>Let’s read the data file and turn it into a raster stack. The values of the emigration probability trait are listed in the column named <em>EP</em>:</p>
+<pre class="r"><code># load individuals file for replicate 7 (not that the files names start counting with 0):
+inds_rep07 &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch1_Sim0_Land1_Rep6_Inds.txt&quot;), header = T)
+
+ext &lt;- extent(0, 50, 0, 700)
+inds_stack &lt;- stack()
+for(year in seq(0,1250,by = 50)){
+    inds_sub &lt;- subset.data.frame(inds_rep07, Year==year)
+    inds_sub &lt;- aggregate(EP ~ X + Y, data = inds_sub, mean)
+    inds_sub[,1:2] &lt;- inds_sub[,1:2]+0.5
+    inds_r &lt;- raster::rasterFromXYZ(inds_sub)
+    inds_r &lt;- extend(inds_r, ext)
+    names(inds_r) &lt;- paste0(&quot;y&quot;,year)
+    inds_stack &lt;- addLayer(inds_stack, inds_r)
+}</code></pre>
 <p>Plot the maps:</p>
 <pre class="r"><code>levelplot(inds_stack,
           col.regions=hcl.colors(20, palette = &quot;viridis&quot;, rev = TRUE),
@@ -589,7 +608,26 @@ plotOccupancy(s, dirpath,rep=F, sd=T)</code></pre>
 )</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>In equilibrium conditions, when the potential range is stationary, selection against dispersal prevails across the species’ range except near the margin, where the emigration probability evolves to be higher. When the environmental gradient starts to shift, the species lags behind its suitable environmental space mainly due the very low emigration probability that evolved throughout most of the range. At the same time, selection for increased dispersal occurs, especially at the leading edge. In consequence, emigration probability evolves to be higher, and the trait surfs back towards the centre and rear edge of the range. This ‘rescue’ effect enables the species to keep up with the shifting environment. After the shifting stops, high emigration is not advantageous anymore, and the trait gradually evolves back to values observed prior to environmental change.</p>
-<p>We can also map the mean dispersal distances per cell, which can be extracted from the individuals output file under the column name <em>DistMoved</em>. It gives similar results: <img src="tutorial_3_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>We can also map the mean dispersal distances per cell, which can be extracted from the individuals output file under the column name <em>DistMoved</em>. It gives similar results:</p>
+<pre class="r"><code>inds_stack &lt;- stack()
+for(year in seq(0,1250,by = 50)){
+    inds_sub &lt;- subset.data.frame(inds_rep07, Year==year)
+    inds_sub &lt;- aggregate(DistMoved ~ X + Y, data = inds_sub, mean)
+    inds_sub[,1:2] &lt;- inds_sub[,1:2]+0.5
+    inds_r &lt;- raster::rasterFromXYZ(inds_sub)
+    inds_r &lt;- extend(inds_r, ext)
+    names(inds_r) &lt;- paste0(&quot;y&quot;,year)
+    inds_stack &lt;- addLayer(inds_stack, inds_r)
+}
+levelplot(inds_stack,
+          at=seq(0,300,length.out=20),
+          col.regions=hcl.colors(20, palette = &quot;viridis&quot;, rev = TRUE),
+          between = list(x=0), 
+          names.attr = as.character(seq(0,1250,by = 50)),
+          scales=list(x=list(draw=F)),
+          par.strip.text=list(cex=.6)
+)</code></pre>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>To yield a summary of the trait evolution, we can simply use the aggregated information stored in the ‘mean traits by rows’ output file. It contains a time series of the heritable trait values, averaged over the <em>x</em>-coordinates. This can be useful to avoid the large storage amount for the individuals output.</p>
 <pre class="r"><code># load &#39;traits by rows&#39; output file
 trait_ts &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch1_Sim0_Land1_TraitsXrow.txt&quot;), header = T)
