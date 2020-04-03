@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -89,7 +88,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -238,6 +236,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -266,6 +265,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -371,14 +376,26 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="mailto:anne-kathleen.malchow@geo.hu-berlin.de">
+    <span class="fa fa-envelope"></span>
+     
+  </a>
+</li>
+<li>
   <a href="mailto:damaris@zurell.de">
     <span class="fa fa-envelope"></span>
      
   </a>
 </li>
 <li>
-  <a href="https://damariszurell.github.io">
+  <a href="https://rangeshifter.github.io">
     <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/RangeShifter">
+    <span class="fa fa-github"></span>
      
   </a>
 </li>
@@ -423,7 +440,7 @@ dirpath = &quot;Tutorial_01/&quot;
 dir.create(paste0(dirpath,&quot;Inputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Outputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code></pre>
-<p>Copy the map files provided for exercise 1 into the ‘Inputs’ folder. The files are available from the original <span class="citation">Bocedi et al. (2014)</span> <a href="https://besjournals.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2F2041-210X.12162&amp;file=mee312162-sup-0001-AppendixS1.zip">tutorials</a>.</p>
+<p>Copy the input files provided for exercise 1 into the ‘Inputs’ folder. The files can be downloaded <a href="files/Tutorial_data.zip">here</a>.</p>
 </div>
 <div id="landscape-parameters" class="section level2">
 <h2><span class="header-section-number">1.2</span> Landscape parameters</h2>
@@ -699,20 +716,13 @@ levelplot(r_years_long[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FAL
 <p>When comparing the maps of mean abundance between the first and second scenario, these look quite similar. One reason might be that successful long-distance dispersal is highly stochastic and, thus, high occupancy only occurs for a few but not for all runs. So, let’s try and map only the replicate run with the highest occupancy.</p>
 <pre class="r"><code># Which replicate had highest occupancy?
 head(subset(range_df_long,Year==95)[order(subset(range_df_long,Year==95)$NOccupCells,decreasing=T),])</code></pre>
-<pre><code>##     Rep Year RepSeason  NInds NOccupCells Occup.Suit  min_X  max_X min_Y
-## 419  19   95         0 949724        2841  0.1195460 211000 569000 45000
-## 167   7   95         0 895927        2826  0.1189140 211000 569000 45000
-## 398  18   95         0 929092        2720  0.1144540 211000 569000 58000
-## 335  15   95         0 683409        2665  0.1121400 211000 569000 37000
-## 377  17   95         0 759546        2208  0.0929097 185000 569000 45000
-## 125   5   95         0 693928        2198  0.0924890 211000 569000 45000
-##      max_Y
-## 419 325000
-## 167 295000
-## 398 282000
-## 335 312000
-## 377 279000
-## 125 277000</code></pre>
+<pre><code>##     Rep Year RepSeason  NInds NOccupCells Occup.Suit  min_X  max_X min_Y  max_Y
+## 419  19   95         0 949724        2841  0.1195460 211000 569000 45000 325000
+## 167   7   95         0 895927        2826  0.1189140 211000 569000 45000 295000
+## 398  18   95         0 929092        2720  0.1144540 211000 569000 58000 282000
+## 335  15   95         0 683409        2665  0.1121400 211000 569000 37000 312000
+## 377  17   95         0 759546        2208  0.0929097 185000 569000 45000 279000
+## 125   5   95         0 693928        2198  0.0924890 211000 569000 45000 277000</code></pre>
 <pre class="r"><code>rep_x = subset(range_df_long,Year==95)$Rep[which.max(subset(range_df_long,Year==95)$NOccupCells)]
 
 r_years_long_1 &lt;- stack_pop(pop_df_long, ext_long, rep=rep_x, mask=UKmap)
@@ -835,7 +845,7 @@ levelplot(r_years_envstoch_red_1[[&#39;NInd.90&#39;]], margin=F, scales=list(dra
 <br>
 <hr />
 <div id="footer">
-<p>Anne-Kathleen Malchow, Greta Bocedi, Justin Travis & Damaris Zurell <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" >(CC BY-NC-ND 4.0)</a>.  </p>
+<p>Anne-Kathleen Malchow, Greta Bocedi, Steve Palmer, Justin Travis & Damaris Zurell <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" >(CC BY-NC-ND 4.0)</a>.  </p>
 </div>
 
 </html>
