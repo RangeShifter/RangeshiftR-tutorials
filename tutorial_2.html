@@ -592,18 +592,18 @@ bg &lt;- function(main=NULL){
     levelplot(landsc, margin=F, scales=list(draw=FALSE),at=seq(.5,7.5,by=1), colorkey=F,
                 col.regions = rev(brewer.pal(n = 7, name = &quot;Greys&quot;) ), main=main)
 }</code></pre>
-<p>To reproduce Fig. 3b of <span class="citation">Bocedi et al. (2014)</span>, we map the mean occupancy probability for each patch after 100 years (left panel in the paper) as well as the mean time to colonisation (right panel), both calculated over the 20 replicates. We need to do a little data processing for this.</p>
+<p>To reproduce Fig. 3b of <span class="citation">Bocedi et al. (2014)</span>, we map the mean occupancy probability for each patch in year 100 (left panel in the paper) as well as the mean time to colonisation (right panel), both calculated over the 20 replicates. We need to do a little data processing for this.</p>
 <pre class="r"><code># read population results
 pop_df &lt;- readPop(s, dirpath)
 pop_df &lt;- pop_df[pop_df$PatchID!=0,]
 
-# Occupancy probability after 100 years over all replicates
+# Occupancy probability in year 100 averaged over all replicates
 occ_prob &lt;- sapply(sort(unique(pop_df$PatchID)), FUN=function(x,n=length(unique(pop_df$Rep))){ind &lt;- sum(subset(pop_df,PatchID==x &amp; Year==100)$NInd&gt;0)/n; names(ind)=x;ind})
 
 # Time to colonisation:
 col_time &lt;- data.frame(sapply(sort(unique(pop_df$PatchID)),FUN=function(p){sapply(sort(unique(pop_df$Rep)),FUN=function(r){ ifelse(nrow(subset(pop_df,PatchID==p &amp; Rep==r &amp; NInd&gt;0)), min(subset(pop_df,PatchID==p &amp; Rep==r &amp; NInd&gt;0)$Year), NA) })}))
 names(col_time) &lt;- sort(unique(pop_df$PatchID))
-col_time_mean &lt;- colMeans(col_time)
+col_time_mean &lt;- colMeans(col_time, na.rm=T)
 
 # Update patch information
 patch_occ_prob &lt;- patch_col_time &lt;- patch
@@ -648,15 +648,15 @@ grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,max(pop_df
 get_patch_results &lt;- function(pop_df,patch_r){
     # This function takes the patch-based population file and the patch raster map and produces summary stats and maps on occupancy probability and mean time to colonisation
 
-    # Occupancy probability after 100 years over all replicates
+    # Occupancy probability in year 100 averaged over all replicates
     occ_prob &lt;- sapply(sort(unique(pop_df$PatchID)), FUN=function(x,n=length(unique(pop_df$Rep))){ind &lt;- sum(subset(pop_df,PatchID==x &amp; Year==100)$NInd&gt;0)/n; names(ind)=x;ind})
 
     # Time to colonisation:
     col_time &lt;- data.frame(sapply(sort(unique(pop_df$PatchID)),FUN=function(p){sapply(sort(unique(pop_df$Rep)),FUN=function(r){ ifelse(nrow(subset(pop_df,PatchID==p &amp; Rep==r &amp; NInd&gt;0)), min(subset(pop_df,PatchID==p &amp; Rep==r &amp; NInd&gt;0)$Year), NA) })}))
     names(col_time) &lt;- sort(unique(pop_df$PatchID))
-    col_time_mean &lt;- colMeans(col_time)
+    col_time_mean &lt;- colMeans(col_time, na.rm=T)
 
-    patch_occ_prob &lt;- patch_col_time &lt;- patch
+    patch_occ_prob &lt;- patch_col_time &lt;- patch_r
     values(patch_occ_prob)[values(patch)&gt;0] &lt;- 0
     values(patch_col_time)[values(patch)&gt;0] &lt;- -9
 
@@ -665,10 +665,10 @@ get_patch_results &lt;- function(pop_df,patch_r){
     }
 
     for (i in as.numeric(names(col_time_mean))){
-        values(patch_col_time)[values(patch)==i] &lt;- ifelse(is.na(col_time_mean[paste(i)]),-9,col_time_mean[paste(i)])
+        values(patch_col_time)[values(patch_r)==i] &lt;- ifelse(is.na(col_time_mean[paste(i)]),-9,col_time_mean[paste(i)])
     }
 
-    values(patch_occ_prob)[values(patch)&lt;1] &lt;- values(patch_col_time)[values(patch)&lt;1] &lt;- NA
+    values(patch_occ_prob)[values(patch_r)&lt;1] &lt;- values(patch_col_time)[values(patch_r)&lt;1] &lt;- NA
 
     return(list(occ_prob=occ_prob, col_time=col_time, col_time_mean=col_time_mean, patch_occ_prob=patch_occ_prob, patch_col_time=patch_col_time))
 }
