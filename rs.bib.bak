@@ -46,4 +46,46 @@
   url       = {http://rspb.royalsocietypublishing.org/content/276/1661/1407.full},
 }
 
+@Article{Henry2013,
+  author    = {Roslyn C. Henry and Greta Bocedi and Justin M.J. Travis},
+  title     = {Eco-evolutionary dynamics of range shifts: Elastic margins and critical thresholds},
+  journal   = {Journal of Theoretical Biology},
+  year      = {2013},
+  volume    = {321},
+  pages     = {1--7},
+  doi       = {10.1016/j.jtbi.2012.12.004},
+  file      = {:readme/papers/Henry_etal_JTheorBiol_2013.pdf:PDF},
+  keywords  = {Climate change Environmental change Eco-evolutionary dynamics Evolutionary rescue Extinction thresholds},
+  owner     = {DZ},
+  timestamp = {2020.03.11},
+}
+
+@Article{Sciaini2018,
+  author    = {Marco Sciaini and Matthias Fritsch and C{\'{e}}dric Scherer and Craig Eric Simpkins},
+  journal   = {Methods in Ecology and Evolution},
+  title     = {{NLMR} and landscapetools: An integrated environment for simulating and modifying neutral landscape models in R},
+  year      = {2018},
+  month     = {sep},
+  number    = {11},
+  pages     = {2240--2248},
+  volume    = {9},
+  abstract  = {Sections
+PDFPDF
+Tools
+Share
+Abstract
+
+    Neutral landscape models (NLMs) simulate landscape patterns based on theoretical distributions and can be used to systematically study the effect of landscape structure on ecological processes. NLMs are commonly used in landscape ecology to enhance the findings of field studies as well as in simulation studies to provide an underlying landscape. However, their creation so far has been limited to software that is platform dependent, does not allow a reproducible workflow or is not embedded in R, the prevailing programming language used by ecologists.
+    Here, we present two complementary R packages NLMR and landscapetools, that allow users to generate and manipulate NLMs in a single environment. They grant the simulation of the widest collection of NLMs found in any single piece of software thus far while allowing for easy manipulation in a self?contained and reproducible workflow. The combination of both packages should stimulate a wider usage of NLMs in ecology. NLMR is a comprehensive collection of algorithms with which to simulate NLMs. landscapetools provides a utility toolbox which facilitates an easy workflow with simulated neutral landscapes and other raster data.
+    We show two example applications that illustrate potential use cases for NLMR and landscapetools: First, an agent?based simulation study in which the effect of spatial structure on disease persistence was studied. The second example shows how increases in spatial scaling can introduce biases in calculated landscape metrics.
+    Simplifying the workflow around generating and handling NLMs should encourage an uptake in the usage of NLMs. NLMR and landscapetools are both generic frameworks that can be used in a variety of applications and are a further step to having a unified simulation environment in R for answering spatial research questions.},
+  doi       = {10.1111/2041-210x.13076},
+  editor    = {Nick Golding},
+  file      = {:readme/papers/Sciaini_etal_MEE_2018.pdf:PDF},
+  keywords  = {artificial landscape landscape generator spatial patterns spatial visualisation virtual landscape},
+  owner     = {DZ},
+  publisher = {Wiley},
+  timestamp = {2020.04.29},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}

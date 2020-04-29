@@ -60,4 +60,20 @@
   timestamp = {2020.03.11},
 }
 
+@Article{Sciaini2018,
+  author    = {Marco Sciaini and Matthias Fritsch and Cedric Scherer and Craig Eric Simpkins},
+  journal   = {Methods in Ecology and Evolution},
+  title     = {{NLMR} and landscapetools: An integrated environment for simulating and modifying neutral landscape models in R},
+  year      = {2018},
+  month     = {sep},
+  number    = {11},
+  pages     = {2240--2248},
+  volume    = {9},
+  doi       = {10.1111/2041-210x.13076},
+  file      = {:readme/papers/Sciaini_etal_MEE_2018.pdf:PDF},
+  keywords  = {artificial landscape landscape generator spatial patterns spatial visualisation virtual landscape},
+  owner     = {DZ},
+  timestamp = {2020.04.29},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
