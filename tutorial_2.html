@@ -363,26 +363,29 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="overview_0.html">0. General package introduction</a>
+    </li>
+    <li>
       <a href="tutorial_1.html">1. Range expansion</a>
     </li>
     <li>
       <a href="tutorial_2.html">2. Patch connectivity</a>
     </li>
     <li>
-      <a href="tutorial_3.html">3. Evolution of dispersal</a>
+      <a href="tutorial_3.html">3. Dynamic landscapes &amp; SMS paths</a>
+    </li>
+    <li>
+      <a href="tutorial_4.html">4. Evolution of dispersal</a>
+    </li>
+    <li>
+      <a href="appendix_tutorial_3.html">Appendix A3. Create dynamic landscapes</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="mailto:anne-kathleen.malchow@geo.hu-berlin.de">
-    <span class="fa fa-envelope"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="mailto:damaris@zurell.de">
+  <a href="mailto:RangeshiftR@uni-potsdam.de">
     <span class="fa fa-envelope"></span>
      
   </a>
@@ -454,7 +457,7 @@ dirpath = &quot;Tutorial_02/&quot;
 dir.create(paste0(dirpath,&quot;Inputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Outputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code></pre>
-<p>Copy the input files provided for exercise 2 into the ‘Inputs’ folder. The files can be downloaded <a href="files/Tutorial_data.zip">here</a>.</p>
+<p>Copy the input files provided for exercise 2 into the ‘Inputs’ folder. The files can be downloaded <a href="files/Tutorial2_Inputs.zip">here</a>.</p>
 </div>
 <div id="landscape-parameters" class="section level2">
 <h2><span class="header-section-number">1.2</span> Landscape parameters</h2>
@@ -592,36 +595,39 @@ bg &lt;- function(main=NULL){
     levelplot(landsc, margin=F, scales=list(draw=FALSE),at=seq(.5,7.5,by=1), colorkey=F,
                 col.regions = rev(brewer.pal(n = 7, name = &quot;Greys&quot;) ), main=main)
 }</code></pre>
-<p>To reproduce Fig. 3b of <span class="citation">Bocedi et al. (2014)</span>, we map the mean occupancy probability for each patch in year 100 (left panel in the paper) as well as the mean time to colonisation (right panel), both calculated over the 20 replicates. We need to do a little data processing for this.</p>
-<pre class="r"><code># read population results
-pop_df &lt;- readPop(s, dirpath)
-pop_df &lt;- pop_df[pop_df$PatchID!=0,]
+<p>To reproduce Fig. 3b of <span class="citation">Bocedi et al. (2014)</span>, we map the mean occupancy probability for each patch in year 100 (left panel in the paper) as well as the mean time to colonisation (right panel), both calculated over the 20 replicates. We can use the built-in function <code>ColonisationStats()</code> for this. It calculates the mean occupancy probability of given years as well as the time to colonisation for all replicates:</p>
+<pre class="r"><code>col_stats_a &lt;- ColonisationStats(s, dirpath, years = 100, maps = T)
 
-# Occupancy probability in year 100 averaged over all replicates
-occ_prob &lt;- sapply(sort(unique(pop_df$PatchID)), FUN=function(x,n=length(unique(pop_df$Rep))){ind &lt;- sum(subset(pop_df,PatchID==x &amp; Year==100)$NInd&gt;0)/n; names(ind)=x;ind})
-
-# Time to colonisation:
-col_time &lt;- data.frame(sapply(sort(unique(pop_df$PatchID)),FUN=function(p){sapply(sort(unique(pop_df$Rep)),FUN=function(r){ ifelse(nrow(subset(pop_df,PatchID==p &amp; Rep==r &amp; NInd&gt;0)), min(subset(pop_df,PatchID==p &amp; Rep==r &amp; NInd&gt;0)$Year), NA) })}))
-names(col_time) &lt;- sort(unique(pop_df$PatchID))
-col_time_mean &lt;- colMeans(col_time, na.rm=T)
-
-# Update patch information
-patch_occ_prob &lt;- patch_col_time &lt;- patch
-values(patch_occ_prob)[values(patch)&gt;0] &lt;- 0
-values(patch_col_time)[values(patch)&gt;0] &lt;- -9
-
-for (i in as.numeric(names(occ_prob))){
-    values(patch_occ_prob)[values(patch)==i] &lt;- occ_prob[paste(i)]
-}
-
-for (i in as.numeric(names(col_time_mean))){
-    values(patch_col_time)[values(patch)==i] &lt;- ifelse(is.na(col_time_mean[paste(i)]),-9,col_time_mean[paste(i)])
-}
-
-# map occupancy probability
+# mean occupancy probability in year 100
+head(col_stats_a$occ_prob)</code></pre>
+<pre><code>##   patch  100
+## 1     1 0.60
+## 2     8 0.05
+## 3    10 0.00
+## 4    11 0.10
+## 5    13 0.00
+## 6    15 0.90</code></pre>
+<pre class="r"><code># time to colonisation
+head(col_stats_a$col_time)</code></pre>
+<pre><code>##   patch rep.0 rep.1 rep.2 rep.3 rep.4 rep.5 rep.6 rep.7 rep.8 rep.9 rep.10
+## 1     1    NA    NA    67    57    46    43    45    NA    NA    49     90
+## 2     8    NA    NA    NA    NA    93    NA    NA    NA    NA    NA     NA
+## 3    10    NA    NA    NA    65    NA    NA    NA    NA    37    NA     NA
+## 4    11    NA    NA    32    65    NA    34   100    94    90    NA     NA
+## 5    13    NA    86    NA    NA    NA    NA    73    58    NA    NA     NA
+## 6    15    12    45    10    23    41    26    11    49    32     9     26
+##   rep.11 rep.12 rep.13 rep.14 rep.15 rep.16 rep.17 rep.18 rep.19
+## 1     57     NA     50     43     67     51     72     NA     48
+## 2     NA     NA     NA     NA     NA     NA     NA     NA     NA
+## 3     40     NA     NA     NA     NA     48     NA     86     NA
+## 4     37     NA     NA     53     NA     68     NA     NA     48
+## 5     84     31     NA     NA     NA     NA     NA     88     NA
+## 6     10     23     26     38     50     34     54     65     37</code></pre>
+<p>For mapping the results, we can use the optional raster output If it is enabled, the function <code>ColonisationStats()</code> returns a raster stack with the mean occupancy probabilities of the given years as well as a raster with the mean time to colonisation ovre all replicates. We plot these maps on top of our landscape:</p>
+<pre class="r"><code># map occupancy probability
 mycol_occprob &lt;- colorRampPalette(c(&#39;blue&#39;,&#39;orangered&#39;,&#39;gold&#39;))
-levelplot(patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))</code></pre>
-<p><img src="tutorial_2_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+levelplot(col_stats_a$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))</code></pre>
+<p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <pre class="r"><code># map occupancy probability on landscape background. For this, we first define a colorkey function
 col.key &lt;- function(mycol, at, space=&#39;bottom&#39;,pos=0.05, height=0.6, width=1) {
     key &lt;- draw.colorkey(
@@ -632,48 +638,17 @@ col.key &lt;- function(mycol, at, space=&#39;bottom&#39;,pos=0.05, height=0.6, w
     return(key)
 }
 
-bg() + levelplot(patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+bg() + levelplot(col_stats_a$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
 grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
-<p><img src="tutorial_2_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
+<p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 <pre class="r"><code># map colonisation time
 mycol_coltime &lt;- colorRampPalette(c(&#39;orangered&#39;,&#39;gold&#39;,&#39;yellow&#39;,&#39;PowderBlue&#39;,&#39;LightSeaGreen&#39;))
-levelplot(patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))</code></pre>
-<p><img src="tutorial_2_files/figure-html/unnamed-chunk-18-3.png" width="672" /></p>
+levelplot(col_stats_a$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))</code></pre>
+<p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-3.png" width="672" /></p>
 <pre class="r"><code># map colonisation time on landscape background
-bg() + levelplot(patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,max(pop_df$Year),length=11))))</code></pre>
-<p><img src="tutorial_2_files/figure-html/unnamed-chunk-18-4.png" width="672" /></p>
-<p>For convenience, let’s put all the population data processing into a function <code>get_patch_results()</code> for later usage.</p>
-<pre class="r"><code># Put all of this into a function
-get_patch_results &lt;- function(pop_df,patch_r){
-    # This function takes the patch-based population file and the patch raster map and produces summary stats and maps on occupancy probability and mean time to colonisation
-
-    # Occupancy probability in year 100 averaged over all replicates
-    occ_prob &lt;- sapply(sort(unique(pop_df$PatchID)), FUN=function(x,n=length(unique(pop_df$Rep))){ind &lt;- sum(subset(pop_df,PatchID==x &amp; Year==100)$NInd&gt;0)/n; names(ind)=x;ind})
-
-    # Time to colonisation:
-    col_time &lt;- data.frame(sapply(sort(unique(pop_df$PatchID)),FUN=function(p){sapply(sort(unique(pop_df$Rep)),FUN=function(r){ ifelse(nrow(subset(pop_df,PatchID==p &amp; Rep==r &amp; NInd&gt;0)), min(subset(pop_df,PatchID==p &amp; Rep==r &amp; NInd&gt;0)$Year), NA) })}))
-    names(col_time) &lt;- sort(unique(pop_df$PatchID))
-    col_time_mean &lt;- colMeans(col_time, na.rm=T)
-
-    patch_occ_prob &lt;- patch_col_time &lt;- patch_r
-    values(patch_occ_prob)[values(patch)&gt;0] &lt;- 0
-    values(patch_col_time)[values(patch)&gt;0] &lt;- -9
-
-    for (i in as.numeric(names(occ_prob))){
-        values(patch_occ_prob)[values(patch)==i] &lt;- occ_prob[paste(i)]
-    }
-
-    for (i in as.numeric(names(col_time_mean))){
-        values(patch_col_time)[values(patch_r)==i] &lt;- ifelse(is.na(col_time_mean[paste(i)]),-9,col_time_mean[paste(i)])
-    }
-
-    values(patch_occ_prob)[values(patch_r)&lt;1] &lt;- values(patch_col_time)[values(patch_r)&lt;1] &lt;- NA
-
-    return(list(occ_prob=occ_prob, col_time=col_time, col_time_mean=col_time_mean, patch_occ_prob=patch_occ_prob, patch_col_time=patch_col_time))
-}
-
-summary_pop_a &lt;- get_patch_results(pop_df,patch)</code></pre>
+bg() + levelplot(col_stats_a$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
+<p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-4.png" width="672" /></p>
 </div>
 </div>
 <div id="scenario-b-females-settle-independent-of-males" class="section level1">
@@ -698,19 +673,16 @@ s_b &lt;- s + disp_b + sim_b</code></pre>
 <pre class="r"><code># run simulation
 RunRS(s_b, dirpath)</code></pre>
 <p>Now, let’s post-process the simulation results and plot the maps.</p>
-<pre class="r"><code># Read in population results
-pop_df_b &lt;- readPop(s_b, dirpath)
-
-# Process the results to get occupancy probabilities and colonisation times
-summary_pop_b &lt;- get_patch_results(pop_df_b,patch)
+<pre class="r"><code># Get colonisation stats
+col_stats_b &lt;- ColonisationStats(s, dirpath, years = 100, maps = T)
 
 # Map occupancy probabilities:
-bg() + levelplot(summary_pop_b$patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+bg() + levelplot(col_stats_b$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
 grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <pre class="r"><code># map colonisation time + background
-bg() + levelplot(summary_pop_b$patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,max(pop_df$Year),length=11))))</code></pre>
+bg() + levelplot(col_stats_b$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
 <p>From both the visualisation and the results, we see that relaxing the mate-finding rules substantially increased the number of occupied patches, their probability of occupancy and the mean time to colonization. This results in higher functional connectivity of the woodland network over 100 years.</p>
 </div>
@@ -754,17 +726,16 @@ sim_c &lt;- Simulation(Simulation = 2,
 s_c &lt;- RSsim(batchnum = 3, land = land_c, demog = demo_c, dispersal = disp_c, simul = sim_c, init = init)</code></pre>
 <pre class="r"><code>RunRS(s_c, dirpath)</code></pre>
 <p>Process the output and plot the occupancy maps:</p>
-<pre class="r"><code># Read population results
-pop_df_c &lt;- readPop(s_c, dirpath)
-summary_pop_c &lt;- get_patch_results(pop_df_c,patch)
+<pre class="r"><code># Get colonisation stats
+col_stats_c &lt;- ColonisationStats(s, dirpath, years = 100, maps = T)
 
 # Map occupancy probabilities:
-bg() + levelplot(summary_pop_c$patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+bg() + levelplot(col_stats_c$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
 grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <pre class="r"><code># Map colonisation time + background
-bg() + levelplot(summary_pop_c$patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,max(pop_df$Year),length=11))))</code></pre>
+bg() + levelplot(col_stats_c$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-25-2.png" width="672" /></p>
 <p>As we see from the results, the asexual model without mate finding as settlement rule leads to a drastic increase in the overall occupancy of the habitat network after 100 years.</p>
 </div>
@@ -788,17 +759,16 @@ s_d &lt;- s + disp_d + sim_d</code></pre>
 <p>Run the simulation:</p>
 <pre class="r"><code>RunRS(s_d, dirpath)</code></pre>
 <p>Process and map results:</p>
-<pre class="r"><code># Read population results
-pop_df_d &lt;- readPop(s_d, dirpath)
-summary_pop_d &lt;- get_patch_results(pop_df_d,patch)
+<pre class="r"><code># Get colonisation stats
+col_stats_d &lt;- ColonisationStats(s, dirpath, years = 100, maps = T)
 
 # Map occupancy probabilities:
-bg() + levelplot(summary_pop_d$patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+bg() + levelplot(col_stats_d$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
 grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <pre class="r"><code># map colonisation time + background
-bg() + levelplot(summary_pop_d$patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,max(pop_df$Year),length=11))))</code></pre>
+bg() + levelplot(col_stats_d$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-28-2.png" width="672" /></p>
 <p>We see that such small changes in the per-step mortality, in interaction with the landscape structure, make a big difference in the results, in this case decreasing the functional connectivity of the network.</p>
 </div>
@@ -806,23 +776,23 @@ grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,max(pop_df
 <h1><span class="header-section-number">6</span> Scenario comparison</h1>
 <p>Let’s plot all maps next to each other.</p>
 <pre class="r"><code># Plot occupancy probabilities for all scenarios
-occ_a &lt;- bg(main=&quot;Scenario A&quot;) + levelplot(summary_pop_a$patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-occ_b &lt;- bg(main=&quot;Scenario B&quot;) + levelplot(summary_pop_b$patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-occ_c &lt;- bg(main=&quot;Scenario C&quot;) + levelplot(summary_pop_c$patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-occ_d &lt;- bg(main=&quot;Scenario D&quot;) + levelplot(summary_pop_d$patch_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+occ_a &lt;- bg(main=&quot;Scenario A&quot;) + levelplot(col_stats_a$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+occ_b &lt;- bg(main=&quot;Scenario B&quot;) + levelplot(col_stats_b$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+occ_c &lt;- bg(main=&quot;Scenario C&quot;) + levelplot(col_stats_c$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+occ_d &lt;- bg(main=&quot;Scenario D&quot;) + levelplot(col_stats_d$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
 
 grid.arrange(occ_a,occ_b,occ_c,occ_d, ncol=2)
 grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11), space=&#39;right&#39;,pos=0.5))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <pre class="r"><code># Plot colonisation times for all scenarios
 # colonisation times
-col_a &lt;- bg(main=&quot;Scenario A&quot;) + levelplot(summary_pop_a$patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-col_b &lt;- bg(main=&quot;Scenario B&quot;) + levelplot(summary_pop_b$patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-col_c &lt;- bg(main=&quot;Scenario C&quot;) + levelplot(summary_pop_c$patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-col_d &lt;- bg(main=&quot;Scenario D&quot;) + levelplot(summary_pop_d$patch_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,max(pop_df$Year),length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+col_a &lt;- bg(main=&quot;Scenario A&quot;) + levelplot(col_stats_a$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+col_b &lt;- bg(main=&quot;Scenario B&quot;) + levelplot(col_stats_b$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+col_c &lt;- bg(main=&quot;Scenario C&quot;) + levelplot(col_stats_c$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+col_d &lt;- bg(main=&quot;Scenario D&quot;) + levelplot(col_stats_d$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
 
 grid.arrange(col_a,col_b,col_c,col_d, ncol=2)
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,max(pop_df$Year),length=11)), space=&#39;right&#39;,pos=0.5))</code></pre>
+grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11)), space=&#39;right&#39;,pos=0.5))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-29-2.png" width="672" /></p>
 </div>
 <div id="dispersal-heatmap" class="section level1">

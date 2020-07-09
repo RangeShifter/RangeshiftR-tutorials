@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Overview: General introduction to RangeshiftR</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RangeshiftR tutorials</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">About RangeshiftR</a>
+</li>
+<li>
+  <a href="installing.html">Installing RangeshiftR</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    RangeshiftR tutorials
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="overview_0.html">0. General package introduction</a>
+    </li>
+    <li>
+      <a href="tutorial_1.html">1. Range expansion</a>
+    </li>
+    <li>
+      <a href="tutorial_2.html">2. Patch connectivity</a>
+    </li>
+    <li>
+      <a href="tutorial_3.html">3. Dynamic landscapes &amp; SMS paths</a>
+    </li>
+    <li>
+      <a href="tutorial_4.html">4. Evolution of dispersal</a>
+    </li>
+    <li>
+      <a href="appendix_tutorial_3.html">Appendix A3. Create dynamic landscapes</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="mailto:RangeshiftR@uni-potsdam.de">
+    <span class="fa fa-envelope"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://rangeshifter.github.io">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/RangeShifter">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/ZurellLab">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Overview: General introduction to RangeshiftR</h1>
+
+</div>
+
+
+<p>In this overview, we quickly go through the main functionality of the <em>RangeshiftR</em> R-package in order to get a first overview of the basic structure.</p>
+<div id="the-basics" class="section level1">
+<h1><span class="header-section-number">1</span> The basics</h1>
+<p>Within the standard workflow of <em>RangeshiftR</em>, a simulation is defined by:</p>
+<ol style="list-style-type: decimal">
+<li>a so-called parameter master object that contains the simulation modules, which represent the model structure, as well as the (numeric) values of all necessary simulation parameters, and</li>
+<li>the path to the working directory on the disc where the simulation inputs and outputs are stored.</li>
+</ol>
+<p>The standard workflow of <em>RangeshiftR</em> is to load input maps from ASCII files and to write all simulation output into text files. Therefore, the specified working directory needs to have a certain folder structure: It should contain 3 sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’.</p>
+<div id="running-a-first-working-example" class="section level2">
+<h2><span class="header-section-number">1.1</span> Running a first working example</h2>
+<p>Load the package by typing:</p>
+<pre class="r"><code>library(RangeshiftR)</code></pre>
+<p>Create a parameter master object with all the default settings and store it:</p>
+<pre class="r"><code>s &lt;- RSsim()</code></pre>
+<p>If you have already created a suitable directory for your simulation on your disc, store its path in a variable. This can either be the relative path from your R working directory or the absolute path.</p>
+<pre class="r"><code>dirpath = &quot;Overview/&quot;</code></pre>
+<p>Create the RS folder structure, if it doesn’t yet exist:</p>
+<pre class="r"><code>dir.create(paste0(dirpath,&quot;Inputs&quot;), showWarnings = TRUE)
+dir.create(paste0(dirpath,&quot;Outputs&quot;), showWarnings = TRUE)
+dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code></pre>
+<p>With this, we are already set to run our first simulation by typing:</p>
+<pre class="r"><code>RunRS(s,dirpath)</code></pre>
+<pre><code>## Checking Control parameters 
+## 
+## Control Parameters checked
+## 
+## Run Simulation(s) with random seed ...
+## 
+## Running simulation nr. 1
+## 
+## starting replicate 0
+## RunModel(): completed initialisation 
+## starting year 0...
+## starting year 1...
+## starting year 2...
+## starting year 3...
+## starting year 10...
+## starting year 20...
+## starting year 30...
+## 
+## starting replicate 1
+## RunModel(): completed initialisation 
+## starting year 0...
+## starting year 1...
+## starting year 2...
+## starting year 3...
+## starting year 10...
+## starting year 20...
+## starting year 30...
+## 
+## ***** Elapsed time: 3 seconds
+## 
+## *****
+## ***** Simulation completed 
+## ***** Outputs folder: ../Tutorials/Overview/Outputs/
+## *****</code></pre>
+<pre><code>## $Errors
+## [1] 0</code></pre>
+<p>You should find the generated output - the simulation results as well as some log files - in the ‘Outputs’ folder.</p>
+</div>
+</div>
+<div id="simulation-modules" class="section level1">
+<h1><span class="header-section-number">2</span> Simulation modules</h1>
+<p>To look at the parameter master in more detail, simply type:</p>
+<pre class="r"><code>s</code></pre>
+<pre><code>##  Simulation # 1 
+##  -----------------
+##    Replicates =  2 
+##    Years      =  50 
+##    Absorbing  =  FALSE 
+##  File Outputs:
+##    Range,       every 1 years
+##    Populations, every 1 years, starting year 0
+## 
+##  Artificial landscape: random structure, binary habitat/matrix code
+##    Size              : 65 x 65 cells
+##    Resolution        :       100 meters
+##    Proportion of suitable habitat: 0.5 
+##    Carrying capacity : 10 
+## 
+##  Demography:
+##   Unstructured population:
+##    Rmax : 1.5 
+##    bc   : 1 
+##   Reproduction Type : 0 (female only)
+## 
+##  Dispersal: 
+##   Emigration:
+##    Emigration probabilities:
+##      [,1]
+## [1,]    0
+## 
+##   Transfer:
+##    Dispersal Kernel
+##    Dispersal kernel traits:
+##      [,1]
+## [1,]  100
+##    Constant mortality prob = 0 
+## 
+##   Settlement:
+##    Settlement conditions:
+##      [,1]
+## [1,]    0
+##    FindMate = FALSE 
+## 
+##  Initialisation: 
+##    InitType = 0 : Free initialisation 
+##                   of all suitable cells/patches.
+##    InitDens = 1 : At half carrying capacity K/2</code></pre>
+<p>It contains of a number of parameter modules that each define different aspects of the RangeShifter simulation. Specifically, there are:</p>
+<ul>
+<li>Simulation</li>
+<li>Landscape</li>
+<li>Demography</li>
+<li>Dispersal</li>
+<li>Genetics</li>
+<li>Initialisation</li>
+</ul>
+<p>Here is a schematic overview of the module constructors and their relations: <img src="figures/func_overview.gif" alt="RangeshiftR function overview" /></p>
+<p>In the following, we go through some of the most relevant aspects of each module.</p>
+<div id="simulation" class="section level2">
+<h2><span class="header-section-number">2.1</span> Simulation</h2>
+<p>This module is used to set general simulation parameters (e.g. simulation ID, number of replicates, and number of years to simulate) and to control output types (plus some more specific settings). For this overview, we will stick to the defaults:</p>
+<pre class="r"><code>sim &lt;- Simulation(Simulation = 2,
+                  Years = 50,
+                  Replicates = 2,
+                  OutIntPop = 50)</code></pre>
+<p>For detailed information on this module (or any other), please see the documentation.</p>
+<pre class="r"><code>?Simulation</code></pre>
+</div>
+<div id="landscape" class="section level2">
+<h2><span class="header-section-number">2.2</span> Landscape</h2>
+<p>RangeShifter can either import a map from an ASCII file in the ‘Inputs’ folder or generate a random map to use in the simulation.</p>
+<p>For each option, there is a corresponding function to create a Landscape parameter object</p>
+<pre class="r"><code>land &lt;- ImportedLandscape() 
+land &lt;- ArtificialLandscape()</code></pre>
+<p>Imported landscapes can provide either (binary or continuous) habitat suitability or land type codes. Furthermore, they can be either patch- or cell-based. We cover both types of landscapes in the remaining tutorials.</p>
+<p>Artificially generated landscapes can only contain (binary or continuous) habitat suitability and are always cell-based.</p>
+<p>For our example, we define an artificial landscape:</p>
+<pre class="r"><code>land &lt;- ArtificialLandscape(Resolution = 10,  # in meters
+                            K = 1500,  # ~ 15 inds/cell
+                            propSuit = 0.2,
+                            dimX = 129, dimY = 257, 
+                            fractal = T, hurst = 0.3,
+                            continuous = F)</code></pre>
+</div>
+<div id="demography" class="section level2">
+<h2><span class="header-section-number">2.3</span> Demography</h2>
+<p>The Demography module contains all the local population dynamics of your simulated species. Generally there are two types:</p>
+<ul>
+<li>Unstructured model / non-overlapping generations</li>
+<li>Stage-structured model / overlapping generations</li>
+</ul>
+<p>For the first case, create a simple Demography module (the maximum growth rate <code>Rmax</code> is the only required parameter)</p>
+<pre class="r"><code>demo &lt;- Demography(Rmax = 2.2, ReproductionType = 1, PropMales = 0.45)</code></pre>
+<p>The option <code>ReproductionType</code> determines the way that different sexes are considered:</p>
+<p>0 = asexual / only female model<br />
+1 = simple sexual model<br />
+2 = sexual model with explicit mating system</p>
+<p>In order to make a stage-structured model, we have to additionally create a stage-structure sub-module within the Demography module. Here, we have already defined a Demography object and can use ‘+’ to add the StageStructure sub-module.</p>
+<pre class="r"><code>stg &lt;- StageStructure(Stages = 3,
+                      TransMatrix = matrix(c(0,1,0,5.7,.5,.4,3.4,0,.9),nrow = 3),
+                      FecDensDep = T,
+                      SurvDensDep = T)
+demo &lt;- demo + stg</code></pre>
+<p>Alternatively, we define the sub-module within the Demography module:</p>
+<pre class="r"><code>demo &lt;- Demography(StageStruct = stg, ReproductionType = 1, PropMales = 0.45)</code></pre>
+<p>RangeshiftR provides a number of useful functions to explore the model set-up. For example, we can plot the rates from the transition matrix:</p>
+<pre class="r"><code>plotProbs(stg)</code></pre>
+<p><img src="overview_0_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="dispersal" class="section level2">
+<h2><span class="header-section-number">2.4</span> Dispersal</h2>
+<p>The dispersal process is modelled wih three sub-processes (see the schematic figure above): Emigration, Transfer and Settlement.</p>
+<pre class="r"><code>disp &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.2), 
+                   Transfer   = DispersalKernel(Distances = 50),
+                   Settlement = Settlement() )</code></pre>
+<p>We can use the function <code>plotProbs()</code> to plot verious functional relationships, for example a dispersal kernel with stage-dependent mean distance:</p>
+<pre class="r"><code>plotProbs(DispersalKernel(Distances = matrix(c(0,1,2,70,50,30),nrow = 3), StageDep = T))</code></pre>
+<p><img src="overview_0_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>This is using mostly default options. For example, we can change the settlement condition so that a female individual, that arrives in an unsuitable cell, will wait for another time step and disperse again, while the males will die if arriving in an unsuitable cell:</p>
+<pre class="r"><code>disp &lt;-  disp + Settlement(SexDep = T, 
+                           Settle = matrix(c(0,1,1,0), nrow = 2))</code></pre>
+<p>The dispersal traits of every phase can be set to vary between individuals (<code>IndVar = TRUE</code>). This also makes the dispersal traits heritable and thus allows for evolution, for example, evolving emigration probability:</p>
+<pre class="r"><code>disp2 &lt;-  disp + Emigration(IndVar = TRUE,
+                            EmigProb = matrix(c(.7,.1), nrow = 1),
+                            MutationScales = c(.1))</code></pre>
+</div>
+<div id="genetics" class="section level2">
+<h2><span class="header-section-number">2.5</span> Genetics</h2>
+<p>The genetics module controls the heritability and evolution of traits and is needed if inter-individual variability is enabled (<code>IndVar = TRUE</code>) for at least one dispersal trait.</p>
+<pre class="r"><code>gene &lt;- Genetics(NLoci = 3, ProbMutn = .05)</code></pre>
+</div>
+<div id="initialisation" class="section level2">
+<h2><span class="header-section-number">2.6</span> Initialisation</h2>
+<p>In order to control the initial distribution of individuals in the landscape at year 0, we set initialisation rules. We choose to initialise 3 individuals per habitat cell. Additionally, since we define a stage-structured model, we have to specify the initial proportion of stages:</p>
+<pre class="r"><code>init &lt;- Initialise(FreeType = 0, 
+                   NrCells = 2250,
+                   InitDens = 2, 
+                   IndsHaCell = 3, 
+                   PropStages = c(0,0.7,0.3))
+init</code></pre>
+<pre><code>##  Initialisation: 
+##    InitType = 0 : Free initialisation 
+##    of 2250 random suitable cells/patches.
+##    InitDens = 2 : 3  individuals per cell/hectare 
+##    PropStages = 0 0.7 0.3 
+##    InitAge = 2  : Quasi-equilibrium</code></pre>
+</div>
+<div id="parameter-master" class="section level2">
+<h2><span class="header-section-number">2.7</span> Parameter master</h2>
+<p>After all settings have been made in their respective modules, we are ready to combine them to a parameter master object, which is needed to run the simulation.</p>
+<pre class="r"><code>s &lt;- RSsim(simul = sim, land = land, demog = demo, dispersal = disp, gene = gene, init = init)
+
+# Alternative notation:
+# s &lt;- RSsim() + land + demo + disp + sim + init + gene</code></pre>
+<p>We can check the parameter master (or any single module) for potential parameter conflicts:</p>
+<pre class="r"><code>validateRSparams(s)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+</div>
+<div id="run-the-simulation" class="section level2">
+<h2><span class="header-section-number">2.8</span> Run the simulation</h2>
+<p>Once the parameter master has been defined, we can run the simulations in the specified RS directory.</p>
+<pre class="r"><code>RunRS(s, dirpath)</code></pre>
+</div>
+<div id="plot-results" class="section level2">
+<h2><span class="header-section-number">2.9</span> Plot results</h2>
+<p>All results are stored in the Outputs folder. <code>RangeshiftR</code> provides some in-built functions to access and plot these results. Here, we plot the abundance and occupancy timeseries:</p>
+<pre class="r"><code>range_df &lt;- readRange(s, dirpath)
+
+# ...with replicates:
+par(mfrow=c(1,2))
+plotAbundance(range_df)
+plotOccupancy(range_df)</code></pre>
+<p><img src="overview_0_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre class="r"><code># ...with standard deviation:
+par(mfrow=c(1,2))
+plotAbundance(range_df, sd=T, replicates = F)
+plotOccupancy(range_df, sd=T, replicates = F)</code></pre>
+<p><img src="overview_0_files/figure-html/unnamed-chunk-26-2.png" width="672" /></p>
+<p>Although <code>RangeshiftR</code> provides a number of functions for easy post-processing and plotting of results, it may also be desirable to further process the results yourself. As a simple example for such a workflow, let’s plot the spatial distribution of abundance. For doing so, we load the data from the population output files and process it using the <code>raster</code> package:</p>
+<pre class="r"><code># read population output file into a dataframe
+pop_df &lt;- readPop(s, dirpath)
+
+# Not all years have the same number of populated and thus listed cells. For stacking, we set a common extent with the values used in the landscape module:
+ext &lt;- c(0,1290,0,2570)
+res &lt;- 10
+
+# Make stack of different raster layers for each year and for only one repetition (Rep==0):
+pop_wide_rep0 &lt;- reshape(subset(pop_df,Rep==0)[,c(&#39;Year&#39;,&#39;x&#39;,&#39;y&#39;,&#39;NInd&#39;)], timevar=&#39;Year&#39;, v.names=c(&#39;NInd&#39;), idvar=c(&#39;x&#39;,&#39;y&#39;), direction=&#39;wide&#39;)
+
+# use raster package to make a raster from the data frame
+library(raster)
+stack_years_rep0 &lt;- rasterFromXYZ(pop_wide_rep0)
+names(stack_years_rep0) &lt;- c(&#39;Year.0&#39;, &#39;Year.50&#39;)
+spplot(stack_years_rep0, zlim = c(0,7))</code></pre>
+<p><img src="overview_0_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+</div>
+</div>
+
+<!DOCTYPE html>
+<html>
+
+<br>
+<hr />
+<div id="footer">
+<p>Anne-Kathleen Malchow, Greta Bocedi, Steve Palmer, Justin Travis & Damaris Zurell <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" >(CC BY-NC-ND 4.0)</a>.  </p>
+</div>
+
+</html>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
