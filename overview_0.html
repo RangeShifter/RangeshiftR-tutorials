@@ -473,7 +473,7 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 ## starting year 20...
 ## starting year 30...
 ## 
-## ***** Elapsed time: 3 seconds
+## ***** Elapsed time: 2 seconds
 ## 
 ## *****
 ## ***** Simulation completed 
@@ -648,8 +648,9 @@ init</code></pre>
 <p>Once the parameter master has been defined, we can run the simulations in the specified RS directory.</p>
 <pre class="r"><code>RunRS(s, dirpath)</code></pre>
 </div>
-<div id="plot-results" class="section level2">
-<h2><span class="header-section-number">2.9</span> Plot results</h2>
+</div>
+<div id="plot-results" class="section level1">
+<h1><span class="header-section-number">3</span> Plot results</h1>
 <p>All results are stored in the Outputs folder. <code>RangeshiftR</code> provides some in-built functions to access and plot these results. Here, we plot the abundance and occupancy timeseries:</p>
 <pre class="r"><code>range_df &lt;- readRange(s, dirpath)
 
@@ -680,7 +681,6 @@ stack_years_rep0 &lt;- rasterFromXYZ(pop_wide_rep0)
 names(stack_years_rep0) &lt;- c(&#39;Year.0&#39;, &#39;Year.50&#39;)
 spplot(stack_years_rep0, zlim = c(0,7))</code></pre>
 <p><img src="overview_0_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
-</div>
 </div>
 
 <!DOCTYPE html>
