@@ -345,19 +345,19 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">RangeshiftR tutorials</a>
+      <a class="navbar-brand" href="index.html">RangeShiftR tutorials</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">About RangeshiftR</a>
+  <a href="index.html">About RangeShiftR</a>
 </li>
 <li>
-  <a href="installing.html">Installing RangeshiftR</a>
+  <a href="installing.html">Installing RangeShiftR</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    RangeshiftR tutorials
+    RangeShiftR tutorials
      
     <span class="caret"></span>
   </a>
@@ -385,7 +385,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="mailto:RangeshiftR@uni-potsdam.de">
+  <a href="mailto:RangeShiftR@uni-potsdam.de">
     <span class="fa fa-envelope"></span>
      
   </a>
@@ -426,19 +426,21 @@ div.tocify {
 <p>To this end, two settings of landscape dynamics are covered:</p>
 <ol style="list-style-type: decimal">
 <li>Road scenario: a patch-matrix landscape is getting fragmented by the construction of a road</li>
-<li>Land abondement scenario: a cell-based landscape with continuous shifts in the proportional cover of different land use types</li>
+<li>Land abandonment scenario: a cell-based landscape with continuous shifts in the proportional cover of different land use types</li>
 </ol>
-<p>#Getting started:</p>
+<div id="getting-started" class="section level1">
+<h1><span class="header-section-number">1</span> Getting started:</h1>
 <div id="create-a-rs-directory" class="section level2">
-<h2><span class="header-section-number">0.1</span> Create a RS directory</h2>
-<p>First of all, load <code>RangeshiftR</code> and other required packages and set the relative path from your current working directory to the RS directory.</p>
+<h2><span class="header-section-number">1.1</span> Create a RS directory</h2>
+<p>First of all, load <code>RangeShiftR</code> and other required packages and set the relative path from your current working directory to the RS directory.</p>
 <pre class="r"><code># load packages
-library(RangeshiftR)
-library(purrr)
+library(RangeShiftR)
+library(tidyr)
+library(ggplot2)
 library(raster)
 library(rasterVis)
-library(SDMTools)
-library(landscapetools)
+library(gridExtra)
+library(RColorBrewer)
 
 # relative path from current working directory:
 dirpath = &quot;Tutorial_03/&quot;</code></pre>
@@ -448,12 +450,13 @@ dir.create(paste0(dirpath,&quot;Outputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code></pre>
 <p>Copy the input files provided for exercise 3 into the ‘Inputs’ folder. The files can be downloaded <a href="files/Tutorial3_Inputs.zip">here</a>. All dynamic landscapes from Tutorial 3 were created using the package <code>NLMR</code> <span class="citation">(Sciaini et al. 2018)</span> as shown in the <a href="appendix_tutorial_3.html">appendix</a>.</p>
 </div>
+</div>
 <div id="road-scenario" class="section level1">
-<h1><span class="header-section-number">1</span> Road scenario</h1>
+<h1><span class="header-section-number">2</span> Road scenario</h1>
 <p>In this scenario, we simulate a patch-matrix landscape that is getting fragmented by the construction of a road. With this example we show some possible ways to analyse the optional SMS paths output.</p>
 <div id="artificial-maps" class="section level2">
-<h2><span class="header-section-number">1.1</span> Artificial Maps</h2>
-<p>We created a series of 4 maps (<em>map_01.asc</em> to <em>map_04.asc</em>) that represent different time steps in which a landscape mosaic of woodland and grassland patches in an agricultural matrix gets increasingly disturbed by woodland clearing and the construction of a road. For the code used to create these habitat maps and their corresponding patch maps, see the <a href="appendix_tutorial_3.html">appendix</a>.</p>
+<h2><span class="header-section-number">2.1</span> Artificial Maps</h2>
+<p>We created a series of four maps (<em>map_01.asc</em> to <em>map_04.asc</em>) that represent different time steps in which a landscape mosaic of woodland and grassland patches in an agricultural matrix gets increasingly disturbed by woodland clearing and the construction of a road. For the code used to create these habitat maps and their corresponding patch maps, see the <a href="appendix_tutorial_3.html">appendix</a>.</p>
 <p>We choose land type <em>2</em> to be the matrix and the others (<em>1</em>,<em>3</em>,<em>4</em>) to be different forms of habitat. The road is denoted by its own code <em>5</em> and will be assigned higher dispersal costs. The land types are:</p>
 <ol style="list-style-type: decimal">
 <li>semi-natural grassland</li>
@@ -469,27 +472,31 @@ spplot(habitat_maps,
        col.regions=mycol_terrain,
        at = 0:5+.5)</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>The patches are defined by cohesive regions of habitat, confined by the matrix. Thus, a patch can be made up of up to 3 different habitat types. As we have already seen in <a href="tutorial_02.html">Tutorial 2</a>, we also need to explicitly define the patch IDs. The patch files should have the same extent and resolution as the habitat map, and each cell contains a unique patch ID that indicates to which patch it belongs. As the patches do not change between habitat maps 3 and 4, we only need three different patch files.</p>
+<p>The patches are defined by cohesive regions of habitat, confined by the matrix. Thus, a patch can be made up of up to three different habitat types. As we have already seen in <a href="tutorial_02.html">Tutorial 2</a>, we also need to explicitly define the patch IDs. The patch files should have the same extent and resolution as the habitat map, and each cell contains a unique patch ID that indicates to which patch it belongs. As the patches do not change between habitat maps 3 and 4, we only need three different patch files.</p>
 <pre class="r"><code>patches &lt;- stack(sapply(1:3, FUN=function(n){paste0(dirpath,&quot;Inputs/patches_0&quot;,n,&quot;.asc&quot;)}))
 
 # Plot the patches in different colours:
 spplot(patches, margin=F, scales=list(draw=FALSE), at=0:230, colorkey=F,
-       col.regions = c(&#39;black&#39;,rep(brewer.pal(n = 12, name = &quot;Paired&quot;),5))) </code></pre>
+       col.regions = c(&#39;black&#39;,rep(brewer.pal(n = 12, name = &quot;Paired&quot;),5)))</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>As the last input map, we look at the initial distribution of our model species. According to this map, a few large patches will be initialised at the beginning of the simulation time:</p>
 <pre class="r"><code>plot(raster(paste0(dirpath,&quot;Inputs/init_dist.asc&quot;)))</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
-<div id="rangeshifter-setup" class="section level2">
-<h2><span class="header-section-number">1.2</span> RangeShifter setup</h2>
+<div id="rangeshiftr-setup" class="section level2">
+<h2><span class="header-section-number">2.2</span> RangeShiftR setup</h2>
 <p>We aim to simulate a population at equilibrium with the environment before road construction starts. Landscape clearing and road construction then increasingly disrupt individual movement in the landscape. In order to set up the simulation, we need to specify the species’ demography parameters, the landscape parameters and the dispersal parameters.</p>
 <div id="demographic-parameters" class="section level3">
-<h3><span class="header-section-number">1.2.1</span> Demographic parameters</h3>
-<p>We choose to model a long-lived, stage-structured population with 4 stages and a simple form of mate limitation (<code>ReproductionType = 1</code>). The transition matrix is set up so that new-borns (stage 0) always develop to juveniles (stage 1), meaning that new-born mortality is accounted for within the fecundity. Juveniles (stage 1) do not reproduce and develop to sub-adult (stage 2) quickly, with a rate of ca. <code>7/8</code>. Sub-adult (stage 2) have a much lower mortality than juveniles. Only the adults (stage 3) reproduce and have a high survival rate.</p>
+<h3><span class="header-section-number">2.2.1</span> Demographic parameters</h3>
+<p>We choose to model a long-lived, stage-structured population with four stages and a simple form of mate limitation (<code>ReproductionType = 1</code>). The transition matrix is set up so that new-borns (stage 0) always develop to juveniles (stage 1), meaning that new-born mortality is accounted for within the fecundity. Juveniles (stage 1) do not reproduce and develop to sub-adult (stage 2) quickly, with a rate of ca. <em>6/7</em>. Sub-adult (stage 2) have a little slower development than juveniles. Only the adults (stage 3) reproduce and have a high survival rate.</p>
+<pre class="r"><code>( TraMa &lt;- matrix( c(0,1,0,0, 0,.10,.60,0, 0,0,0.2,0.45, 5,0,0,.85), ncol = 4) )</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4]
+## [1,]    0  0.0 0.00 5.00
+## [2,]    1  0.1 0.00 0.00
+## [3,]    0  0.6 0.20 0.00
+## [4,]    0  0.0 0.45 0.85</code></pre>
 <p>Furthermore, we assume density-dependence in fecundity and survival, where the density dependence in survival is lower than in fecundity (controlled by <code>SurvDensCoeff</code>). Finally, we assume that individuals in patches that get destroyed will not die instantly but will be able to disperse to new patches (controlled by the parameter <code>PostDestructn</code>).</p>
-<pre class="r"><code>TraMa &lt;- matrix( c(0,1,0,0, 0,.10,.70,0, 0,0,0.45,0.45, 3,0,0,.85), ncol = 4)
-TraMa &lt;- matrix( c(0,1,0,0, 0,.10,.60,0, 0,0,0.2,0.45, 5,0,0,.85), ncol = 4)
-demog &lt;- Demography(ReproductionType = 1,
+<pre class="r"><code>demog &lt;- Demography(ReproductionType = 1,
                     StageStruct = StageStructure(Stages = 4,
                                                  TransMatrix = TraMa,
                                                  FecDensDep = T,
@@ -498,34 +505,35 @@ demog &lt;- Demography(ReproductionType = 1,
                                                  PostDestructn = T))</code></pre>
 </div>
 <div id="set-landscape-and-explore-equilibrium-population-size" class="section level3">
-<h3><span class="header-section-number">1.2.2</span> Set landscape and explore equilibrium population size</h3>
-<p>Next, we need to define the landscape object (using <code>ImportedLandscape()</code>). You may remember from the previous tutorials that the strength of density dependence (<em>K=1/b</em>) is also specified in the landscape object.</p>
-<p>Specifically, for each land cover type, we need to set <em>1/b</em>, the strength of density dependence, which will affect the equilibrium population size. For this, we use the slot <code>K</code> to specify <em>1/b</em> (note that <code>K</code> holds the carrying capacities in case of a non-structured population). Since we’d like to simulate a woodland species we set the lowest density dependence <em>b</em> (i.e. highest <em>1/b</em>) for forest (land type <em>3</em>). To characterise the matrix and roads, <em>1/b</em> is set to <em>0</em>, denoting non-habitat.</p>
-<p>As <em>b</em> affects the equilibrium population size, it will also affect the maximum abundance that we could observe in a patch and stage. To explore the potential effect of <em>b</em> on equilibrium population sizes before running the simulation, we implemented the function <code>getLocalisedEquilPop()</code>. This allows a better understanding of reasonable values of <em>1/b</em> for the different land types. In fact, the function <code>getLocalisedEquilPop()</code> runs a quick simulation of a closed and localised population (i.e. without dispersal and in a single idealised patch) for a given vector of potential <em>K=1/b</em> values based on our above defined <code>Demography()</code> module.</p>
-<p>The <code>getLocalisedEquilPop()</code> function takes absolute values of <em>K</em> as number of individuals in the local population, while what we need are relative values of <em>K</em> as individuals per hectare. We choose to simulate a hypothetical patch of our landscape, and want to determine the value of <em>1/b</em> that is needed to observe e.g. <em>100</em> individuals (let’s assume this corresponds to our empirical observation how many individuals were maximally observed in woodland patches). Thus, we aim to find the <em>1/b</em> parameter that would yield a maximum local population abundance of <em>100</em> individuals per hectar. We can now assess the localised equilibrium population size for different values of <em>1/b</em> and see how the density dependence plays out. By default, the function <code>getLocalisedEquilPop()</code> will output a barplot illustrating the equilibrium population sizes for the different levels of <em>1/b</em>:</p>
-<pre class="r"><code>eq_pop &lt;- getLocalisedEquilPop(demog = demog, K_vector = seq(50,300,50))</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>Here, a <em>K=1/b</em> of roughly <em>150</em> would yield the desired result approximately, in a closed and localised population. We choose the slightly higher value, since dispersal losses are not accounted for. We thus assume <em>1/b=150</em> for the woodland habitat and lower <em>1/b</em> for the less suitable grassland patches.</p>
-<p>Now, we can specify all parameters in the landscape object, including the file names of the habitat and patch files, and the years in which the different landscapes should be loaded in the simulation. Note that we have to include the patch map #3 twice, in order to match the patch maps with their corresponding habitat maps.</p>
-<pre class="r"><code># Define in which simulation year the new habitat maps and patch landscape should be loaded:
+<h3><span class="header-section-number">2.2.2</span> Set landscape and explore equilibrium population size</h3>
+<p>Next, we need to define the landscape object (using <code>ImportedLandscape()</code>). You may remember from the previous tutorials that the strength of density dependence (<em>1/b</em>) is also specified in the landscape object via the argument <code>K_or_DensDep</code>. (Note that <code>K_or_DensDep</code> holds the carrying capacities <em>K</em> in case of a non-structured population and <em>1/b</em> in case of a stage-structured population, like in this example.)</p>
+<p>Specifically, for each land cover type, we need to set <em>1/b</em>, the strength of density dependence, which will affect the equilibrium population size. To this end, we give a vector to <code>K_or_DensDep</code> that holds the values of <em>1/b</em> for each land type. Since we’d like to simulate a woodland species we set the lowest density dependence <em>b</em> (i.e. highest <em>1/b</em>) for forest (land type <em>3</em>). To characterise the matrix and roads, <em>1/b</em> is set to <em>0</em>, denoting non-habitat.</p>
+<p>As <em>b</em> affects the equilibrium population size, it will also affect the maximum abundance that we could observe in a patch and stage. To explore the potential effect of <em>b</em> on equilibrium population sizes before running the simulation, we implemented the function <code>getLocalisedEquilPop()</code>. This allows a better understanding of reasonable values of <em>1/b</em> for the different land types. In fact, the function <code>getLocalisedEquilPop()</code> runs a quick simulation of a closed and localised population (i.e. without dispersal and in a single idealised patch) for a given vector of potential <em>1/b</em> values (argument <code>DensDep_values</code>) and based on our above defined <code>Demography()</code> module (argument <code>demog</code>).</p>
+<p>The <code>getLocalisedEquilPop()</code> function uses absolute values of individuals in the local population (since there is not spatial extent), while what we need are relative values of <em>1/b</em> as individuals per hectare. We choose to simulate a hypothetical patch of our landscape, and want to determine the value of <em>1/b</em> that is needed to observe e.g. <em>100</em> individuals (let’s assume this corresponds to our empirical observation how many individuals were maximally observed in woodland patches). Thus, we aim to find the <em>1/b</em> parameter that would yield a maximum local population abundance of <em>100</em> individuals. We can now assess the localised equilibrium population size for different values of <em>1/b</em> and see how the density dependence plays out. By default, the function <code>getLocalisedEquilPop()</code> will output a barplot illustrating the equilibrium population sizes for the different levels of <em>1/b</em>:</p>
+<pre class="r"><code>eq_pop &lt;- getLocalisedEquilPop(demog = demog, DensDep_values = seq(50,300,50))</code></pre>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Here, a <em>1/b</em> of roughly <em>150</em> would yield the desired result approximately, in a closed and localised population. We choose the slightly higher value, since dispersal losses are not accounted for. We thus assume <em>1/b=150</em> for the woodland habitat and lower <em>1/b</em> for the less suitable grassland patches.</p>
+<p>Now, we can specify all parameters in the landscape object, including the file names of the habitat and patch files, and the years in which the different landscapes should be loaded in the simulation. Note that we have to include the patch map 3 twice, in order to match the patch maps with their corresponding habitat maps.</p>
+<pre class="r"><code># define in which simulation year the new habitat maps and patch landscape should be loaded:
 year_blocks &lt;- c(0,80,110,140)
 
-# Explicitly provide the file names to the landscape object:
+# explicitly provide the file names to the landscape object:
 landnames &lt;- c(&quot;map_01.asc&quot;,&quot;map_02.asc&quot;,&quot;map_03.asc&quot;,&quot;map_04.asc&quot;)
 land &lt;- ImportedLandscape(LandscapeFile = landnames,
                           PatchFile = c(&quot;patches_01.asc&quot;,&quot;patches_02.asc&quot;,&quot;patches_03.asc&quot;,&quot;patches_03.asc&quot;),
                           DynamicLandYears = year_blocks,
                           Nhabitats = 5, 
                           Resolution = 10, 
-                          K = c(125,0,150,75,0),
+                          K_or_DensDep = c(125,0,150,75,0),
                           SpDistFile = &quot;init_dist.asc&quot;,
                           SpDistResolution = 10)</code></pre>
 </div>
 <div id="dispersal-parameters" class="section level3">
-<h3><span class="header-section-number">1.2.3</span> Dispersal parameters</h3>
-<p>The next step is to set up the dispersal module. We set a density- and stage-dependent emigration probability, such that only the juvenile and sub-adult stages emigrate. As a transfer method we choose the SMS movement process with a dispersal bias, which gives an individual the prefrence to move away from its natal patch. The strength of this bias decays with the number of steps taken (controlled by the decay rate <code>AlphaDB</code> and the inflection point <code>BetaDB</code>). In <code>SMS()</code>, the dispersal resistance of each land type is set by the argument <code>Costs</code>, and the constant step mortality is defined by <code>StepMort</code>. The density-dependent emigration probability is defined by the maximum emigration probability and the parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>, all of which are provided as matrix in the argument <code>EmigProb</code>.</p>
-<p>The settlement rules include a maximum and minimum number of steps per dispersal event. Furthermore, we use the option to set a maximum number of steps per year (<code>MaxStepsYear</code>). If an individual reaches this limit during dispersal, it halts and waits for the next year to continue its dispersal event, while being subjected to the yearly survival probability of its stage. If, in contrast the individual hits the overall limit on the number of steps, <code>MaxSteps</code>, it dies. Additionally, we set the mating requirement (<code>FindMate</code>) for settlement. This enables an individual to settle in a given patch only if there is an individual of the opposite sex present.</p>
-<pre class="r"><code># Density-dependent emigration
+<h3><span class="header-section-number">2.2.3</span> Dispersal parameters</h3>
+<p>The next step is to set up the dispersal module. We set a density- and stage-dependent emigration probability, such that only the juvenile and sub-adult stages emigrate. As a transfer method we choose the SMS movement process with a dispersal bias, which gives an individual the preference to move away from its natal patch. The strength of this bias decays with the number of steps taken (controlled by the decay rate <code>AlphaDB</code> and the inflection point <code>BetaDB</code>). In <code>SMS()</code>, the dispersal resistance of each land type is set by the argument <code>Costs</code>, and the constant step mortality is defined by <code>StepMort</code>. The density-dependent emigration probability is defined by the maximum emigration probability and the parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>, all of which are provided as matrix in the argument <code>EmigProb</code>.</p>
+<p>The settlement rules include a maximum and minimum number of steps per dispersal event. Furthermore, we use the option to set a maximum number of steps per year (<code>MaxStepsYear</code>). If an individual reaches this limit during dispersal, it halts and waits for the next year to continue its dispersal event, while being subjected to the yearly survival probability of its stage. If, in contrast the individual hits the overall limit on the number of steps, <code>MaxSteps</code>, it dies.</p>
+<p>Additionally, we set the mating requirement (<code>FindMate</code>) for settlement. This enables an individual to settle in a given patch only if there is an individual of the opposite sex present.</p>
+<pre class="r"><code># density-dependent emigration
 disp &lt;- Dispersal(Emigration = Emigration(StageDep = T, 
                                           DensDep = T,
                                           EmigProb = cbind(0:3,c(0.55,0.45,0,0), c(5,5,0,0), c(1,1,0,0))),
@@ -540,18 +548,20 @@ disp &lt;- Dispersal(Emigration = Emigration(StageDep = T,
 <pre class="r"><code>par(mfrow=c(1,2))
 plotProbs(disp@Transfer)
 plotProbs(disp@Emigration)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="initialisation" class="section level3">
-<h3><span class="header-section-number">1.2.4</span> Initialisation</h3>
-<p>Now we turn to the initial conditions of our simulation. We initialise every patch with the equilibrium density and proportional density of stages that we simulated above with the matrix model (with <code>K=1/b=150</code>).</p>
-<pre class="r"><code># Get local equilibrium population size:
-eq_pop &lt;- getLocalisedEquilPop(demog = demog, K_vector = 150, plot=F)
+<h3><span class="header-section-number">2.2.4</span> Initialisation</h3>
+<p>Now we turn to the initial conditions of our simulation. We initialise every patch with the equilibrium density and proportional density of stages that we simulated above with the matrix model (with <code>1/b=150</code>).</p>
+<pre class="r"><code># run again for convenience to get local equilibrium population size
+# at target value of 1/b:
+eq_pop &lt;- getLocalisedEquilPop(demog = demog, DensDep_values = 150, plot=F)
 
-# calculate proportion of all stages excluding the new-born juvenile (stage 0) population, which can&#39;t be initialised
+# calculate proportion of all stages excluding the new-born juvenile (stage 0) population, 
+# which can&#39;t be initialised:
 prop_stgs &lt;- eq_pop[-1]/sum(eq_pop[-1])
 
-# we initialise at roughly half the capacity of the most suitable patch
+# we initialise at roughly half the 1/b of the most suitable patch
 init &lt;- Initialise(InitType = 1,  # from loaded species distribution map (see &#39;land&#39; module)
                    SpType = 0,    # all presence cells (the default)
                    InitDens = 2,  # initial density: user-defined
@@ -560,10 +570,11 @@ init &lt;- Initialise(InitType = 1,  # from loaded species distribution map (see
                    InitAge = 2)  # initial age distribution: quasi-equilibrium (the default).</code></pre>
 </div>
 <div id="simulation" class="section level3">
-<h3><span class="header-section-number">1.2.5</span> Simulation</h3>
+<h3><span class="header-section-number">2.2.5</span> Simulation</h3>
 <p>Lastly, we set the number of simulated years and replicates as well as the types and temporal intervals of produced output.</p>
-<p>We request the population output for every 10 years and the range output for every 5 years. Since we simulate SMS dispersal, we can enable the paths output to get the individual dispersal trajectories and their step-wise status by setting <code>OutIntPaths</code>&gt; 0. Since this output type can produce large amounts of data when there are many dispersal events taking place, it can be advantageous to start with large intervals. The results for each replicate will be stored in a separate file.</p>
-<p>Finally, we put together the parameter master with all the settings we have made in this section.</p>
+<p>We request the population output for every 10 years and the range output for every 5 years.</p>
+<p>Since we simulate SMS dispersal, we can enable the paths output to get the individual dispersal trajectories and their step-wise status by setting <code>OutIntPaths</code>&gt; 0. Since this output type can produce large amounts of data when there are many dispersal events taking place, it can be advantageous to start with large intervals or few replicates. The results for each replicate will be stored in a separate file.</p>
+<p>Finally, we put together the parameter master with all the settings we have made in this section and a set seed.</p>
 <pre class="r"><code>simul &lt;- Simulation(Simulation = 1,
                     Years = 200, 
                     Replicates = 20,
@@ -571,52 +582,53 @@ init &lt;- Initialise(InitType = 1,  # from loaded species distribution map (see
                     OutIntRange = 5,
                     OutIntPaths = 10)
 
-s &lt;- RSsim(batchnum = 12, land = land, demog = demog, dispersal = disp, init = init, simul = simul)</code></pre>
+s &lt;- RSsim(batchnum = 12, seed = 987, land = land, demog = demog, dispersal = disp, init = init, simul = simul)</code></pre>
 </div>
 <div id="run-rs" class="section level3">
-<h3><span class="header-section-number">1.2.6</span> Run RS</h3>
-<p>Let’s run the RangeshiftR simulation:</p>
+<h3><span class="header-section-number">2.2.6</span> Run RS</h3>
+<p>Let’s run the <code>RangeShiftR</code> simulation:</p>
 <pre class="r"><code>RunRS(s, dirpath = dirpath)</code></pre>
 </div>
 </div>
 <div id="results" class="section level2">
-<h2><span class="header-section-number">1.3</span> Results</h2>
+<h2><span class="header-section-number">2.3</span> Results</h2>
 <div id="abundance-and-occupied-patches-over-time" class="section level3">
-<h3><span class="header-section-number">1.3.1</span> Abundance and occupied patches over time</h3>
+<h3><span class="header-section-number">2.3.1</span> Abundance and occupied patches over time</h3>
 <p>To get a first impression of our simulation results, we look at the time series for total abundance and the number of occupied patches. These functions use the range output; as we set its output interval to 5 years, we get a time series with a temporal resolution of 5 years.</p>
 <pre class="r"><code>par(mfrow=c(1,2))
 plotAbundance(s, dirpath)
 plotOccupancy(s, dirpath)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<p>After initialisation, the abundance first drops and then quickly grows to values around 2300 individuals. The mean occupancy plateaus at about 30 patches, but with a large variance.</p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>After initialisation, the abundance first drops and then quickly grows to values around <em>2000</em> individuals. The mean occupancy plateaus at about <em>20</em> patches, but with a large variance.</p>
 </div>
 <div id="occupancy-probability-and-time-to-colonisation" class="section level3">
-<h3><span class="header-section-number">1.3.2</span> Occupancy Probability and Time to colonisation</h3>
-<p>We use the function <code>ColonisationStats()</code> to get the occupancy probabilities at given years as well as the time to colonisation for all patches. With the option <code>maps=T</code>, this function also returns maps to visualise these quantities. <code>ColonisationStats()</code> uses the population output; as we set its output interval to 10 years, we can only request the results for those years. If we don’t specify a year, the last recorded year is used by default. (In the second scenario below, you can find an example on how to get the occupancy probabilities for given years.)</p>
+<h3><span class="header-section-number">2.3.2</span> Occupancy Probability and Time to colonisation</h3>
+<p>We use the function <code>ColonisationStats()</code> to get the occupancy probabilities at given years as well as the time to colonisation for all patches. With the option <code>maps=T</code>, this function also returns maps to visualise these quantities.</p>
+<p><code>ColonisationStats()</code> uses the population output; as we set its output interval to 10 years, we can only request the results for those years. If we don’t specify a year, the last recorded year is used by default. (In the second scenario below, you can find an example on how to get the occupancy probabilities for given years.)</p>
 <p>The function returns a list with the numeric results and the maps:</p>
 <pre class="r"><code>col &lt;- ColonisationStats(s, dirpath, maps=T)
 names(col)</code></pre>
 <pre><code>## [1] &quot;occ_prob&quot;     &quot;col_time&quot;     &quot;map_occ_prob&quot; &quot;map_col_time&quot;</code></pre>
 <p>Let’s plot the mean occupancy probability in the last recorded year, year <em>200</em>, over all replicates:</p>
 <pre class="r"><code>plot(col$map_occ_prob)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
-<p>We find that the larger a patch, the higher it’s probability of being occupied in the last year of a given replicate of our simulation.</p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p>We find that larger patches tend to have a higher probability of being occupied in the last year of a given replicate of our simulation.</p>
 <p>Now, let’s also plot the mean time to colonisation for all patches:</p>
 <pre class="r"><code>plot(col$map_col_time)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<p>The lighter the color, the earlier a patch is being colonised during the simulation. The initial patches appear in light grey. We find that larger patches generally get colonised earlier than smaller ones.</p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>The lighter the color, the earlier a patch was colonised during the simulation. The initial patches appear in light gray and the matrix in white. We find that larger patches tend to get colonised earlier than smaller ones.</p>
 </div>
 <div id="local-population-densities-prior-to-landscape-changes" class="section level3">
-<h3><span class="header-section-number">1.3.3</span> Local population densities prior to landscape changes</h3>
+<h3><span class="header-section-number">2.3.3</span> Local population densities prior to landscape changes</h3>
 <p>To get a spatial view of the population, we load the population output that contains information on patch-specific and stage-specific abundance (recorded every 10 years) and map the local population density onto the four different patch maps. We use the last recorded time step before the landscape changes occur.</p>
-<p>Since the population output lists the absolute abundances for each patch, larger patches tend to have larger population sizes than smaller ones. To account for this, we devide the abundances by the number of cells in its respective patch to get a population density.</p>
+<p>Since the population output lists the absolute abundances for each patch, larger patches tend to have larger population sizes than smaller ones. To account for this, we divide the abundances by the number of cells in its respective patch to get a population density.</p>
 <pre class="r"><code># last recorded time step before the landscape changes:
 map_years &lt;- c(70,100,130,190)
 
 # We have already read in the patches earlier:
 patches &lt;- patches[[c(1:3,3)]]
 
-# Initialise raster stacks for population density
+# initialise raster stacks for population density
 map_pop &lt;- patches
 names(map_pop) &lt;- paste(&#39;Year&#39;,map_years)
 values(map_pop)[values(map_pop)==0] &lt;- NA
@@ -644,11 +656,11 @@ for(i in 1:length(map_years)){
 
 # plot density
 spplot(map_pop)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p>In the present example, we find that larger patches tend to have higher population densities. We encourage you to play around with different modelling assumptions, for example the density dependence in survival and emigration probability and explore the effects on local population densities.</p>
 </div>
 <div id="dispersal-outcomes" class="section level3">
-<h3><span class="header-section-number">1.3.4</span> Dispersal outcomes</h3>
+<h3><span class="header-section-number">2.3.4</span> Dispersal outcomes</h3>
 <p>Now we analyse the SMS paths output. There is a separate output file for each replicate. Let’s look at the paths of the first replicate (note that counting starts at zero):</p>
 <pre class="r"><code># read output file
 steps &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch12_Sim1_Land1_Rep0_MovePaths.txt&quot;), header = T)
@@ -661,9 +673,9 @@ head(steps)</code></pre>
 ## 5    0  2008    0 101 122      0
 ## 6    0  2008    1 101 123      1</code></pre>
 <p>The SMS paths files list for each output year all currently dispersing individuals with all steps taken by them during this year. From this file we can easily extract how many steps individuals took during dispersal.</p>
-<pre class="r"><code># We ask how often a step was logged per individual
+<pre class="r"><code># we ask how often a step was logged per individual
 hist(c(table(steps$IndID)),xlab=&#39;Number of steps&#39;,main=&#39;Steps per dispersing individual&#39;)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <p>We see that many individuals disperse more than 20 steps, meaning that they did not settle within the first year. Quite a few of them even reach the overall maximum number of steps <code>MaxSteps</code>, which is set to <em>80</em> in this example.</p>
 <p>To reconstruct the individual paths, we need the status information of each step from the last column of the SMS path files. This variable codes for 9 different possible dispersal states:</p>
 <ol start="0" style="list-style-type: decimal">
@@ -696,7 +708,7 @@ steps_10 &lt;- subset(steps, IndID %in% Inds)
 ## 1362    0  2552    7 60 32      1
 ## 1477    0  2552    8 60 31      1
 ## 1683    0  2552    8 60 31      7</code></pre>
-<p>This list of steps begins with the starting cell in the natal patch (status 0), followed by 8 SMS steps that record the intermediate cells, and ends with the dispersal outcome; in this case the individual died during dispersal from the set step-mortality (status 7).</p>
+<p>This list of steps begins with the starting cell in the natal patch (status 0), followed by 8 SMS steps that record the intermediate cells, and ends with the dispersal outcome; in this case the individual died during dispersal from the set step-mortality (status 7). Note that <code>x</code> and <code>y</code> refer to the cell count in each direction, not the actual position in meters.</p>
 <p>We look at another 10-step dispersal event, one that already starts with a step number above the maximum number of steps per year (<code>MaxStepsYear</code>):</p>
 <pre class="r"><code>(steps_i &lt;- subset(steps, IndID == subset(steps_10, Step &gt; 20)[1,&quot;IndID&quot;]) )</code></pre>
 <pre><code>##      Year IndID Step   x  y Status
@@ -710,13 +722,13 @@ steps_10 &lt;- subset(steps, IndID %in% Inds)
 ## 6694   20 15086   48 135 40      1
 ## 6760   20 15086   49 136 41      1
 ## 6870   20 15086   50 137 40      4</code></pre>
-<p>This list doesn’t start with with status 0, so we know that this event has begun already in an earlier year and is now being continued. This happens if an individual is forced to wait until the next year to continue dispersal because it reached the maximum yearly number of steps (<code>MaxStepsYear</code>). This outome will be denoted by status 3 at the end of the previous year. During the wait time, the individual is subject to annual survival and might die from demographic mortality (status 8). In above case, however, settlement terminates successfully (status 4).</p>
-<p>Now that we know how to interpret the data, let’s plot some trajectories. Since a single dispersal event can be allowed to span multiple years and because we haven’t recorded the SMS steps of every year but only every 10th year, there might be incomplete trajectories in the data. We plot all dispersal events that started in year 70 (i.e. before the first landscape transition):</p>
-<pre class="r"><code># Find all dispersing individuals of the last 10 years of the first map
+<p>This list doesn’t start with with status 0, so we know that this event has begun already in an earlier year and is now being continued. This happens if an individual is forced to wait until the next year to continue dispersal because it reached the maximum yearly number of steps (<code>MaxStepsYear</code>). This outcome will be denoted by status 3 at the end of the previous year. During the wait time, the individual is subject to annual survival and might die from demographic mortality (status 8). In above case, however, settlement terminates successfully (status 4).</p>
+<p>Now that we know how to interpret the data, let’s plot some trajectories. Since a single dispersal event can be allowed to span multiple years and because we haven’t recorded the SMS steps of every year but only every 10th year, there might be incomplete trajectories in the data. We plot all dispersal events that started in year <em>70</em> (i.e. before the first landscape transition):</p>
+<pre class="r"><code># find all dispersing individuals of the last 10 years of the first map
 steps_map1 &lt;- subset(steps, Year &gt;= 70 &amp; Year &lt; 80)
 Inds &lt;- subset(steps_map1, Status == 0, select = IndID)  # Trajectory contains start of path
 
-# Trajectory is completed within one year if it starts with status 0 and ends with status 4 or greater
+# trajectory is completed within one year if it starts with status 0 and ends with status 4 or greater
 Inds_outcome &lt;- sapply(Inds$IndID, function(Ind){
     steps_i &lt;- subset(steps_map1, IndID == Ind)
     outcome = steps_i$Status[nrow(steps_i)]
@@ -730,6 +742,8 @@ Inds &lt;- data.frame(IndID = Inds, Outcome = Inds_outcome)
 
 # load raster of first map
 map1 &lt;- raster(paste0(dirpath,&quot;Inputs/&quot;,landnames[1]))
+
+# multiply x and y counts by map resolution
 steps_map1[,c(4,5)] &lt;- steps_map1[,c(4,5)]*res(map1)
 
 pathplot_1 &lt;- levelplot(map1, margin=F, scales=list(draw=FALSE),
@@ -740,14 +754,14 @@ pathplot_1 &lt;- levelplot(map1, margin=F, scales=list(draw=FALSE),
     xyplot(y ~ x , data=steps_map1[steps_map1$IndID %in% Inds[Inds$Outcome==&quot;die&quot;,1],], groups = IndID, type=&quot;l&quot;, col = &quot;red&quot;, alpha = .7, lwd=2)
 
 pathplot_1</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
-<p>The blue paths indicate successfull dispersal events, the purple paths indicate individual dispersal events that paused due to the maximum numbers of steps per year and will continue in the following year (which we have not logged), and the red paths indicate unsuccessful dispersal events where the individuals died during dispersal.</p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p>The blue paths indicate successful dispersal events, the purple paths indicate individual dispersal events that paused due to the maximum numbers of steps per year and will continue in the following year (which we have not logged), and the red paths indicate unsuccessful dispersal events where the individuals died during dispersal.</p>
 <p>Let’s compare to the movement paths after road construction.</p>
-<pre class="r"><code># Find all dispersing individuals during last 10 years of road scenario
+<pre class="r"><code># find all dispersing individuals during last 10 years of road scenario
 steps_map4 &lt;- subset(steps, Year &gt;= 190)
 Inds &lt;- subset(steps_map4, Status == 0, select = IndID)  # Trajectory contains start of path
 
-# Trajectory is completed within one year if it starts with status 0 and ends with status 4 or greater
+# trajectory is completed within one year if it starts with status 0 and ends with status 4 or greater
 Inds_outcome &lt;- sapply(Inds$IndID, function(Ind){
     steps_i &lt;- subset(steps_map4, IndID == Ind)
     outcome = steps_i$Status[nrow(steps_i)]
@@ -761,6 +775,8 @@ Inds &lt;- data.frame(IndID = Inds, Outcome = Inds_outcome)
 
 # load raster of first map
 map4 &lt;- raster(paste0(dirpath,&quot;Inputs/&quot;,landnames[4]))
+
+# multiply x and y counts by map resolution
 steps_map4[,c(4,5)] &lt;- steps_map4[,c(4,5)]*res(map4)
 
 pathplot_2 &lt;- levelplot(map4, margin=F, scales=list(draw=FALSE),
@@ -770,33 +786,36 @@ pathplot_2 &lt;- levelplot(map4, margin=F, scales=list(draw=FALSE),
     xyplot(y ~ x , data=steps_map4[steps_map4$IndID %in% Inds[Inds$Outcome==&quot;settle&quot;,1],], groups = IndID, type=&quot;l&quot;, col = &quot;blue2&quot;, alpha = .7, lwd=2) +
     xyplot(y ~ x , data=steps_map4[steps_map4$IndID %in% Inds[Inds$Outcome==&quot;die&quot;,1],], groups = IndID, type=&quot;l&quot;, col = &quot;red&quot;, alpha = .7, lwd=2)
 
-library(gridExtra)
+
+# plot before and after road construction
 grid.arrange(pathplot_1,pathplot_2, ncol=1)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <p>From the paths file, we can easily summarise the dispersal outcomes over all years:</p>
 <pre class="r"><code>hist(steps$Status[steps$Status&gt;3], breaks = 3:9+0.5,
      main = &quot;Dispersal Outcomes&quot;,
      xlab = &quot;Status code&quot;)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
-<p>In our example, the numbers of dispersal events that ended successfully with settlement is comparable to the number of dispersal events that ended unsuccessfully with death.</p>
-<pre class="r"><code># Successful dispersal events recorded during simulation
-sum(steps$Status==4)
-# Unsuccessful dispersal events
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p>In our example, the numbers of dispersal events that ended successfully with settlement is lower than the number of dispersal events that ended unsuccessfully with death.</p>
+<pre class="r"><code># successful dispersal events recorded during simulation
+sum(steps$Status==4)</code></pre>
+<pre><code>## [1] 747</code></pre>
+<pre class="r"><code># unsuccessful dispersal events
 sum(steps$Status &gt;4)</code></pre>
+<pre><code>## [1] 824</code></pre>
 <p>Obviously, the above plots and numbers only summarise the dispersal paths of a single replicate run.</p>
 <p>To summarise the dispersal pathways and outcomes over all replicate simulations and for different time slices (e.g. representing the different landscapes), we need to do a bit more complex number crunching.</p>
-<pre class="r"><code># Prepare a matrix with rows corresponding to the potential dispersal status and columns corresponding to the time periods (the four different landscapes)
+<pre class="r"><code># prepare a matrix with rows corresponding to the potential dispersal status and columns corresponding to the time periods (the four different landscapes)
 steps_sum &lt;- matrix(rep(0,10*length(year_blocks)), nrow=10)
 rownames(steps_sum) &lt;- 0:9
 
-# Prepare a named vector for the dispersal status
+# prepare a named vector for the dispersal status
 null_tb &lt;- rep(0,10)
 names(null_tb) &lt;- 0:9
 
-# Loop through all simulation replicates
+# loop through all simulation replicates
 for(i in 0:(s@simul@Replicates-1)){
   
-    # Read in the movement paths for the replicate
+    # read in the movement paths for the replicate
     steps &lt;- read.table(paste0(dirpath,
                                &quot;Outputs/Batch&quot;,s@control@batchnum,
                                &quot;_Sim&quot;,s@simul@Simulation,
@@ -804,35 +823,35 @@ for(i in 0:(s@simul@Replicates-1)){
                                &quot;_Rep&quot;,i,
                                &quot;_MovePaths.txt&quot;), 
                         header = T)
-    # Count for each time period how often we logged the different dispersal statuses
+    # count for each time period how often we logged the different dispersal statuses
     steps_y &lt;- sapply(seq(length(year_blocks)), FUN = function(y){
-        # Empty vector for dispersal status
+        # empty vector for dispersal status
         tb &lt;- null_tb
         
-        # The starting year of the time period
+        # the starting year of the time period
         lo &lt;- year_blocks[y]
         
-        # Get the number of instances/steps with different dispersal statuses for the time period
+        # get the number of instances/steps with different dispersal statuses for the time period
         if (y==length(year_blocks)) tb_n &lt;- table(subset(steps, Year &gt;= lo, select = &#39;Status&#39;))
         else {
             up &lt;- year_blocks[y+1]
             tb_n &lt;- table(subset(steps, Year &gt;= lo &amp; Year &lt; up, select = &#39;Status&#39;))
         }
         
-        # Assign the instances/steps to the empty vector of dispersal status and return that vector
+        # assign the instances/steps to the empty vector of dispersal status and return that vector
         ix &lt;- names(tb) %in% names(tb_n)
         tb[ix] &lt;- tb_n
         tb
     })
     
-    # Sum up the counts over all replicates
+    # sum up the counts over all replicates
     steps_sum &lt;- steps_sum + steps_y
 }
 
-# Mean counts over replicates
+# mean counts over replicates
 steps_sum &lt;- data.frame(steps_sum / s@simul@Replicates)
 
-# Mean dispersal events per year: divide counts by number of years in time period
+# mean dispersal events per year: divide counts by number of years in time period
 year_blocks_end &lt;- c(year_blocks,s@simul@Years)
 nyear_blocks &lt;- diff(year_blocks_end)
 steps_sum &lt;- sapply(1:ncol(steps_sum),FUN=function(i){steps_sum[,i]/nyear_blocks[i]})
@@ -849,12 +868,9 @@ colnames(steps_sum) &lt;- landnames
 ## 8       7   1.728750   2.1150000   3.1750000   2.111667
 ## 9       8   1.408750   1.2516667   1.2300000   1.520833
 ## 10      9   0.000000   0.0000000   0.0000000   0.000000</code></pre>
-<p>This dataframe contains the mean (over replicates and years) counts of the different dispersal status codes for the time periods of the four maps.</p>
-<p>We use it to make two plots: Firstly, we create a histogram of the number dispersal starts and the mean number of steps taken per dispersal event. Then, secondly, we plot the frequency of the various dispersal outcomes per year, again itemised by the four time periods.</p>
-<pre class="r"><code>library(tidyr)
-library(ggplot2)
-
-plot_steps_sum &lt;- subset(steps_sum, status&lt;2)
+<p>This data frame contains the mean (over replicates as well as years) counts of the different dispersal status codes for the time periods of the four maps.</p>
+<p>We use it to make two plots: Firstly, we create a histogram of the number dispersal starts and the mean number of steps taken per dispersal event. Secondly, we plot the frequency of the various dispersal outcomes per year, again itemised by the four time periods.</p>
+<pre class="r"><code>plot_steps_sum &lt;- subset(steps_sum, status&lt;2)
 
 # steps taken per dispersal event
 plot_steps_sum[plot_steps_sum$status==1,-1] &lt;- plot_steps_sum[plot_steps_sum$status==1,-1]/plot_steps_sum[plot_steps_sum$status==0,-1]
@@ -863,29 +879,29 @@ plot_steps_sum[plot_steps_sum$status==1,-1] &lt;- plot_steps_sum[plot_steps_sum$
 # get population size
 range_df &lt;- readRange(s, dirpath)
 
-# Which stages are dispersing?
+# which stages are dispersing?
 disp@Emigration@EmigProb</code></pre>
 <pre><code>##      [,1] [,2] [,3] [,4]
 ## [1,]    0 0.55    5    1
 ## [2,]    1 0.45    5    1
 ## [3,]    2 0.00    0    0
 ## [4,]    3 0.00    0    0</code></pre>
-<pre class="r"><code># In our case stage 0 and stage 1 are dispersing- this corresponds to NInd_stage1 and NJuvs in the range output
+<pre class="r"><code># in our case stage 0 and stage 1 are dispersing- this corresponds to NInd_stage1 and NJuvs in the range output
 range_df$disp_stages &lt;- range_df$NInd_stage1+range_df$NJuvs # dispersing stages
 
-# Now, we average the number of dispersing individuals per year over all replicates
+# now, we average the number of dispersing individuals per year over all replicates
 range_df_disp &lt;- aggregate(disp_stages~Year, data = range_df, FUN = mean)
 
-# As we logged the range file in shorter intervals than the path file, we need to harmonize them:
+# as we logged the range file in shorter intervals than the path file, we need to harmonize them:
 range_df_disp &lt;- range_df_disp[range_df_disp$Year %in% unique(steps$Year),]
 
-# Average individuals per year per time period:
+# average individuals per year per time period:
 (disp_pop &lt;- sapply(1:4, function(i) {colMeans(subset(range_df_disp, 
                                                      Year&gt;=year_blocks_end[i] &amp; Year&lt;year_blocks_end[i+1], 
                                                      select = disp_stages))}))</code></pre>
 <pre><code>## disp_stages disp_stages disp_stages disp_stages 
 ##    1938.181    2248.550    2152.583    2147.667</code></pre>
-<pre class="r"><code># Get relative number of individuals (per 1000 individuals) starting to disperse
+<pre class="r"><code># get relative number of individuals (per 1000 individuals) starting to disperse
 plot_steps_sum[plot_steps_sum$status==0,-1] &lt;- plot_steps_sum[plot_steps_sum$status==0,-1]/disp_pop*1000
 
 plot_steps_sum$status &lt;- as.factor(plot_steps_sum$status)
@@ -895,17 +911,17 @@ ggplot(gather(plot_steps_sum, key = timeperiod, value = N, -status), aes(x=timep
     geom_col(position=&quot;dodge&quot;) + 
     labs(title=&quot;Dispersal starts per year and Steps taken per dispersal event&quot;, 
          subtitle = &quot;mean over years&quot;, fill=&quot;Status&quot;, x=&quot;Timeperiod&quot;, y=&quot;Count&quot;)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 <p>Although the number of individuals in the dispersal stages slightly decreases throughout the simulation (see <code>disp_pop</code>), the number of individuals starting to disperse is highest just before road construction. The number of steps taken per dispersal event are higher after initial clearing of small patches (second time period) and after road construction (fourth time period).</p>
 <p>We now assess how dispersal outcomes differed between the different landscapes.</p>
-<pre class="r"><code># Get averaged dispersal outcomes for the different time periods
+<pre class="r"><code># get averaged dispersal outcomes for the different time periods
 plot_steps_sum &lt;- subset(steps_sum, status&gt;3)
 
-# Get total number of individuals per recorded year
+# get total number of individuals per recorded year
 range_df_adult &lt;- aggregate(NInds~Year, data = range_df, FUN = mean)
 range_df_adult &lt;- range_df_adult[range_df_adult$Year %in% unique(steps$Year),]
 
-# Average individuals per time period
+# average individuals per time period
 adult_pop &lt;- sapply(1:4, function(i) {colMeans(subset(range_df_adult, Year&gt;=year_blocks_end[i] &amp; Year&lt;year_blocks_end[i+1], select = NInds))})
 for(i in 1:4) plot_steps_sum[,i+1] &lt;- plot_steps_sum[,i+1]/adult_pop[i]*1000
 
@@ -915,8 +931,8 @@ levels(plot_steps_sum$status) &lt;- c(&quot;settled&quot;,&quot;settled neighbou
 ggplot(data=gather(plot_steps_sum, key = timeperiod, value = N, -status), aes(x=timeperiod, y=N, fill=status)) + 
     geom_col(position=&quot;dodge&quot;) + 
     labs(title = &quot;Dispersal Outcomes per 1000 Individuals per year&quot;, subtitle = &quot;mean count over years&quot;, fill = &quot;Status&quot;, x=&quot;Timeperiod&quot;, y=&quot;Count&quot;)</code></pre>
-<p><img src="tutorial_3_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
-<p>The number of successful settlements steadily decreases with each land change, while the number of deaths continuously rises. Throughout, the most common cause of death during dispersal is the step mortality. However, the failure to find suitable habitat becomes more important over time. Death during the waiting time between two dispersal years is lowest in the mid time periods.</p>
+<p><img src="tutorial_3_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p>The number of successful settlements are highest in the two middle periods, while the number of deaths is highest while there is the cleared corridor. Throughout, the most common cause of death during dispersal is the step mortality. The failure to find suitable habitat stays equally important over time. Death during the waiting time between two dispersal years is lowest in the mid time periods, which may be explained with the average stage of dispersers.</p>
 <p>For a last visualisation, we use the built-in function <code>SMSpathLengths</code> to calculate the distribution of path lengths for the four time periods:</p>
 <pre class="r"><code>pathlen &lt;- SMSpathLengths(s,dirpath)
 head(pathlen)</code></pre>
@@ -927,11 +943,11 @@ head(pathlen)</code></pre>
 ## 4  2.95  1.05  2.90  2.10
 ## 5  3.55  1.45  2.95  2.15
 ## 6  3.35  1.20  2.70  2.60</code></pre>
-<p>This gives a dataframe with the frequency of the possible path lengths (measured in number of steps) for each time period in the columns. Let’s plot:</p>
+<p>This gives a data frame with the frequency of the possible path lengths (measured in number of steps) for each time period in the columns. Let’s plot:</p>
 <pre class="r"><code>mycol_lines = hcl.colors(length(landnames), palette = &quot;Dark 3&quot;)
 names(mycol_lines) &lt;- landnames
 
-plot(NULL, xlim = c(0,80), ylim = c(0,150), xlab = &quot;Path length&quot;, ylab = &quot;Frequenncy&quot;)
+plot(NULL, xlim = c(0,80), ylim = c(0,150), xlab = &quot;Path length&quot;, ylab = &quot;Frequency&quot;)
 for(n in 1:length(landnames)){
     lines(pathlen[[n]], type = &quot;l&quot;, col = mycol_lines[n], lwd = 2)
 }
@@ -942,10 +958,10 @@ legend(&quot;topright&quot;, legend = landnames, fill = mycol_lines)</code></pre
 </div>
 </div>
 <div id="land-abandonment-scenario" class="section level1">
-<h1><span class="header-section-number">2</span> Land abandonment scenario</h1>
+<h1><span class="header-section-number">3</span> Land abandonment scenario</h1>
 <p>In this scenario, we simulate a cell-based landscape with continuous shifts in the proportional cover of different land use types. We compare two different SMS specifications (the one yielding more directed, the other more random movements) and use the built-in function <code>ColonisationStats()</code> for a quick assessment of the resulting output.</p>
 <div id="artificial-maps-1" class="section level2">
-<h2><span class="header-section-number">2.1</span> Artificial Maps</h2>
+<h2><span class="header-section-number">3.1</span> Artificial Maps</h2>
 <p>We have created a series of artificial maps (<em>habitat1_1.asc</em> to <em>habitat1_4.asc</em>) using the midpoint displacement algorithm as neutral landscape model <span class="citation">(Sciaini et al. 2018)</span>. To find out how to make similar maps yourself, please refer to the <a href="appendix_tutorial_3.html">appendix</a>.</p>
 <p>The scenario describes an urbanised landscape that gets abandoned over time. The habitat maps contain the following land cover types:</p>
 <ol style="list-style-type: decimal">
@@ -966,19 +982,19 @@ spplot(habitat_maps,
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 </div>
 <div id="simulation-1" class="section level2">
-<h2><span class="header-section-number">2.2</span> Simulation</h2>
-<div id="rangeshifter-setup-1" class="section level3">
-<h3><span class="header-section-number">2.2.1</span> RangeShifter setup</h3>
-<p>To use these maps in the simulation, we store their file names in the <code>ImportedLandscape</code> object and set the years at which each should become the current habitat map. Also, we specify the carrying capacities for each land type according to its habitat quality for our modelled woodland species.</p>
+<h2><span class="header-section-number">3.2</span> Simulation</h2>
+<div id="rangeshiftr-setup-1" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> RangeShiftR setup</h3>
+<p>To use these maps in the simulation, we store their file names in the <code>ImportedLandscape</code> object and set the years at which each should become the current habitat map. Also, we specify the carrying capacities for each land type according to its habitat quality for our modelled woodland species. (Since we will model this species with non-overlapping generations (see below), <code>K_or_DensDep</code> is interpreted as carrying capacities <em>K</em>.)</p>
 <p>We simulate the population dynamics with a simple female-only model with non-overlapping generations similar to <a href="tutorial_1.html">tutorial 1</a>. To this end, we only set the intrinsic growth rate of the species.</p>
 <p>Dispersal is simulated with density-dependent emigration and settlement probabilities. The transfer is modelled using the stochastic movement simulator (<code>SMS</code>) with land cover-specific dispersal resistances (see option <code>Costs</code>). We will compare two different settings of the SMS-module: the first yields more directed movement while the second, in the next section, yields more random movement. For the first case, we set the directional persistence (<code>DP</code>) to have a value of <em>5</em> and the dispersal bias (activated with <code>GoalType = 2</code>) to have a strength (<code>GoalBias</code>) and decay rate (<code>AlphaDB</code>,<code>BetaDB</code>) analogous to the road scenario above.</p>
-<p>We define the initialisation such that the simulation starts with all suitable cells populated at half their respective carrying capacity.</p>
+<p>We define the initialisation such that the simulation starts with all suitable cells populated at half their respective carrying capacity <em>K</em>.</p>
 <pre class="r"><code>landnames &lt;- paste0(&quot;habitat1_&quot;,seq_len(nr_dyntimes),&quot;.asc&quot;)
 land &lt;- ImportedLandscape(LandscapeFile = landnames,
                           DynamicLandYears = c(0,70,110,150),
                           Nhabitats = 4, 
                           Resolution = 100, 
-                          K = c(0,0,1.2,5.5))
+                          K_or_DensDep = c(0,0,1.2,5.5))
 
 demog &lt;- Demography(Rmax = 1.85)
 
@@ -999,8 +1015,8 @@ init &lt;- Initialise(InitType = 0, FreeType = 1, InitDens = 1)
 
 simul &lt;- Simulation(Simulation = 2,
                     Years = 190, 
-                    Replicates = 10, 
-                    OutIntPop = 10, 
+                    Replicates = 20,
+                    OutIntPop = 10,
                     OutIntRange = 5,
                     LocalExt = T, 
                     LocalExtProb = .2)</code></pre>
@@ -1011,13 +1027,13 @@ plotProbs(disp@Settlement, xmax=1)</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 </div>
 <div id="run-the-simulation" class="section level3">
-<h3><span class="header-section-number">2.2.2</span> Run the simulation</h3>
+<h3><span class="header-section-number">3.2.2</span> Run the simulation</h3>
 <p>After setting all necessary parameters, we can define the parameter master object and run the simulation:</p>
-<pre class="r"><code>s &lt;- RSsim(land = land, demog = demog, dispersal = disp, init = init, simul = simul)
+<pre class="r"><code>s &lt;- RSsim(seed = 487, land = land, demog = demog, dispersal = disp, init = init, simul = simul)
 RunRS(s, dirpath)</code></pre>
 </div>
 <div id="results-1" class="section level3">
-<h3><span class="header-section-number">2.2.3</span> Results</h3>
+<h3><span class="header-section-number">3.2.3</span> Results</h3>
 <p>To get a first impression of our simulation results, we look at the time series for total abundance and the number of occupied cells.</p>
 <pre class="r"><code>par(mfrow=c(1,2))
 plotAbundance(s, dirpath)
@@ -1025,23 +1041,23 @@ plotOccupancy(s, dirpath)</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
 <p>The effect of the landscape changes have a considerable effect on abundance and occupancy.</p>
 <p>To get an impression of the spatial occupancy dynamics, we use the function <code>ColonisationStats()</code> to retrieve raster maps of the occupancy probability of selected years. Here, we want to map the last recorded year before the major landscape transitions as well as the time to colonisation for every cell.</p>
-<pre class="r"><code># Get colonisation stats for different time slices
+<pre class="r"><code># get colonisation stats for different time slices
 col &lt;- ColonisationStats(s, dirpath, 
                          years = c(60,100,150,190), 
                          maps = TRUE)
 
-# Plot occupancy probability for the different time slices
+# plot occupancy probability for the different time slices
 spplot(col$map_occ_prob, col.regions = hcl.colors(20, palette = &quot;Lajolla&quot;, rev = F))</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
-<pre class="r"><code># Plot the time to colonisation in years
+<pre class="r"><code># plot the time to colonisation in years
 plot(col$map_col_time)</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
 <p>As we can see from these plots, the landscape gets increasingly colonised over the years, as the habitat in the landscape improves for our modelled species.</p>
 </div>
 <div id="modify-sms-parameters" class="section level3">
-<h3><span class="header-section-number">2.2.4</span> Modify SMS parameters</h3>
+<h3><span class="header-section-number">3.2.4</span> Modify SMS parameters</h3>
 <p>For comparison, we run a second simulation with slightly different SMS settings. Some parameters remain the same, such as the perceptional range (<code>PR</code>), the memory size (<code>MemSize</code>), the land cover-specific costs and the per-step moratality. However, we now switch of the dispersal bias and, in fact, use the default values for the directional persistence (<code>DP=1.0</code>) and the dispersal bias (i.e. no bias: <code>GoalType=0</code>). With these default SMS specifications, the movement trajectories resemble random walks, instead of a directed movement.</p>
-<p>By adding the new SMS module to the old Dispersal module, we create a new Dispersal object via replacement of its Transfer sub-module. Also, we update the parameter master:</p>
+<p>By adding the new SMS module to the old <code>Dispersal()</code> module, we create a new dispersal object via replacement of its transfer (<code>SMS()</code> here) sub-module. Also, we update the parameter master:</p>
 <pre class="r"><code>disp2 &lt;- disp + SMS(PR = 3,
                     MemSize = 3,
                     Costs = c(10,4,2,1),
@@ -1071,9 +1087,9 @@ spplot(col2$map_occ_prob, col.regions = hcl.colors(20, palette = &quot;Lajolla&q
 <p>We see the same overall pattern as before: The landscape gets increasingly populated over time. To appreciate the difference caused by the modified transfer phase, we need to look at the direct comparison.</p>
 </div>
 <div id="compare-both-scenarios" class="section level3">
-<h3><span class="header-section-number">2.2.5</span> Compare both scenarios</h3>
+<h3><span class="header-section-number">3.2.5</span> Compare both scenarios</h3>
 <p>We use the objects created above and plot the same maps again, but this time right next to each other to facilitate the comparison.</p>
-<p>Compare occupancy probabilities for both scenarios:</p>
+<p>Compare <em>occupancy probabilities</em> for both scenarios:</p>
 <pre class="r"><code>maps &lt;- stack(col$map_occ_prob,col2$map_occ_prob)
 names(maps) &lt;- c(paste0(&#39;Scen.1_Map.&#39;,1:4),paste0(&#39;Scen.2_Map.&#39;,1:4))
 
@@ -1082,7 +1098,7 @@ spplot(maps,
        xlab = &quot;Time periods of changing maps&quot;, ylab = &quot;Scenarios&quot;)</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
 <p>We find that the modelled species manages to colonise newly gained high-quality habitat more quickly in the first scenario using the directed movements and the population is slightly more spread out.</p>
-<p>Compare time to colonisation for both scenarios:</p>
+<p>Compare <em>time to colonisation</em> for both scenarios:</p>
 <pre class="r"><code>maps &lt;- stack(col$map_col_time,col2$map_col_time)
 names(maps) &lt;- c(paste0(&#39;Scenario.&#39;,1:2))
                  
@@ -1160,7 +1176,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

@@ -11,7 +11,7 @@
 
 
 
-<title>Overview: General introduction to RangeshiftR</title>
+<title>Overview: General introduction to RangeShiftR</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -345,19 +345,19 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">RangeshiftR tutorials</a>
+      <a class="navbar-brand" href="index.html">RangeShiftR tutorials</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">About RangeshiftR</a>
+  <a href="index.html">About RangeShiftR</a>
 </li>
 <li>
-  <a href="installing.html">Installing RangeshiftR</a>
+  <a href="installing.html">Installing RangeShiftR</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    RangeshiftR tutorials
+    RangeShiftR tutorials
      
     <span class="caret"></span>
   </a>
@@ -385,7 +385,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="mailto:RangeshiftR@uni-potsdam.de">
+  <a href="mailto:RangeShiftR@uni-potsdam.de">
     <span class="fa fa-envelope"></span>
      
   </a>
@@ -417,24 +417,30 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Overview: General introduction to RangeshiftR</h1>
+<h1 class="title toc-ignore">Overview: General introduction to RangeShiftR</h1>
 
 </div>
 
 
-<p>In this overview, we quickly go through the main functionality of the <em>RangeshiftR</em> R-package in order to get a first overview of the basic structure.</p>
+<p>In this overview, we quickly go through the main functionality of the <em>RangeShiftR</em> R-package in order to get a first overview of the basic structure.</p>
 <div id="the-basics" class="section level1">
 <h1><span class="header-section-number">1</span> The basics</h1>
-<p>Within the standard workflow of <em>RangeshiftR</em>, a simulation is defined by:</p>
+<p>Within the standard workflow of <em>RangeShiftR</em>, a simulation is defined by:</p>
 <ol style="list-style-type: decimal">
 <li>a so-called parameter master object that contains the simulation modules, which represent the model structure, as well as the (numeric) values of all necessary simulation parameters, and</li>
 <li>the path to the working directory on the disc where the simulation inputs and outputs are stored.</li>
 </ol>
-<p>The standard workflow of <em>RangeshiftR</em> is to load input maps from ASCII files and to write all simulation output into text files. Therefore, the specified working directory needs to have a certain folder structure: It should contain 3 sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’.</p>
+<p>The standard workflow of <em>RangeShiftR</em> is to load input maps from ASCII raster files and to write all simulation output into text files. Therefore, the specified working directory needs to have a certain folder structure: It should contain 3 sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’.</p>
 <div id="running-a-first-working-example" class="section level2">
 <h2><span class="header-section-number">1.1</span> Running a first working example</h2>
 <p>Load the package by typing:</p>
-<pre class="r"><code>library(RangeshiftR)</code></pre>
+<pre class="r"><code>library(RangeShiftR)</code></pre>
+<pre><code>## RangeshiftR version 1.0.0 (01.10.2020)
+## Copyright (C) 2020 Anne-Kathleen Malchow, Greta Bocedi, Steve Palmer, Justin Travis, Damaris Zurell
+## 
+## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+## You are welcome to redistribute it and/or modify it under certain conditions;
+## type &#39;RangeShiftR_license()&#39; for details.</code></pre>
 <p>Create a parameter master object with all the default settings and store it:</p>
 <pre class="r"><code>s &lt;- RSsim()</code></pre>
 <p>If you have already created a suitable directory for your simulation on your disc, store its path in a variable. This can either be the relative path from your R working directory or the absolute path.</p>
@@ -488,7 +494,9 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 <h1><span class="header-section-number">2</span> Simulation modules</h1>
 <p>To look at the parameter master in more detail, simply type:</p>
 <pre class="r"><code>s</code></pre>
-<pre><code>##  Simulation # 1 
+<pre><code>##  Batch # 1 
+## 
+##  Simulation # 1 
 ##  -----------------
 ##    Replicates =  2 
 ##    Years      =  50 
@@ -498,10 +506,10 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 ##    Populations, every 1 years, starting year 0
 ## 
 ##  Artificial landscape: random structure, binary habitat/matrix code
-##    Size              : 65 x 65 cells
-##    Resolution        :       100 meters
+##    Size         : 65 x 65 cells
+##    Resolution   :       100 meters
 ##    Proportion of suitable habitat: 0.5 
-##    Carrying capacity : 10 
+##    K or 1/b     : 10 
 ## 
 ##  Demography:
 ##   Unstructured population:
@@ -531,7 +539,7 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 ##  Initialisation: 
 ##    InitType = 0 : Free initialisation 
 ##                   of all suitable cells/patches.
-##    InitDens = 1 : At half carrying capacity K/2</code></pre>
+##    InitDens = 1 : At half K_or_DensDep</code></pre>
 <p>It contains of a number of parameter modules that each define different aspects of the RangeShifter simulation. Specifically, there are:</p>
 <ul>
 <li>Simulation</li>
@@ -541,7 +549,13 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 <li>Genetics</li>
 <li>Initialisation</li>
 </ul>
-<p>Here is a schematic overview of the module constructors and their relations: <img src="figures/func_overview.gif" alt="RangeshiftR function overview" /></p>
+Here is a schematic overview of the module constructors and their relations:
+<div class="figure">
+<img src="figures/func_overview.png" alt="*RangeshiftR function overview*" width="1604" />
+<p class="caption">
+<em>RangeshiftR function overview</em>
+</p>
+</div>
 <p>In the following, we go through some of the most relevant aspects of each module.</p>
 <div id="simulation" class="section level2">
 <h2><span class="header-section-number">2.1</span> Simulation</h2>
@@ -555,7 +569,7 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 </div>
 <div id="landscape" class="section level2">
 <h2><span class="header-section-number">2.2</span> Landscape</h2>
-<p>RangeShifter can either import a map from an ASCII file in the ‘Inputs’ folder or generate a random map to use in the simulation.</p>
+<p><em>RangeShiftR</em> can either import a map from an ASCII raster file in the ‘Inputs’ folder or generate a random map to use in the simulation.</p>
 <p>For each option, there is a corresponding function to create a Landscape parameter object</p>
 <pre class="r"><code>land &lt;- ImportedLandscape() 
 land &lt;- ArtificialLandscape()</code></pre>
@@ -563,7 +577,7 @@ land &lt;- ArtificialLandscape()</code></pre>
 <p>Artificially generated landscapes can only contain (binary or continuous) habitat suitability and are always cell-based.</p>
 <p>For our example, we define an artificial landscape:</p>
 <pre class="r"><code>land &lt;- ArtificialLandscape(Resolution = 10,  # in meters
-                            K = 1500,  # ~ 15 inds/cell
+                            K_or_DensDep = 1500,  # ~ 15 inds/cell
                             propSuit = 0.2,
                             dimX = 129, dimY = 257, 
                             fractal = T, hurst = 0.3,
@@ -576,7 +590,7 @@ land &lt;- ArtificialLandscape()</code></pre>
 <li>Unstructured model / non-overlapping generations</li>
 <li>Stage-structured model / overlapping generations</li>
 </ul>
-<p>For the first case, create a simple Demography module (the maximum growth rate <code>Rmax</code> is the only required parameter)</p>
+<p>For the first case, create a simple <code>Demography()</code> module (the maximum growth rate <code>Rmax</code> is the only required parameter)</p>
 <pre class="r"><code>demo &lt;- Demography(Rmax = 2.2, ReproductionType = 1, PropMales = 0.45)</code></pre>
 <p>The option <code>ReproductionType</code> determines the way that different sexes are considered:</p>
 <p>0 = asexual / only female model<br />
@@ -590,18 +604,20 @@ land &lt;- ArtificialLandscape()</code></pre>
 demo &lt;- demo + stg</code></pre>
 <p>Alternatively, we define the sub-module within the Demography module:</p>
 <pre class="r"><code>demo &lt;- Demography(StageStruct = stg, ReproductionType = 1, PropMales = 0.45)</code></pre>
-<p>RangeshiftR provides a number of useful functions to explore the model set-up. For example, we can plot the rates from the transition matrix:</p>
+<p><em>RangeShiftR</em> provides a number of useful functions to explore the model set-up. For example, we can plot the rates from the transition matrix:</p>
 <pre class="r"><code>plotProbs(stg)</code></pre>
 <p><img src="overview_0_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="dispersal" class="section level2">
 <h2><span class="header-section-number">2.4</span> Dispersal</h2>
-<p>The dispersal process is modelled wih three sub-processes (see the schematic figure above): Emigration, Transfer and Settlement.</p>
+<p>The dispersal process is modelled wih three sub-processes (see the schematic figure above): <code>Emigration()</code>, <code>Transfer()</code> and <code>Settlement()</code>.</p>
 <pre class="r"><code>disp &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.2), 
                    Transfer   = DispersalKernel(Distances = 50),
                    Settlement = Settlement() )</code></pre>
-<p>We can use the function <code>plotProbs()</code> to plot verious functional relationships, for example a dispersal kernel with stage-dependent mean distance:</p>
+<p>We can use the function <code>plotProbs()</code> to plot various functional relationships, for example a dispersal kernel with a stage-dependent mean transfer distance:</p>
 <pre class="r"><code>plotProbs(DispersalKernel(Distances = matrix(c(0,1,2,70,50,30),nrow = 3), StageDep = T))</code></pre>
+<pre><code>## Warning in if (class(object@Distances) != &quot;matrix&quot;) {: Bedingung hat Länge &gt; 1
+## und nur das erste Element wird benutzt</code></pre>
 <p><img src="overview_0_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p>This is using mostly default options. For example, we can change the settlement condition so that a female individual, that arrives in an unsuitable cell, will wait for another time step and disperse again, while the males will die if arriving in an unsuitable cell:</p>
 <pre class="r"><code>disp &lt;-  disp + Settlement(SexDep = T, 
@@ -609,7 +625,7 @@ demo &lt;- demo + stg</code></pre>
 <p>The dispersal traits of every phase can be set to vary between individuals (<code>IndVar = TRUE</code>). This also makes the dispersal traits heritable and thus allows for evolution, for example, evolving emigration probability:</p>
 <pre class="r"><code>disp2 &lt;-  disp + Emigration(IndVar = TRUE,
                             EmigProb = matrix(c(.7,.1), nrow = 1),
-                            MutationScales = c(.1))</code></pre>
+                            TraitScaleFactor = c(.1))</code></pre>
 </div>
 <div id="genetics" class="section level2">
 <h2><span class="header-section-number">2.5</span> Genetics</h2>
@@ -618,7 +634,7 @@ demo &lt;- demo + stg</code></pre>
 </div>
 <div id="initialisation" class="section level2">
 <h2><span class="header-section-number">2.6</span> Initialisation</h2>
-<p>In order to control the initial distribution of individuals in the landscape at year 0, we set initialisation rules. We choose to initialise 3 individuals per habitat cell. Additionally, since we define a stage-structured model, we have to specify the initial proportion of stages:</p>
+<p>In order to control the initial distribution of individuals in the landscape at year <em>0</em>, we set initialisation rules. We choose to initialise <em>3</em> individuals per habitat cell. Additionally, since we define a stage-structured model, we have to specify the initial proportion of stages:</p>
 <pre class="r"><code>init &lt;- Initialise(FreeType = 0, 
                    NrCells = 2250,
                    InitDens = 2, 
@@ -651,7 +667,7 @@ init</code></pre>
 </div>
 <div id="plot-results" class="section level1">
 <h1><span class="header-section-number">3</span> Plot results</h1>
-<p>All results are stored in the Outputs folder. <code>RangeshiftR</code> provides some in-built functions to access and plot these results. Here, we plot the abundance and occupancy timeseries:</p>
+<p>All results are stored in the Outputs folder. <em>RangeShiftR</em> provides some in-built functions to access and plot these results. Here, we plot the abundance and occupancy time series:</p>
 <pre class="r"><code>range_df &lt;- readRange(s, dirpath)
 
 # ...with replicates:
@@ -664,7 +680,7 @@ par(mfrow=c(1,2))
 plotAbundance(range_df, sd=T, replicates = F)
 plotOccupancy(range_df, sd=T, replicates = F)</code></pre>
 <p><img src="overview_0_files/figure-html/unnamed-chunk-26-2.png" width="672" /></p>
-<p>Although <code>RangeshiftR</code> provides a number of functions for easy post-processing and plotting of results, it may also be desirable to further process the results yourself. As a simple example for such a workflow, let’s plot the spatial distribution of abundance. For doing so, we load the data from the population output files and process it using the <code>raster</code> package:</p>
+<p>Although <em>RangeShiftR</em> provides a number of functions for easy post-processing and plotting of results, it may also be desirable to further process the results yourself. As a simple example for such a workflow, let’s plot the spatial distribution of abundance. For doing so, we load the data from the population output files and process it using the <code>raster</code> package:</p>
 <pre class="r"><code># read population output file into a dataframe
 pop_df &lt;- readPop(s, dirpath)
 
@@ -743,7 +759,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

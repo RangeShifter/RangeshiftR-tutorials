@@ -11,7 +11,7 @@
 
 
 
-<title>Installing RangeshiftR</title>
+<title>Installing RangeShiftR</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -269,19 +269,19 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">RangeshiftR tutorials</a>
+      <a class="navbar-brand" href="index.html">RangeShiftR tutorials</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">About RangeshiftR</a>
+  <a href="index.html">About RangeShiftR</a>
 </li>
 <li>
-  <a href="installing.html">Installing RangeshiftR</a>
+  <a href="installing.html">Installing RangeShiftR</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    RangeshiftR tutorials
+    RangeShiftR tutorials
      
     <span class="caret"></span>
   </a>
@@ -309,7 +309,7 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="mailto:RangeshiftR@uni-potsdam.de">
+  <a href="mailto:RangeShiftR@uni-potsdam.de">
     <span class="fa fa-envelope"></span>
      
   </a>
@@ -341,15 +341,15 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Installing RangeshiftR</h1>
+<h1 class="title toc-ignore">Installing RangeShiftR</h1>
 
 </div>
 
 
-<p>The <code>RangeshiftR</code> package is not yet released and we thus need to install it by hand. Please note that currently the beta version is only available upon request. The official release is planned for May 2020. For further information please contact us under <a href="mailto:RangeshiftR@uni-potsdam.de">RangeshiftR@uni-potsdam.de</a>.</p>
+<p>The <em>RangeShiftR</em> package is not yet released and we thus need to install it by hand. Please note that currently the beta version is only available upon request. The official release is planned for November 2020. For further information please contact us under <a href="mailto:RangeShiftR@uni-potsdam.de">RangeShiftR@uni-potsdam.de</a>.</p>
 <div id="install-and-load-required-packages" class="section level1">
 <h1>Install and load required packages</h1>
-<p><code>RangeshiftR</code> requires <em>R</em> 3.6.0 or higher and <em>Rcpp</em> 1.0.1 or higher. <em>Devtools</em> is recommended for an easy installation. Install these packages if you don’t have them already.</p>
+<p><em>RangeShiftR</em> requires <em>R</em> 3.6.0 or higher, <em>Rcpp</em> 1.0.1 or higher and <em>Rdpack</em> 0.7 or higher. <em>Devtools</em> is recommended for an easy installation. Install these packages if you don’t have them already.</p>
 <pre class="r"><code>library(Rcpp)
 library(devtools)</code></pre>
 </div>
@@ -369,11 +369,17 @@ Go to Control panel -&gt; System and Security -&gt; System -&gt; Advanced system
 <p>If the output is not <em>4</em>, then there is an issue with the toolchain.</p>
 </div>
 <div id="install-the-rangeshiftr-package" class="section level1">
-<h1>Install the RangeshiftR package</h1>
-<p>Navigate to package directory “RangeshiftR” and run the installation.</p>
-<pre class="r"><code>devtools::install(options(&quot;devtools.install.args&quot;=c(&quot;--no-multiarch&quot;)))</code></pre>
+<h1>Install the RangeShiftR package</h1>
+<p>Navigate to package directory “RangeShiftR” and run the installation.</p>
+<pre class="r"><code>devtools::install()</code></pre>
 <p>After successful installation, you can load the package:</p>
-<pre class="r"><code>library(RangeshiftR)</code></pre>
+<pre class="r"><code>library(RangeShiftR)</code></pre>
+<pre><code>## RangeshiftR version 1.0.0 (01.10.2020)
+## Copyright (C) 2020 Anne-Kathleen Malchow, Greta Bocedi, Steve Palmer, Justin Travis, Damaris Zurell
+## 
+## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+## You are welcome to redistribute it and/or modify it under certain conditions;
+## type &#39;RangeShiftR_license()&#39; for details.</code></pre>
 </div>
 
 <!DOCTYPE html>

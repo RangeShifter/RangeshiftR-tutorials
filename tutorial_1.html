@@ -345,19 +345,19 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">RangeshiftR tutorials</a>
+      <a class="navbar-brand" href="index.html">RangeShiftR tutorials</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">About RangeshiftR</a>
+  <a href="index.html">About RangeShiftR</a>
 </li>
 <li>
-  <a href="installing.html">Installing RangeshiftR</a>
+  <a href="installing.html">Installing RangeShiftR</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    RangeshiftR tutorials
+    RangeShiftR tutorials
      
     <span class="caret"></span>
   </a>
@@ -385,7 +385,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="mailto:RangeshiftR@uni-potsdam.de">
+  <a href="mailto:RangeShiftR@uni-potsdam.de">
     <span class="fa fa-envelope"></span>
      
   </a>
@@ -422,13 +422,14 @@ div.tocify {
 </div>
 
 
-<p>This is an example of how RangeShifter can be used at national scale for modelling species range dynamics <span class="citation">(Bocedi et al. 2014)</span>. We model a hypothetical grassland species distributed initially in the South-West of England, and assume that from the start of the simulation the species is free to expand its range. This could be the case for alien species that naturally start to expand after having gone through an establishment phase, alien or native species that have been released from natural enemies or competitors, or species for which a previously prohibiting climate has become suitable. We assume that we have data about the current species distribution and use it as a starting point. The objective is to investigate how different assumptions about the dispersal ability of the species and about temporal environmental stochasticity can affect the modelled range expansion. We start with the basic setting of a single dispersal kernel and no environmental stochasticity.</p>
+<p>This is an example of how <code>RangeShiftR</code> can be used at national scale for modelling species range dynamics <span class="citation">(Bocedi et al. 2014)</span>. We model a hypothetical grassland species distributed initially in the South-West of England, and assume that from the start of the simulation the species is free to expand its range. This could be the case for alien species that naturally start to expand after having gone through an establishment phase, an alien or native species that have been released from natural enemies or competitors, or a species for which a previously prohibiting climate has become suitable.</p>
+<p>We assume that we have data about the current species distribution and use it as a starting point. The objective is to investigate how different assumptions about the dispersal ability of the species and about temporal environmental stochasticity can affect the modelled range expansion. We start with the basic setting of a single dispersal kernel and no environmental stochasticity.</p>
 <div id="simulating-range-expansions" class="section level1">
 <h1><span class="header-section-number">1</span> Simulating range expansions</h1>
 <div id="create-an-rs-directory" class="section level2">
 <h2><span class="header-section-number">1.1</span> Create an RS directory</h2>
-<p>The directory in which we run RangeShifter needs to have a certain folder structure. It should contain 3 sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’. We can create them from R:</p>
-<pre class="r"><code>library(RangeshiftR)
+<p>The directory in which we run <code>RangeShiftR</code> needs to have a certain folder structure. It should contain three sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’. We can create them from R:</p>
+<pre class="r"><code>library(RangeShiftR)
 library(raster)
 library(RColorBrewer)
 library(rasterVis)
@@ -447,7 +448,7 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 </div>
 <div id="landscape-parameters" class="section level2">
 <h2><span class="header-section-number">1.2</span> Landscape parameters</h2>
-<p>We use a land-cover map of Great Britain at 1km resolution. Six dominant aggregated habitat types were derived from LandCover Map 2007 <span class="citation">(Morton et al. 2011)</span>. The map, <em>UKmap_1km.txt</em>, is a ASCII in the standard text format, where each cell holds the code of its dominant habitat type. For simplicity, the codes are set as sequential numbers:</p>
+<p>We use a land-cover map of Great Britain at 1km resolution. Six dominant aggregated habitat types were derived from LandCover Map 2007 <span class="citation">(Morton et al. 2011)</span>. The map, <em>UKmap_1km.txt</em>, is an ASCII raster in the standard text format, where each cell holds the code of its dominant habitat type. The habitat codes have to be given as sequential integer numbers, starting from one:</p>
 <ul>
 <li>1 = woodland (broadleaved and conifer)</li>
 <li>2 = arable</li>
@@ -456,53 +457,53 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 <li>5 = heath and bog</li>
 <li>6 = other (urban, water &amp; coastal habitats)</li>
 </ul>
-<p>Furthermore, we are provided with a map that defines the (initial) species distribution, named <em>Species_Distribution_10km.txt</em>. It is given at a larger resolution of 10km.</p>
-<p>We can plot the landscape map and overlay it with the initial species distribution:</p>
+<p>Furthermore, we are provided with a map that defines the (initial) species distribution, named <em>Species_Distribution_10km.txt</em>. It is given at a coarser resolution of 10km.</p>
+<p>Let’s plot the landscape map and overlay it with the initial species distribution:</p>
 <pre class="r"><code>UKmap &lt;- raster(paste0(dirpath, &quot;Inputs/UKmap_1km.txt&quot;))
 SpDist &lt;- raster(paste0(dirpath, &quot;Inputs/Species_Distribution_10km.txt&quot;))
 values(SpDist)[values(SpDist) &lt; 1] &lt;- NA
 
-# Plot land cover map and highlight cells with initial species distribution - option 1:
+# plot land cover map and highlight cells with initial species distribution - option 1:
 plot(UKmap, col=brewer.pal(n = 6, name = &quot;Spectral&quot;), axes=F)
 plot(rasterToPolygons(SpDist, dissolve=F), add=T)</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>For prettier mapping with a legend specifying the different land cover categories, we need a little work around:</p>
-<pre class="r"><code># Plot land cover map and highlight cells with initial species distribution - option 2 with categorical legend:
+<p>For prettier mapping with a legend specifying the different land cover categories and a custom colour palette, we need a little workaround:</p>
+<pre class="r"><code># plot land cover map and highlight cells with initial species distribution - option 2 with categorical legend:
 UKmap.f &lt;- as.factor(UKmap)
-# add the land cover classes to the raster attribute table (rat)
+# add the land cover classes to the raster attribute table (RAT)
 rat &lt;- levels(UKmap.f)[[1]]
 rat[[&quot;landcover&quot;]] &lt;- c(&quot;woodland&quot;, &quot;arable&quot;, &quot;improved grassland&quot;, &quot;semi-natural grassland&quot;, &quot;heath and bog&quot;, &quot;other&quot;)
 levels(UKmap.f) &lt;- rat
 
 custom.pal &lt;- c(&quot;#1A9850&quot;, &quot;#91CF60&quot;, &quot;#D9EF8B&quot;, &quot;#FEE08B&quot;, &quot;#D8B365&quot;, &quot;#777777&quot;)
 levelplot(UKmap.f, margin=F, scales=list(draw=FALSE), col.regions=custom.pal)  +
-  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;black&#39;))</code></pre>
+  layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>In order to use the habitat and distribution maps in <em>RangeShiftR</em>, we need to set up a landscape parameter object. It takes the path to the map files along with some other parameters, like their resolutions (given in meters) and the number of habitats. Additionally, for each habitat type we have to specify the carrying capacity for our target species, given in individuals per hectare. In this example, we assume that the species can reproduce only in semi-natural grassland, which has the code 4. Set the carrying capacity for this habitat equal to 5 inds/ha and all others to 0, by defining a vector (<em>carrycap</em>) that contains these numbers in order of increasing habitat codes:</p>
+<p>In order to use the habitat and distribution maps in <code>RangeShiftR</code>, we need to set up a landscape module. It takes the path to the map files along with some other parameters, like their resolutions (given in meters) and the number of habitats. Additionally, we have to specify the demographic density dependence for our target species in each habitat type, which is given in individuals per hectare and provided to the argument <code>K_or_DensDep</code>. Care should be taken, since this value is used differently in the population models for overlapping and non-overlapping generations. In this example, we use a simple model with non-overlapping generations (see below), so that the given values are used as limiting carrying capacities <em>K</em> of each habitat type. We assume that the species can reproduce only in semi-natural grassland, which has the code <em>4</em>. Therefore, we set the carrying capacity for this habitat equal to <em>5 inds/ha</em> and all others to <em>0</em>, by defining a vector named <em>carrycap</em> that contains these numbers in the order of increasing habitat codes and that we give to the argument <code>K_or_DensDep</code> of the imported landscape module:</p>
 <pre class="r"><code># carrying capacitíes and landscape parameter object
 carrycap &lt;- c(0, 0, 0, 5, 0, 0)
 land &lt;- ImportedLandscape(LandscapeFile = &quot;UKmap_1km.txt&quot;, 
                           Resolution = 1000, 
                           Nhabitats = 6, 
-                          K = carrycap, 
+                          K_or_DensDep = carrycap, 
                           SpDistFile = &quot;Species_Distribution_10km.txt&quot;, 
                           SpDistResolution = 10000)</code></pre>
 </div>
 <div id="species-parameters" class="section level2">
 <h2><span class="header-section-number">1.3</span> Species parameters</h2>
-<p>Next, we specify the species parameters for demography and dispersal kernel. In this first example, we choose the most simple model options for both: the population dynamics are described by an only-female model with non-overlapping generations. It has one compulsory argument, the maximum growth rate <em>Rmax</em>, that we set to 1.5.</p>
+<p>Next, we specify the species parameters for the demography and dispersal modules. In this first example, we choose the simplest model options for both: the population dynamics are described by a female-only model with non-overlapping generations. This has one compulsory argument, the maximum growth rate <em>Rmax</em>, that we set to <em>1.5</em>.</p>
 <pre class="r"><code>demo &lt;- Demography(Rmax = 1.5)</code></pre>
-<p>The dispersal module comprises three sub-modules for Emigration, Transport and Settlement. We assume a constant emigration probability of 0.1. The transfer phase is modelled with a dispersal kernel, whose mean distance we set to 2,000m. For the Settlement sub-module, we use the default options, which assume that an individual will die if it arrives in an unsuitable cell.</p>
+<p>The dispersal module comprises three sub-modules representing the three phases of dispersal: Emigration, Transport and Settlement. We assume a constant emigration probability of <em>0.1</em>. The transfer phase is modelled with a dispersal kernel, whose mean distance is set to <em>2,000m</em>. For the Settlement sub-module, we use the default options, which assume that an individual will die if it arrives in an unsuitable cell and settle if it’s suitable.</p>
 <pre class="r"><code>disp &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1), 
                    Transfer = DispersalKernel(Distances = 2000), 
                    Settlement = Settlement() )
 
-# Alternative notation:
+# alternative notation:
 # disp &lt;-  Dispersal() + Emigration(EmigProb = 0.1) + DispersalKernel(Distances = 2000) + Settlement()</code></pre>
 </div>
 <div id="initialisation-parameters" class="section level2">
 <h2><span class="header-section-number">1.4</span> Initialisation parameters</h2>
-<p>In order to control the initial distribution of individuals in the landscape at year 0, we set initialisation rules. We want to initialise all the habitat cells that are present inside the 10km x 10km cells of the loaded species distribution map; and we want each of those cells to be initialised at its carrying capacity. These options are encoded in numeric arguments, for a list of possible settings see the documentation:</p>
+<p>In order to control the initial distribution of individuals in the landscape at year <em>0</em>, we set initialisation rules. We want to initialise all habitat cells that are located inside the <em>10km</em> x <em>10km</em> presence cells indicated by the loaded species distribution map; and we want each of those cells to be initialised at its respective carrying capacity. These options are encoded in numeric arguments; for a list of possible settings see the documentation:</p>
 <pre class="r"><code>?Initialise
 init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species distribution map
                    SpType = 0,   # = all suitable cells within all distribution presence cells
@@ -512,22 +513,24 @@ init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species dis
 <h2><span class="header-section-number">1.5</span> Simulation parameters</h2>
 <p>Lastly, we set some basic simulation parameters, i.e. the simulation number, number of replicates and number of years to be simulated. Furthermore, we specify what file output will be generated. In this example, we choose to output the population, occupancy and range data for every 5 years.</p>
 <pre class="r"><code>sim_0 &lt;- Simulation(Simulation = 0, 
-                  Replicates = 20, 
-                  Years = 100,
-                  OutIntPop = 5,
-                  OutIntOcc = 5,
-                  OutIntRange = 5)</code></pre>
+                    Replicates = 20, 
+                    Years = 100,
+                    OutIntPop = 5,
+                    OutIntOcc = 5,
+                    OutIntRange = 5)</code></pre>
 </div>
 <div id="parameter-master" class="section level2">
 <h2><span class="header-section-number">1.6</span> Parameter master</h2>
-<p>All the settings we have made so far are contained in their respective modules. They have to be combined in a parameter master object, which is needed to run the simulation.</p>
+<p>All settings we have made so far are contained in their respective module objects. They have to be combined to a parameter master object, which validates all parameter settings and is needed to run the simulation.</p>
 <pre class="r"><code>s &lt;- RSsim(land = land, demog = demo, dispersal = disp, simul = sim_0, init = init)
 
-# Alternative notation:
+# alternative notation:
 # s &lt;- RSsim() + land + demo + disp + sim_0 + init</code></pre>
-<p>Before we run the simulation, let’s get an overview of the settings we have made by simply typing</p>
+<p>Before we run the simulation, let’s get an overview of the settings we have made by simply typing:</p>
 <pre class="r"><code>s</code></pre>
-<pre><code>##  Simulation # 0 
+<pre><code>##  Batch # 1 
+## 
+##  Simulation # 0 
 ##  -----------------
 ##    Replicates =  20 
 ##    Years      =  100 
@@ -538,9 +541,9 @@ init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species dis
 ##    Populations, every 5 years, starting year 0
 ## 
 ##  Landscape imported from file:
-##    UKmap_1km.txt 
+##    UKmap_1km.txt
 ##    with 6 unique integer habitat code(s)
-##    Carrying capacities K = 0 0 0 5 0 0 .
+##    K or 1/b        :  0 0 0 5 0 0 [inds per ha].
 ##    Resolution      : 1000 
 ##  Initial Species Distribution imported from file:
 ##    Species_Distribution_10km.txt 
@@ -574,11 +577,11 @@ init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species dis
 ##  Initialisation: 
 ##    InitType = 1 : Initialisation from loaded species distribution map
 ##                   all presence cells/patches.
-##    InitDens = 0 : At carrying capacity K</code></pre>
-<p>At any stage, you can check for parameter validity of any module or the master:</p>
+##    InitDens = 0 : At K_or_DensDep</code></pre>
+<p>At any stage, you can check for parameter validity of any module or the master.</p>
 <pre class="r"><code>validateRSparams(s)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<p>Also, before actually running the simulation, the <code>RSsim()</code> function (see next section) will always check the validity of all settings and give error messages in case something doesn’t match up.</p>
+<p>If it returns <code>TRUE</code>, the parameters are valid. Also, before actually running the simulation, the <code>RSsim()</code> function (see next section) will always check the validity of all settings and give error messages in case something doesn’t match up.</p>
 </div>
 <div id="run-the-simulation" class="section level2">
 <h2><span class="header-section-number">1.7</span> Run the simulation</h2>
@@ -587,24 +590,26 @@ init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species dis
 </div>
 <div id="plot-results" class="section level2">
 <h2><span class="header-section-number">1.8</span> Plot results</h2>
-<p>For convenience and for compliance with the RangeShifter Windows GUI, the <em>RangeshiftR</em> package contains a few plotting functions to inspect the population trajectories of the replicate simulations.</p>
-<pre class="r"><code>range_df &lt;- readRange(s, dirpath)
+<p>For convenience and for compliance with the RangeShifter Windows GUI, the <code>RangeShiftR</code> package contains a few plotting functions to inspect the population time series of the replicate simulations.</p>
+<pre class="r"><code># read &#39;range&#39; output into a data frame
+range_df &lt;- readRange(s, dirpath)
 
-# Plot trajectories of all individual runs and overlay with mean:
+# plot trajectories of all individual runs and overlay with mean:
 par(mfrow=c(1,2))
 plotAbundance(range_df)
 plotOccupancy(range_df)</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<pre class="r"><code># Or plot mean and standard deviation:
+<pre class="r"><code># or plot mean and standard deviation:
 par(mfrow=c(1,2))
 plotAbundance(range_df, rep=F, sd=T)
 plotOccupancy(range_df, rep=F, sd=T)</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
-<p>The population output file contains the local abundance for all cells, timesteps and replicates. We can convert this dataframe into raster maps and plot the spatial abundance distribution.</p>
-<pre class="r"><code># read population output file into a dataframe
+<p>The population output file contains the local abundances for all populated cells in the recorded years for all replicates. We can convert this data frame into raster maps and plot the spatial abundance distribution.</p>
+<pre class="r"><code># read population output file into a data frame
 pop_df &lt;- readPop(s, dirpath)
 
-# Not all years have the same number of cells. For later stacking, we need a common extent. This is a quick &amp; dirty solution:
+# Not all years have the same number of cells, since only cells that had ever established a population are recorded. 
+# For later stacking, we need a common extent. This is a quick &amp; dirty solution:
 ext &lt;- c(min(pop_df$x)-500,max(pop_df$x)+500,min(pop_df$y)-500,max(pop_df$y)+500)
 
 # Make stack of different raster layers for each year and for only one repetition (Rep==0):
@@ -623,7 +628,7 @@ levelplot(r_years_rep0[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), 
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>We can make similar maps showing the average abundance over all replicate runs. For convenience, we define a small function for this, which we can re-use later. When calling this function, we can choose whether all replicates should be averaged (the default) or whether a specific replicate should be extracted. Also, we can optionally overlay a mask, e.g. the UK map.</p>
 <pre class="r"><code>stack_pop &lt;- function(pop_df, ext, rep=NULL, mask=NULL){
-  # This function takes the population data frame output from RangeShiftR and turns this into a raster stack of abundance maps.
+  # This function takes the population data frame output from RangeShiftR and turns it into a raster stack of abundance maps.
   # If the ID of the Replicate (&quot;rep&quot;) is not provided, it will return the mean abundance over all replicates.
   
   if (!is.null(rep)){
@@ -649,7 +654,7 @@ levelplot(r_years_rep0[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), 
   }
   return(r_years)
 }</code></pre>
-<p>Extracing the maps is much easier now:</p>
+<p>Extracting the maps is much easier now:</p>
 <pre class="r"><code># Extract maps of single replicate run:
 r_years_rep0 &lt;- stack_pop(pop_df, ext, rep=0, mask=UKmap)
 names(r_years_rep0)</code></pre>
@@ -666,11 +671,11 @@ names(r_years)</code></pre>
 ## [13] &quot;mean.NInd.60&quot;  &quot;mean.NInd.65&quot;  &quot;mean.NInd.70&quot;  &quot;mean.NInd.75&quot; 
 ## [17] &quot;mean.NInd.80&quot;  &quot;mean.NInd.85&quot;  &quot;mean.NInd.90&quot;  &quot;mean.NInd.95&quot; 
 ## [21] &quot;mean.NInd.100&quot;</code></pre>
-<pre class="r"><code># Map abundance of single replicate run:
+<pre class="r"><code># Map abundance of single replicate run in year 90:
 levelplot(r_years_rep0[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20)))) +
   layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<pre class="r"><code># Map mean abundance:
+<pre class="r"><code># Map mean abundance in year 90:
 levelplot(r_years[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20)))) +
   layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
@@ -682,12 +687,17 @@ levelplot(r_years[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FALSE), 
 <div id="add-rare-long-distance-dispersal" class="section level2">
 <h2><span class="header-section-number">2.1</span> Add rare long-distance dispersal</h2>
 <p>To explore the effect of rare long-distance dispersal events on the range expansion, we only need to change the dispersal module. More specifically, we define a new transfer sub-module with the option <em>DoubleKernel</em> enabled, to use the double negative exponential kernel (Mixed kernel). This means that in addition to the standard dispersal kernel, an individual has a certain probability of dispersing with a second - a long-distance - dispersal kernel.</p>
-<pre class="r"><code>trans_long &lt;- DispersalKernel(DoubleKernel = T, Distances = matrix(c(2000, 10000, 0.99), ncol = 3)) #Distances = c(MeanDistance-I, MeanDistance-II, probability of dispersing with Kernel-I)
-
-disp_long &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1),
+<pre class="r"><code># in the dispersal kernel sub-module, the distance parameters are now given as
+# Distances = c(MeanDistance-I, MeanDistance-II, probability of dispersing with Kernel-I)
+trans_long &lt;- DispersalKernel(DoubleKernel = T, Distances = matrix(c(2000, 10000, 0.99), ncol = 3)) </code></pre>
+<pre><code>## Warning in if (class(object@Distances) != &quot;matrix&quot;) {: Bedingung hat Länge &gt; 1
+## und nur das erste Element wird benutzt</code></pre>
+<pre class="r"><code>disp_long &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1),
                         Transfer = trans_long,
                         Settlement = Settlement() )</code></pre>
-<p>Moreover we change the simulation number to 1 in the corresponding parameter object, in order to avoid overwriting the previous output.</p>
+<pre><code>## Warning in if (class(object@Distances) != &quot;matrix&quot;) {: Bedingung hat Länge &gt; 1
+## und nur das erste Element wird benutzt</code></pre>
+<p>Moreover we change the simulation number to <em>1</em> in the corresponding parameter object, in order to avoid overwriting the previous output.</p>
 <pre class="r"><code>sim_1 &lt;- Simulation(Simulation = 1, 
                     Replicates = 20, 
                     Years = 100,
@@ -696,6 +706,8 @@ disp_long &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1),
                     OutIntRange = 5)</code></pre>
 <p>Finally, the new modules are added to the old parameter master to define a new one, <em>s_long</em>.</p>
 <pre class="r"><code>s_long &lt;- s + disp_long + sim_1</code></pre>
+<pre><code>## Warning in if (class(object@Distances) != &quot;matrix&quot;) {: Bedingung hat Länge &gt; 1
+## und nur das erste Element wird benutzt</code></pre>
 <p>With this, run the new simulation:</p>
 <pre class="r"><code>RunRS(s_long, dirpath)</code></pre>
 <p>We can now compare the result plots. The number of occupied cells as well as the total abundance is much higher in this scenario.</p>
@@ -737,12 +749,14 @@ names(r_years_long_1)</code></pre>
 <pre class="r"><code>levelplot(r_years_long_1[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_long$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20))))  +
   layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>We can see that there is a chance for the population to spread to the north and establish in a broader range. However, only some replicates show this.</p>
 </div>
 <div id="add-temporal-environmental-stochasticity" class="section level2">
 <h2><span class="header-section-number">2.2</span> Add temporal environmental stochasticity</h2>
 <p>Lastly, we incorporate temporal environmental stochasticity, which is recognized to be fundamental for both ecological and evolutionary processes and is expected to increase in frequency and become more auto-correlated with climate change.</p>
 <p>The options for the environmental stochasticity are set in the Simulation parameters object. For this example we use <em>global</em> (referring to the spatial extent) stochasticity in <em>growth rate</em>. We explore two types of stochasticity: temporally uncorrelated (white noise) and positively correlated (red noise), by setting the autocorrelation coefficient <em>ac</em>:</p>
-<pre class="r"><code>sim_2 &lt;- Simulation(Simulation = 2, 
+<pre class="r"><code> # for white noise
+sim_2 &lt;- Simulation(Simulation = 2, 
                     Replicates = 20, 
                     Years = 100,
                     EnvStoch = 1,     # global environmental stochasticity
@@ -756,7 +770,8 @@ names(r_years_long_1)</code></pre>
                     OutIntRange = 5)
 
 s_envstoch_white &lt;- s_long + sim_2</code></pre>
-<pre class="r"><code>sim_3 &lt;- Simulation(Simulation = 3, 
+<pre class="r"><code> # for red noise
+sim_3 &lt;- Simulation(Simulation = 3, 
                     Replicates = 20, 
                     Years = 100,
                     EnvStoch = 1,     # global environmental stochasticity
@@ -902,7 +917,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
