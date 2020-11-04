@@ -346,40 +346,48 @@ $(document).ready(function () {
 </div>
 
 
-<p>The <em>RangeShiftR</em> package is not yet released and we thus need to install it by hand. Please note that currently the beta version is only available upon request. The official release is planned for November 2020. For further information please contact us under <a href="mailto:RangeShiftR@uni-potsdam.de">RangeShiftR@uni-potsdam.de</a>.</p>
+<p>The <code>RangeShiftR</code> package source is publicly released on a <a href="https://github.com/RangeShifter/RangeShiftR-package"><em>github</em> repository</a> as a beta version (it is not available on <em>CRAN</em>). The first official release is planned for November 2020. For further information please contact us under <a href="mailto:RangeshiftR@uni-potsdam.de">RangeShiftR@uni-potsdam.de</a>.</p>
 <div id="install-and-load-required-packages" class="section level1">
 <h1>Install and load required packages</h1>
-<p><em>RangeShiftR</em> requires <em>R</em> 3.6.0 or higher, <em>Rcpp</em> 1.0.1 or higher and <em>Rdpack</em> 0.7 or higher. <em>Devtools</em> is recommended for an easy installation. Install these packages if you don’t have them already.</p>
+<p>As of yet, <code>RangeShiftR</code> has to be built from source by the user. This requires the <code>R</code>-version <em>3.6.0</em> or higher, the packages <code>Rcpp</code> <em>1.0.1</em> or higher and <code>Rdpack</code> <em>0.7</em> or higher, as well as a functional C++ toolchain (see below). Further, the package <code>devtools</code> is recommended for an easy installation directly from github.</p>
+<p>Install these packages if you don’t have them already.</p>
 <pre class="r"><code>library(Rcpp)
-library(devtools)</code></pre>
+library(devtools)
+library(Rdpack)</code></pre>
 </div>
 <div id="compiler-toolchain" class="section level1">
 <h1>Compiler toolchain</h1>
-<p>In order to build the package from source, we need to set up a compiler toolchain (i.e. install a suitable C++ compiler and make it available to <em>R</em>).</p>
+<p>In order to build the package from source, we need to set up a compiler toolchain. This involves installing a suitable C++ compiler and making it available to <code>R</code>. The exact procedure depends on your operating system as well as your R installation. Unix-based systems like Linux or MacOS might have the toolchain set up already along with the installation of R. You can find detailed instructions here: <a href="https://thecoatlessprofessor.com/programming/installing-rtools-for-compiled-code-via-rcpp/" class="uri">https://thecoatlessprofessor.com/programming/installing-rtools-for-compiled-code-via-rcpp/</a></p>
+<p>Here is an outline of the information from this website:</p>
 <ul>
-<li><p>on Windows: the <em>Rtools</em> package on CRAN contains all the required tools. Find installing instructions - for either manual installation or from within <em>R</em> (further down) - here: <a href="https://thecoatlessprofessor.com/programming/installing-rtools-for-compiled-code-via-rcpp/" class="uri">https://thecoatlessprofessor.com/programming/installing-rtools-for-compiled-code-via-rcpp/</a><br />
-Pay extra attention to steps 10/11. In case you have to add the path variable manually, try this (Windows 10):<br />
-Go to Control panel -&gt; System and Security -&gt; System -&gt; Advanced system settings -&gt; Environmental variables -&gt; in the list of system variables, edit ‘Path’ -&gt; add the 2 variables ‘C:\Rtools\bin’, ‘C:\Rtools\mingw_32\bin’</p></li>
-<li><p>on Linux: Install the standard development packages (e.g. on Ubuntu and Debian: <em>r-base-dev</em>).</p></li>
-<li><p>on MacOS: Install the Apple Developer Tools <em>Xcode</em> and the C++ compiler <em>clang7</em>. Find installing instructions here (for RangeShifter, the Fortran compiler <em>gfortran</em> is not needed, so you may leave this step out): <a href="https://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-macos/" class="uri">https://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-macos/</a></p></li>
+<li><p>on Windows: the <code>Rtools</code> package on CRAN contains all the required tools. Find installing instructions for either manual installation (top) or from within <code>R</code> (further down) on the website mentioned above. (Tip: Pay extra attention to steps 10/11.)<br />
+If you have upgraded to <code>R</code> version <em>4</em>, make sure to install the corresponding <code>Rtools40</code>. More information here: <a href="https://cran.r-project.org/bin/windows/Rtools/" class="uri">https://cran.r-project.org/bin/windows/Rtools/</a> (Tip: Pay extra attention to the instructions on the bottom of the page, regarding the path variable.)</p></li>
+<li><p>on Linux: Install the standard <code>R</code> development packages (e.g. on Ubuntu and Debian: <code>r-base-dev</code>).</p></li>
+<li><p>on MacOS: Install the Apple Developer Tools <code>Xcode</code> and the C++ compiler <code>clang7</code>. Find installing instructions here (for <code>RangeShiftR</code>, the Fortran compiler <em>gfortran</em> is not needed, so you may leave this step out): <a href="https://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-macos/" class="uri">https://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-macos/</a></p></li>
 </ul>
-<p>You can check if everything works properly by trying this in your <em>R</em> terminal:</p>
+<p>You can check if everything works properly by trying this in your <code>R</code> terminal:</p>
 <pre class="r"><code>Rcpp::evalCpp(&quot;2+2&quot;)</code></pre>
 <pre><code>## [1] 4</code></pre>
 <p>If the output is not <em>4</em>, then there is an issue with the toolchain.</p>
+<p>One common reason for this can be that <code>R</code> doesn’t find the C++ compiler due to an inappropriately set path variable. In this variable your system stores the paths in which to look for executables like the compiler (e.g. <em>gcc</em> or <em>clang</em>), in the order in which they appear in the path variable.</p>
+<p>You can try and check if the path to the directory that contains your compiler is part of the path variable.<br />
+For example, on Windows 10: Go to Control panel -&gt; System and Security -&gt; System -&gt; Advanced system settings -&gt; Environmental variables.<br />
+In the list of system variables, look for ‘Path’. If the correct path is missing, you can add it manually:<br />
+Click ‘edit’ on the ‘Path’ variable -&gt; add the correct variable (The two standard paths would be ‘C:\Rtools\bin’ and ‘C:\Rtools\mingw_32\bin’; you can also try moving them up on the list so they get searched first.)</p>
 </div>
 <div id="install-the-rangeshiftr-package" class="section level1">
 <h1>Install the RangeShiftR package</h1>
-<p>Navigate to package directory “RangeShiftR” and run the installation.</p>
-<pre class="r"><code>devtools::install()</code></pre>
-<p>After successful installation, you can load the package:</p>
+<p>Now, if all preparations are done and successful, we can install the package directly from its public repository on <em>github</em>, using <code>devtools</code>:</p>
+<pre class="r"><code>devtools::install_github(&quot;https://github.com/RangeShifter/RangeShiftR-package&quot;, ref = &quot;main&quot;)</code></pre>
+<p>After successful installation, which can take a few minutes, you can load and use the package:</p>
 <pre class="r"><code>library(RangeShiftR)</code></pre>
-<pre><code>## RangeshiftR version 1.0.0 (01.10.2020)
+<pre><code>## RangeshiftR version 0.2.0 (01.10.2020)
 ## Copyright (C) 2020 Anne-Kathleen Malchow, Greta Bocedi, Steve Palmer, Justin Travis, Damaris Zurell
 ## 
 ## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 ## You are welcome to redistribute it and/or modify it under certain conditions;
 ## type &#39;RangeShiftR_license()&#39; for details.</code></pre>
+<p>If questions or problems remain, please let us know via <em>github</em> issues on our repository: <a href="https://github.com/RangeShifter/RangeShiftR-package/issues" class="uri">https://github.com/RangeShifter/RangeShiftR-package/issues</a></p>
 </div>
 
 <!DOCTYPE html>
