@@ -25,8 +25,19 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -525,6 +536,7 @@ plot(patch30)</code></pre>
 <div id="demographic-and-dispersal-parameters" class="section level2">
 <h2><span class="header-section-number">2.1</span> Demographic and dispersal parameters</h2>
 <p>We will simulate a sexual species with simple, two-staged structured population dynamics. The parameters are chosen to be representative of species having moderately high fecundity, high juvenile mortality and low adult mortality. This is encoded in the following transition matrix</p>
+<pre class="r"><code>(trans_mat &lt;- matrix(c(0, 1, 0, 0, 0.1, 0.4, 5, 0, 0.8), nrow = 3, byrow = F))</code></pre>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    0  0.0  5.0
 ## [2,]    1  0.1  0.0
@@ -601,28 +613,28 @@ bg &lt;- function(main=NULL){
 # mean occupancy probability in year 100
 head(col_stats_a$occ_prob)</code></pre>
 <pre><code>##   patch  100
-## 1     1 0.60
-## 2     8 0.05
-## 3    10 0.00
-## 4    11 0.10
-## 5    13 0.00
-## 6    15 0.90</code></pre>
+## 1    15 0.30
+## 2    17 0.25
+## 3    18 0.00
+## 4    20 0.30
+## 5    23 1.00
+## 6    24 1.00</code></pre>
 <pre class="r"><code># time to colonisation
 head(col_stats_a$col_time)</code></pre>
 <pre><code>##   patch rep.0 rep.1 rep.2 rep.3 rep.4 rep.5 rep.6 rep.7 rep.8 rep.9 rep.10
-## 1     1    NA    NA    67    57    46    43    45    NA    NA    49     90
-## 2     8    NA    NA    NA    NA    93    NA    NA    NA    NA    NA     NA
-## 3    10    NA    NA    NA    65    NA    NA    NA    NA    37    NA     NA
-## 4    11    NA    NA    32    65    NA    34   100    94    90    NA     NA
-## 5    13    NA    86    NA    NA    NA    NA    73    58    NA    NA     NA
-## 6    15    12    45    10    23    41    26    11    49    32     9     26
+## 1    15    57    NA    NA    NA    NA    NA    44    24    94    NA     NA
+## 2    17    48    NA    NA    NA    NA    NA    NA    71    90    NA     NA
+## 3    18    81    NA    NA    NA    NA    NA    NA    NA    NA    NA     NA
+## 4    20    31    NA    NA    NA    NA    NA    76     8    56    NA     NA
+## 5    23    21    48    59    35    30    63    71    67    67    38     45
+## 6    24    10    20    41    16     6    40     5    29    50    19     21
 ##   rep.11 rep.12 rep.13 rep.14 rep.15 rep.16 rep.17 rep.18 rep.19
-## 1     57     NA     50     43     67     51     72     NA     48
-## 2     NA     NA     NA     NA     NA     NA     NA     NA     NA
-## 3     40     NA     NA     NA     NA     48     NA     86     NA
-## 4     37     NA     NA     53     NA     68     NA     NA     48
-## 5     84     31     NA     NA     NA     NA     NA     88     NA
-## 6     10     23     26     38     50     34     54     65     37</code></pre>
+## 1     77     80     98     NA     NA     NA     NA     NA     NA
+## 2     33     77     NA     NA     NA     NA     75     NA     NA
+## 3     NA     NA     NA     NA     NA     NA     NA     NA     NA
+## 4     50     65     86     NA     NA     54     NA     NA     NA
+## 5     37     51     54     26     47     33     77     36     41
+## 6     20     35     36      9     30     12     26      3     21</code></pre>
 <p>For mapping the results, we can use the optional raster output: If enabled, the function <code>ColonisationStats()</code> returns a raster stack with the mean occupancy probabilities of the given years as well as a raster with the mean time to colonisation over all replicates. We plot these maps on top of our landscape:</p>
 <pre class="r"><code># map occupancy probability
 mycol_occprob &lt;- colorRampPalette(c(&#39;blue&#39;,&#39;orangered&#39;,&#39;gold&#39;))
@@ -883,7 +895,7 @@ levelplot(heatmaps_mean,
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
