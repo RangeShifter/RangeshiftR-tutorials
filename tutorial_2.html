@@ -13,22 +13,30 @@
 
 <title>Tutorial 2: Landscape-scale connectivity, matrix permeability and dispersal behaviour</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -40,11 +48,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -57,30 +60,28 @@ if (window.hljs) {
 
 
 
+
+
 <style type="text/css">
-h1 {
-  font-size: 34px;
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
 }
-h1.title {
-  font-size: 38px;
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
 }
-h2 {
-  font-size: 30px;
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
 }
-h3 {
-  font-size: 24px;
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
 }
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
+div.csl-indent {
+  margin-left: 2em;
 }
 </style>
 
@@ -92,10 +93,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -112,40 +109,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -173,7 +146,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -185,7 +158,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -195,11 +168,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -211,13 +201,12 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -225,16 +214,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -337,7 +319,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -351,7 +333,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -367,7 +349,7 @@ div.tocify {
   <a href="installing.html">Installing RangeShiftR</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RangeShiftR tutorials
      
     <span class="caret"></span>
@@ -424,35 +406,59 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
-<h1 class="title toc-ignore">Tutorial 2: Landscape-scale connectivity, matrix permeability and dispersal behaviour</h1>
+<h1 class="title toc-ignore">Tutorial 2: Landscape-scale connectivity,
+matrix permeability and dispersal behaviour</h1>
 
 </div>
 
 
-<p>In this second example, <code>RangeShiftR</code> is used at the landscape scale to model functional connectivity of a woodland network for a hypothetical woodland species. The aims are:</p>
+<p>In this second example, <code>RangeShiftR</code> is used at the
+landscape scale to model functional connectivity of a woodland network
+for a hypothetical woodland species. The aims are:</p>
 <ul>
-<li>to illustrate how the platform can be used to investigate connectivity issues as well as species spatial dynamics at local and landscape scales;</li>
+<li>to illustrate how the platform can be used to investigate
+connectivity issues as well as species spatial dynamics at local and
+landscape scales;</li>
 <li>to show how the platform can run a model as patch-based;</li>
-<li>to show how additional complexity in the population dynamics and dispersal behaviour can be incorporated;</li>
-<li>and to show how the connectivity analyses can be dependent upon the type of model and on the modelled dispersal behaviour.</li>
+<li>to show how additional complexity in the population dynamics and
+dispersal behaviour can be incorporated;</li>
+<li>and to show how the connectivity analyses can be dependent upon the
+type of model and on the modelled dispersal behaviour.</li>
 </ul>
-<p>We want to reproduce Figure 3 of <span class="citation">Bocedi et al. (2014)</span>. To this end, we run four different scenarios:</p>
+<p>We want to reproduce Figure 3 of <span class="citation">Bocedi et al.
+(2014)</span>. To this end, we run four different scenarios:</p>
 <ol style="list-style-type: lower-alpha">
-<li>Explicit sexual model. Constant per-step mortality probability of <em>0.01</em>; individuals settle only if at least one individual of the opposite sex is present in the patch (Figure 3b in the paper).</li>
-<li>As in (a), but with different settlement rules. Females settle in suitable patches, while males will settle only if at least one female is present in the patch (Figure 3c in the paper).</li>
-<li>Only-female model. Constant per-step mortality probability of <em>0.01</em>; females settle in suitable patches (Figure 3d in the paper).</li>
-<li>As in (a), but with habitat-specific per-step mortality (Figure 3e in the paper).</li>
+<li>Explicit sexual model. Constant per-step mortality probability of
+<em>0.01</em>; individuals settle only if at least one individual of the
+opposite sex is present in the patch (Figure 3b in the paper).</li>
+<li>As in (a), but with different settlement rules. Females settle in
+suitable patches, while males will settle only if at least one female is
+present in the patch (Figure 3c in the paper).</li>
+<li>Only-female model. Constant per-step mortality probability of
+<em>0.01</em>; females settle in suitable patches (Figure 3d in the
+paper).</li>
+<li>As in (a), but with habitat-specific per-step mortality (Figure 3e
+in the paper).</li>
 </ol>
-<p><span class="citation">Bocedi et al. (2014)</span> defined the measures ‘final probability of occupancy’ and the ‘mean time to first colonisation’ to illustrate the connectivity between the initial patch and the rest of the woodland network. These measures allow rapidly assessing the effects of landscape characteristics and species movement abilities on connectivity and, importantly, also on the population dynamics. Note that both measures represent multi-generation connectivity.</p>
-<div id="getting-started" class="section level1">
+<p><span class="citation">Bocedi et al. (2014)</span> defined the
+measures ‘final probability of occupancy’ and the ‘mean time to first
+colonisation’ to illustrate the connectivity between the initial patch
+and the rest of the woodland network. These measures allow rapidly
+assessing the effects of landscape characteristics and species movement
+abilities on connectivity and, importantly, also on the population
+dynamics. Note that both measures represent multi-generation
+connectivity.</p>
+<div id="getting-started" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Getting started</h1>
-<div id="create-a-rs-directory" class="section level2">
-<h2><span class="header-section-number">1.1</span> Create a RS directory</h2>
-<p>We need to set up the folder structure again with the three sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’.</p>
+<div id="create-a-rs-directory" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Create a RS
+directory</h2>
+<p>We need to set up the folder structure again with the three
+sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’.</p>
 <pre class="r"><code>library(RangeShiftR)
 library(raster)
 library(RColorBrewer)
@@ -468,17 +474,31 @@ dirpath = &quot;Tutorial_02/&quot;
 dir.create(paste0(dirpath,&quot;Inputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Outputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code></pre>
-<p>Copy the input files provided for exercise 2 into the ‘Inputs’ folder. The files can be downloaded <a href="files/Tutorial2_Inputs.zip">here</a>.</p>
+<p>Copy the input files provided for exercise 2 into the ‘Inputs’
+folder. The files can be downloaded <a
+href="files/Tutorial2_Inputs.zip">here</a>.</p>
 </div>
-<div id="landscape-parameters" class="section level2">
-<h2><span class="header-section-number">1.2</span> Landscape parameters</h2>
-<p>We use a typical British lowland, agricultural landscape having small fragments of woodland, as used by Forest Research, UK, in Watts et al. (2010). The landscape map has an extent of <em>10km</em> by <em>6km</em> and a resolution of <em>10m</em>. Land-covers were aggregated into seven categories (Figure 3a in <span class="citation">Bocedi et al. (2014)</span>). Similar to tutorial 1, the map, <em>landscape_10m_batch.txt</em>, is a raster map with codes for different land-cover types. Land-covers were aggregated into seven categories which have to be given as sequential integer numbers, starting from one:</p>
+<div id="landscape-parameters" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Landscape
+parameters</h2>
+<p>We use a typical British lowland, agricultural landscape having small
+fragments of woodland, as used by Forest Research, UK, in Watts et
+al. (2010). The landscape map has an extent of <em>10km</em> by
+<em>6km</em> and a resolution of <em>10m</em>. Land-covers were
+aggregated into seven categories (Figure 3a in <span
+class="citation">Bocedi et al. (2014)</span>). Similar to tutorial 1,
+the map, <em>landscape_10m_batch.txt</em>, is a raster map with codes
+for different land-cover types. Land-covers were aggregated into seven
+categories which have to be given as sequential integer numbers,
+starting from one:</p>
 <ul>
 <li>1 = semi-natural broad-leaved woodland</li>
-<li>2 = planted/felled broad-leaved and mixed woodland, shrubs and bracken</li>
+<li>2 = planted/felled broad-leaved and mixed woodland, shrubs and
+bracken</li>
 <li>3 = heathland, marshy grassland</li>
 <li>4 = unimproved grassland, mire</li>
-<li>5 = planted/felled coniferous woodland, semi-improved grassland, swamp</li>
+<li>5 = planted/felled coniferous woodland, semi-improved grassland,
+swamp</li>
 <li>6 = improved grasslands, arable, water</li>
 <li>7 = roads, buildings</li>
 </ul>
@@ -493,7 +513,11 @@ levels(landsc.f) &lt;- rat
 
 levelplot(landsc.f, margin=F, scales=list(draw=FALSE), col.regions=brewer.pal(n = 7, name = &quot;Spectral&quot;))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>The second text file, <em>woodland_1ha_patchIDs.txt</em>, contains the patch-matrix landscape. It has the same extent and resolution as the land-type map, and each cell contains a unique patch ID that indicates to which patch it belongs. Patch number <em>0</em> designates the matrix patch, i.e. all unsuitable habitat.</p>
+<p>The second text file, <em>woodland_1ha_patchIDs.txt</em>, contains
+the patch-matrix landscape. It has the same extent and resolution as the
+land-type map, and each cell contains a unique patch ID that indicates
+to which patch it belongs. Patch number <em>0</em> designates the matrix
+patch, i.e. all unsuitable habitat.</p>
 <pre class="r"><code>patch &lt;- raster(paste0(dirpath, &quot;Inputs/woodland_1ha_patchIDs.txt&quot;))
 
 # We can have a glimpse at how many cells the different patches contain:
@@ -514,14 +538,24 @@ levelplot(patch, margin=F, scales=list(draw=FALSE), at=0:50, colorkey=F,
           col.regions = c(&#39;black&#39;,rep(brewer.pal(n = 12, name = &quot;Paired&quot;),5))
           ) </code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>The last text file, <em>patch30.txt</em>, is a map that specifies the patches that contain the initial distribution of the species. In our case, this is only the patch with ID <em>30</em>.</p>
+<p>The last text file, <em>patch30.txt</em>, is a map that specifies the
+patches that contain the initial distribution of the species. In our
+case, this is only the patch with ID <em>30</em>.</p>
 <pre class="r"><code>patch30 &lt;- raster(paste0(dirpath, &quot;Inputs/patch30.txt&quot;))
 
 # Look at initial patch:
 plot(patch30)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>We are ready to set up the landscape parameter object with these maps, their respective resolutions, and the demographic density dependence for all land cover types. In contrast to tutorial 1, we will use a stage-structured population model here (defined below), so that the values in <code>K_or_DensDep</code> will be used as the parameter <em>1/b</em> in the population dynamics (see <code>?StageStructure</code>), describing the strength density dependence (in fecundity, development and survival).</p>
-<p>We choose to define only ‘semi-natural broad-leaved woodland’ (code 1) as suitable for our species.</p>
+<p>We are ready to set up the landscape parameter object with these
+maps, their respective resolutions, and the demographic density
+dependence for all land cover types. In contrast to tutorial 1, we will
+use a stage-structured population model here (defined below), so that
+the values in <code>K_or_DensDep</code> will be used as the parameter
+<em>1/b</em> in the population dynamics (see
+<code>?StageStructure</code>), describing the strength density
+dependence (in fecundity, development and survival).</p>
+<p>We choose to define only ‘semi-natural broad-leaved woodland’ (code
+1) as suitable for our species.</p>
 <pre class="r"><code>land &lt;- ImportedLandscape(LandscapeFile = &quot;landscape_10m_batch.txt&quot;,
                           PatchFile = &quot;woodland_1ha_patchIDs.txt&quot;, 
                           Resolution = 10,
@@ -531,18 +565,32 @@ plot(patch30)</code></pre>
                           SpDistResolution = 10)</code></pre>
 </div>
 </div>
-<div id="scenario-a-sexual-model-with-mate-finding" class="section level1">
-<h1><span class="header-section-number">2</span> Scenario a: sexual model with mate finding</h1>
-<div id="demographic-and-dispersal-parameters" class="section level2">
-<h2><span class="header-section-number">2.1</span> Demographic and dispersal parameters</h2>
-<p>We will simulate a sexual species with simple, two-staged structured population dynamics. The parameters are chosen to be representative of species having moderately high fecundity, high juvenile mortality and low adult mortality. This is encoded in the following transition matrix</p>
+<div id="scenario-a-sexual-model-with-mate-finding"
+class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Scenario a: sexual
+model with mate finding</h1>
+<div id="demographic-and-dispersal-parameters" class="section level2"
+number="2.1">
+<h2><span class="header-section-number">2.1</span> Demographic and
+dispersal parameters</h2>
+<p>We will simulate a sexual species with simple, two-staged structured
+population dynamics. The parameters are chosen to be representative of
+species having moderately high fecundity, high juvenile mortality and
+low adult mortality. This is encoded in the following transition
+matrix</p>
 <pre class="r"><code>(trans_mat &lt;- matrix(c(0, 1, 0, 0, 0.1, 0.4, 5, 0, 0.8), nrow = 3, byrow = F))</code></pre>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    0  0.0  5.0
 ## [2,]    1  0.1  0.0
 ## [3,]    0  0.4  0.8</code></pre>
-<p>The first row and column describe the juvenile stage, the others the two adult stages. Juveniles will develop to the first adult stage at the end of their first year with a probability of <em>1.0</em>, which allows for juvenile dispersal before any mortality happens.</p>
-<p>In order to add a stage-structure to our population dynamics, we use the <code>StageStructure()</code> function within the demography module. The reproduction type <em>1</em> denotes a simple sexual model, i.e. mating is not explicitly modelled.</p>
+<p>The first row and column describe the juvenile stage, the others the
+two adult stages. Juveniles will develop to the first adult stage at the
+end of their first year with a probability of <em>1.0</em>, which allows
+for juvenile dispersal before any mortality happens.</p>
+<p>In order to add a stage-structure to our population dynamics, we use
+the <code>StageStructure()</code> function within the demography module.
+The reproduction type <em>1</em> denotes a simple sexual model,
+i.e. mating is not explicitly modelled.</p>
 <pre class="r"><code>stg &lt;- StageStructure(Stages=3,           # 1 juvenile + 2 adult stages
                       TransMatrix=trans_mat, 
                       MaxAge=1000, 
@@ -550,22 +598,52 @@ plot(patch30)</code></pre>
                       FecDensDep=T)
 demo &lt;- Demography(StageStruct = stg,
                    ReproductionType = 1)  # simple sexual model</code></pre>
-<p>After reproduction, we allow only juveniles to disperse, and define a density-dependent emigration probability. To do so, we enable the options <code>DensDep=T</code> and <code>StageDep=T</code>, and in the matrix <code>EmigProb</code> we set the parameters D<sub>0</sub> = <em>0.5</em>, α = <em>10.0</em> and β = <em>1.0</em> for juveniles and to zero for all adult stages.</p>
-<p>To account for functional connectivity, we use a mechanistic movement model which enables individuals to interact with the landscape and determine their path according to what they can perceive in the landscape. Therefore we will simulate movements with a stochastic movement simulator (<code>SMS()</code>) where individuals move stepwise (each step goes from one cell to a neighbouring cell) and the direction chosen at each step is determined by the land cover costs (specified for each land type), the species’ perceptual range (<code>PR</code>) and directional persistence (<code>DP</code>). We set these parameters so that individuals have a perceptual range of <em>50m</em>, use the arithmetic mean method (the default) for calculating effective cost (which tends to emphasise the avoidance of high-cost landscape features), and tend to follow highly correlated paths within the landscape. We also set a constant per-step mortality probability (<code>StepMort</code>).</p>
-<p>Once arrived in a new patch, an individual decides to settle or not based on certain settlement rules. Finding suitable habitat is a necessary condition in all cases. Additionally, we set mate availability as requirement, i.e. there has to be at least one individual of the opposite sex present in the patch to be considered suitable for settlement.</p>
+<p>After reproduction, we allow only juveniles to disperse, and define a
+density-dependent emigration probability. To do so, we enable the
+options <code>DensDep=T</code> and <code>StageDep=T</code>, and in the
+matrix <code>EmigProb</code> we set the parameters D<sub>0</sub> =
+<em>0.5</em>, α = <em>10.0</em> and β = <em>1.0</em> for juveniles and
+to zero for all adult stages.</p>
+<p>To account for functional connectivity, we use a mechanistic movement
+model which enables individuals to interact with the landscape and
+determine their path according to what they can perceive in the
+landscape. Therefore we will simulate movements with a stochastic
+movement simulator (<code>SMS()</code>) where individuals move stepwise
+(each step goes from one cell to a neighbouring cell) and the direction
+chosen at each step is determined by the land cover costs (specified for
+each land type), the species’ perceptual range (<code>PR</code>) and
+directional persistence (<code>DP</code>). We set these parameters so
+that individuals have a perceptual range of <em>50m</em>, use the
+arithmetic mean method (the default) for calculating effective cost
+(which tends to emphasise the avoidance of high-cost landscape
+features), and tend to follow highly correlated paths within the
+landscape. We also set a constant per-step mortality probability
+(<code>StepMort</code>).</p>
+<p>Once arrived in a new patch, an individual decides to settle or not
+based on certain settlement rules. Finding suitable habitat is a
+necessary condition in all cases. Additionally, we set mate availability
+as requirement, i.e. there has to be at least one individual of the
+opposite sex present in the patch to be considered suitable for
+settlement.</p>
 <pre class="r"><code>disp &lt;-  Dispersal(Emigration = Emigration(DensDep=T, StageDep=T, 
                                            EmigProb = cbind(0:2,c(0.5,0,0),c(10.0,0,0),c(1.0,0,0)) ), 
                    Transfer = SMS(PR=5, DP=10, Costs = c(1,1,3,5,10,20,50), StepMort = 0.01), 
                    Settlement = Settlement(FindMate = T) )</code></pre>
-<p>We can visualise the defined processes by plotting some of the rates and probabilities that we have parameterised:</p>
+<p>We can visualise the defined processes by plotting some of the rates
+and probabilities that we have parameterised:</p>
 <pre class="r"><code>par(mfrow=c(1,2))
 plotProbs(demo@StageStruct)
 plotProbs(disp@Emigration)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
-<div id="initialisation-simulation" class="section level2">
-<h2><span class="header-section-number">2.2</span> Initialisation &amp; simulation</h2>
-<p>We choose to initialise our simulation in all initial patches (specified in initial distribution map; in our case only patch #<em>30</em>) at a density of <em>10</em> individuals per hectare, with an equal number of individuals in stages 1 and 2 at their respective minimum age.</p>
+<div id="initialisation-simulation" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Initialisation &amp;
+simulation</h2>
+<p>We choose to initialise our simulation in all initial patches
+(specified in initial distribution map; in our case only patch
+#<em>30</em>) at a density of <em>10</em> individuals per hectare, with
+an equal number of individuals in stages 1 and 2 at their respective
+minimum age.</p>
 <pre class="r"><code># Population is initialised in Patch 30:
 init &lt;- Initialise(InitType = 1,       # from loaded species distribution map
                    SpType = 0,         # all suitable cells
@@ -573,26 +651,36 @@ init &lt;- Initialise(InitType = 1,       # from loaded species distribution map
                    IndsHaCell = 10,
                    PropStages = c(0,0.5,0.5),
                    InitAge = 0)</code></pre>
-<p>We set the simulation time to <em>100</em> years and <em>20</em> replicates, and set the output types to write the files for population, occupancy and range data every year.</p>
+<p>We set the simulation time to <em>100</em> years and <em>20</em>
+replicates, and set the output types to write the files for population,
+occupancy and range data every year.</p>
 <pre class="r"><code>sim &lt;- Simulation(Simulation = 0, 
                   Replicates = 20, 
                   Years = 100,
                   OutIntPop = 1,
                   OutIntOcc = 1,
                   OutIntRange = 1)</code></pre>
-<p>As before, we need to stitch all modules together to a parameter master. Within <code>RSsim()</code>, we can also set a seed for the random number generator to make our results reproducible:</p>
+<p>As before, we need to stitch all modules together to a parameter
+master. Within <code>RSsim()</code>, we can also set a seed for the
+random number generator to make our results reproducible:</p>
 <pre class="r"><code>s &lt;- RSsim(batchnum = 3, land = land, demog = demo, dispersal = disp, simul = sim, init = init, seed = 324135)</code></pre>
 <p>Run the simulation:</p>
 <pre class="r"><code>RunRS(s, dirpath)</code></pre>
 </div>
-<div id="analyse-output" class="section level2">
+<div id="analyse-output" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Analyse output</h2>
-<p>To analyse the simulation output, we first plot the meta-population results. Note here that - in contrast to the cell-based model from exercise 1 - the plotted occupancy refers to occupied patches rather than cells.</p>
+<p>To analyse the simulation output, we first plot the meta-population
+results. Note here that - in contrast to the cell-based model from
+exercise 1 - the plotted occupancy refers to occupied patches rather
+than cells.</p>
 <pre class="r"><code>par(mfrow=c(1,2))
 plotAbundance(s, dirpath)
 plotOccupancy(s, dirpath)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p>In order to create occupancy maps, we first plot the landscape with the suitable patches in green and the initial patch in red. This color scheme was also used in Fig. 3a of <span class="citation">Bocedi et al. (2014)</span>.</p>
+<p>In order to create occupancy maps, we first plot the landscape with
+the suitable patches in green and the initial patch in red. This color
+scheme was also used in Fig. 3a of <span class="citation">Bocedi et al.
+(2014)</span>.</p>
 <pre class="r"><code># We have initiated the population in the patch with ID=30. We highlight this in the map.
 values(patch30)[values(patch30)&lt;1] &lt;- NA
 values(patch)[values(patch)&lt;1] &lt;- NA
@@ -607,7 +695,14 @@ bg &lt;- function(main=NULL){
     levelplot(landsc, margin=F, scales=list(draw=FALSE),at=seq(.5,7.5,by=1), colorkey=F,
                 col.regions = rev(brewer.pal(n = 7, name = &quot;Greys&quot;) ), main=main)
 }</code></pre>
-<p>To reproduce Fig. 3b of <span class="citation">Bocedi et al. (2014)</span>, we map the mean occupancy probability for each patch in year <em>100</em> (left panel in the paper) as well as the mean time to colonisation (right panel), both calculated over the <em>20</em> replicates. We can use the built-in function <code>ColonisationStats()</code> for this. It calculates the mean occupancy probability of given years as well as the time to colonisation for all replicates:</p>
+<p>To reproduce Fig. 3b of <span class="citation">Bocedi et al.
+(2014)</span>, we map the mean occupancy probability for each patch in
+year <em>100</em> (left panel in the paper) as well as the mean time to
+colonisation (right panel), both calculated over the <em>20</em>
+replicates. We can use the built-in function
+<code>ColonisationStats()</code> for this. It calculates the mean
+occupancy probability of given years as well as the time to colonisation
+for all replicates:</p>
 <pre class="r"><code>col_stats_a &lt;- ColonisationStats(s, dirpath, years = 100, maps = T)
 
 # mean occupancy probability in year 100
@@ -635,7 +730,11 @@ head(col_stats_a$col_time)</code></pre>
 ## 4     50     65     86     NA     NA     54     NA     NA     NA
 ## 5     37     51     54     26     47     33     77     36     41
 ## 6     20     35     36      9     30     12     26      3     21</code></pre>
-<p>For mapping the results, we can use the optional raster output: If enabled, the function <code>ColonisationStats()</code> returns a raster stack with the mean occupancy probabilities of the given years as well as a raster with the mean time to colonisation over all replicates. We plot these maps on top of our landscape:</p>
+<p>For mapping the results, we can use the optional raster output: If
+enabled, the function <code>ColonisationStats()</code> returns a raster
+stack with the mean occupancy probabilities of the given years as well
+as a raster with the mean time to colonisation over all replicates. We
+plot these maps on top of our landscape:</p>
 <pre class="r"><code># map occupancy probability
 mycol_occprob &lt;- colorRampPalette(c(&#39;blue&#39;,&#39;orangered&#39;,&#39;gold&#39;))
 levelplot(col_stats_a$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))</code></pre>
@@ -663,9 +762,17 @@ grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-4.png" width="672" /></p>
 </div>
 </div>
-<div id="scenario-b-females-settle-independent-of-males" class="section level1">
-<h1><span class="header-section-number">3</span> Scenario b: females settle independent of males</h1>
-<p>This experiment was designed to provide an example of how the dispersal behaviour of the species and the specification of settlement rules can change the estimated connectivity of a habitat network. We will relax the mating requirement a little by making it sex-dependent and only setting it for males. This means that female dispersers will settle in suitable patches regardless of males, while males settle only when finding a female.</p>
+<div id="scenario-b-females-settle-independent-of-males"
+class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Scenario b: females
+settle independent of males</h1>
+<p>This experiment was designed to provide an example of how the
+dispersal behaviour of the species and the specification of settlement
+rules can change the estimated connectivity of a habitat network. We
+will relax the mating requirement a little by making it sex-dependent
+and only setting it for males. This means that female dispersers will
+settle in suitable patches regardless of males, while males settle only
+when finding a female.</p>
 <pre class="r"><code># Change Settlement rules
 disp_b &lt;-  Dispersal(Emigration = Emigration(DensDep=T, StageDep=T, 
                                            EmigProb = cbind(0:2,c(0.5,0,0),c(10.0,0,0),c(1.0,0,0)) ), 
@@ -696,12 +803,32 @@ grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
 bg() + levelplot(col_stats_b$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
 grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
-<p>From both the visualisation and the results, we see that relaxing the mate-finding rules substantially increased the number of occupied patches, their probability of occupancy and the mean time to colonisation. This results in higher functional connectivity of the woodland network over <em>100</em> years.</p>
+<p>From both the visualisation and the results, we see that relaxing the
+mate-finding rules substantially increased the number of occupied
+patches, their probability of occupancy and the mean time to
+colonisation. This results in higher functional connectivity of the
+woodland network over <em>100</em> years.</p>
 </div>
-<div id="scenario-c-asexual-female-only-model" class="section level1">
-<h1><span class="header-section-number">4</span> Scenario c: asexual / female-only model</h1>
-<p>Here we change the demography module to represent a female-only model. This change also has important consequences for the dispersal process and potential implications for patterns of colonisation across a landscape. Female-only models assume that males are not limiting, and that the population dynamics are driven only by females. It also means that sexes are not modelled explicitly and it is not possible to account for behaviours like mate-finding in the settlement decisions; females will settle in suitable habitat patches and then will automatically be able to attempt reproduction.</p>
-<p>The stage-structure of the model remains the same apart from accounting for the female-only case. In particular, in female-only models, we ignore the male part of the population and offspring. Therefore, we set the fecundity of stage 3 to <em>2.5</em> instead of <em>5.0</em> and the demographic density dependence <em>1/b</em> (<code>K_or_DensDep</code>) to <em>5</em> instead of <em>10</em>. Sex-dependent settlement options are no longer available.</p>
+<div id="scenario-c-asexual-female-only-model" class="section level1"
+number="4">
+<h1><span class="header-section-number">4</span> Scenario c: asexual /
+female-only model</h1>
+<p>Here we change the demography module to represent a female-only
+model. This change also has important consequences for the dispersal
+process and potential implications for patterns of colonisation across a
+landscape. Female-only models assume that males are not limiting, and
+that the population dynamics are driven only by females. It also means
+that sexes are not modelled explicitly and it is not possible to account
+for behaviours like mate-finding in the settlement decisions; females
+will settle in suitable habitat patches and then will automatically be
+able to attempt reproduction.</p>
+<p>The stage-structure of the model remains the same apart from
+accounting for the female-only case. In particular, in female-only
+models, we ignore the male part of the population and offspring.
+Therefore, we set the fecundity of stage 3 to <em>2.5</em> instead of
+<em>5.0</em> and the demographic density dependence <em>1/b</em>
+(<code>K_or_DensDep</code>) to <em>5</em> instead of <em>10</em>.
+Sex-dependent settlement options are no longer available.</p>
 <pre class="r"><code># Change demographic density dependence to half its value of the sexual model
 land_c &lt;- ImportedLandscape(LandscapeFile = &quot;landscape_10m_batch.txt&quot;,
                           PatchFile = &quot;woodland_1ha_patchIDs.txt&quot;, 
@@ -751,11 +878,23 @@ grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
 bg() + levelplot(col_stats_c$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
 grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-25-2.png" width="672" /></p>
-<p>As we see from the results, the asexual model without mate finding as settlement rule leads to a drastic increase in the overall occupancy of the habitat network after <em>100</em> years.</p>
+<p>As we see from the results, the asexual model without mate finding as
+settlement rule leads to a drastic increase in the overall occupancy of
+the habitat network after <em>100</em> years.</p>
 </div>
-<div id="scenario-d-habitat-specific-per-step-mortality" class="section level1">
-<h1><span class="header-section-number">5</span> Scenario d: habitat-specific per-step mortality</h1>
-<p>In this last simulation, we will demonstrate how <code>RangeshiftR</code> can incorporate more complexity in the way that movement is modelled. We relax the unrealistic assumption that the per-step mortality is constant across all land-cover types, and assign different mortality values to each habitat. To set up this simulation, we use the parameters from scenario a) and only add a modified transfer module. Here, we define <code>StepMort</code> as habitat-dependent by providing a vector with mortality probabilities for each land cover type.</p>
+<div id="scenario-d-habitat-specific-per-step-mortality"
+class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Scenario d:
+habitat-specific per-step mortality</h1>
+<p>In this last simulation, we will demonstrate how
+<code>RangeshiftR</code> can incorporate more complexity in the way that
+movement is modelled. We relax the unrealistic assumption that the
+per-step mortality is constant across all land-cover types, and assign
+different mortality values to each habitat. To set up this simulation,
+we use the parameters from scenario a) and only add a modified transfer
+module. Here, we define <code>StepMort</code> as habitat-dependent by
+providing a vector with mortality probabilities for each land cover
+type.</p>
 <pre class="r"><code># Update Transfer sub-module within the dispersal module
 disp_d &lt;- disp + SMS(PR=5, DP=10, Costs = c(1,1,3,5,10,20,50), 
                      StepMort = c(0,0,0,0.01,0.01,0.02,0.05)
@@ -785,10 +924,14 @@ grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
 bg() + levelplot(col_stats_d$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
 grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-28-2.png" width="672" /></p>
-<p>We see that such small changes in the per-step mortality, in interaction with the landscape structure, make a big difference in the results, in this case decreasing the functional connectivity of the network.</p>
+<p>We see that such small changes in the per-step mortality, in
+interaction with the landscape structure, make a big difference in the
+results, in this case decreasing the functional connectivity of the
+network.</p>
 </div>
-<div id="scenario-comparison" class="section level1">
-<h1><span class="header-section-number">6</span> Scenario comparison</h1>
+<div id="scenario-comparison" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Scenario
+comparison</h1>
 <p>Let’s plot all maps next to each other.</p>
 <pre class="r"><code># Plot occupancy probabilities for all scenarios
 occ_a &lt;- bg(main=&quot;Scenario A&quot;) + levelplot(col_stats_a$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
@@ -809,15 +952,29 @@ grid.arrange(col_a,col_b,col_c,col_d, ncol=2)
 grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11)), space=&#39;right&#39;,pos=0.5))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-29-2.png" width="672" /></p>
 </div>
-<div id="dispersal-heatmap" class="section level1">
+<div id="dispersal-heatmap" class="section level1" number="7">
 <h1><span class="header-section-number">7</span> Dispersal heatmap</h1>
-<p>As an additional tool to analyse the connectivity of a landscape and to assess how the matrix is used by dispersing individuals, the option to output a dispersal heatmap is provided (available only in case of SMS as the transfer method). In this section, we re-run scenario c) as an example to show how to create and plot such a heatmap.</p>
-<p>We use an alternative option for the initialisation of the population. Instead of providing a species distribution map, a text file can be given that specifies a list of initial patches (or cells, in a cell-based model) and initial local populations. This text file must contain a specific list of columns that also depend on your model settings (please see <code>?Initialise</code>). For sexual models, you need to include the column “Sex”; for stage-structured models, you need to include the columns “Age” and “Stage”. For the correct format of the initial individuals file, please refer to the documentation and the example file given with this tutorial.</p>
+<p>As an additional tool to analyse the connectivity of a landscape and
+to assess how the matrix is used by dispersing individuals, the option
+to output a dispersal heatmap is provided (available only in case of SMS
+as the transfer method). In this section, we re-run scenario c) as an
+example to show how to create and plot such a heatmap.</p>
+<p>We use an alternative option for the initialisation of the
+population. Instead of providing a species distribution map, a text file
+can be given that specifies a list of initial patches (or cells, in a
+cell-based model) and initial local populations. This text file must
+contain a specific list of columns that also depend on your model
+settings (please see <code>?Initialise</code>). For sexual models, you
+need to include the column “Sex”; for stage-structured models, you need
+to include the columns “Age” and “Stage”. For the correct format of the
+initial individuals file, please refer to the documentation and the
+example file given with this tutorial.</p>
 <p>The corresponding initialisation module is specified like this:</p>
 <pre class="r"><code># alternative initialisation in patch 30:
 init_alt &lt;- Initialise(InitType = 2, # = from initial individuals list file
                        InitIndsFile = &quot;initial_inds_c.txt&quot;)</code></pre>
-<p>The output of the SMS heatmaps is enabled in the simulation module using the parameter <code>SMSHeatMap</code>.</p>
+<p>The output of the SMS heatmaps is enabled in the simulation module
+using the parameter <code>SMSHeatMap</code>.</p>
 <pre class="r"><code># update simulation module
 sim_c2 &lt;- Simulation(SMSHeatMap = T,
                      Simulation = 4,
@@ -825,17 +982,32 @@ sim_c2 &lt;- Simulation(SMSHeatMap = T,
                      Years = 100,
                      OutIntPop = 0,
                      OutIntRange = 0)</code></pre>
-<p>With these changes and all other modules from scenario c) as defined above, we create the modified parameter master and run the simulation.</p>
+<p>With these changes and all other modules from scenario c) as defined
+above, we create the modified parameter master and run the
+simulation.</p>
 <pre class="r"><code># parameter master
 s_c2 &lt;- s_c+ sim_c2</code></pre>
 <pre class="r"><code>RunRS(s_c2, dirpath)</code></pre>
-<p>For each replicate, we now obtain an SMS heatmap that is saved in the folder ‘Output_Maps’ as an ASCII raster file. The heatmap values represent the number of visits by a dispersing individual to each non-habitat cell. That is, during the dispersal phase each step that was taken by any individual increases the counter of the cell in which this step ended. Thus, the resulting dispersal heatmap can be used to assess those parts of the landscape matrix that are frequently used for dispersal, whether it was successful or not.</p>
+<p>For each replicate, we now obtain an SMS heatmap that is saved in the
+folder ‘Output_Maps’ as an ASCII raster file. The heatmap values
+represent the number of visits by a dispersing individual to each
+non-habitat cell. That is, during the dispersal phase each step that was
+taken by any individual increases the counter of the cell in which this
+step ended. Thus, the resulting dispersal heatmap can be used to assess
+those parts of the landscape matrix that are frequently used for
+dispersal, whether it was successful or not.</p>
 <p>Let’s first look at one replicate only and plot it:</p>
 <pre class="r"><code>levelplot(raster(paste0(dirpath,&quot;Output_Maps/Batch3_Sim4_Land1_Rep1_Visits.txt&quot;)),
           par.settings=BTCTheme(), colorkey=T, margin=F, scales=list(draw=FALSE))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
-<p>The matrix around the initial patch and the first colonised patches appears thoroughly explored. Further away from the initial patch, the number of visits decreases and parts of individual dispersal trajectories are discernible.</p>
-<p>Because movement is stochastic, the number of visits per cell and the colonisation of empty patches are different for each replicate. In order to take into account this variance, we average over all replicates and plot the resulting heatmap:</p>
+<p>The matrix around the initial patch and the first colonised patches
+appears thoroughly explored. Further away from the initial patch, the
+number of visits decreases and parts of individual dispersal
+trajectories are discernible.</p>
+<p>Because movement is stochastic, the number of visits per cell and the
+colonisation of empty patches are different for each replicate. In order
+to take into account this variance, we average over all replicates and
+plot the resulting heatmap:</p>
 <pre class="r"><code># create a raster stack with all replicates as layers
 heatmaps_stack &lt;- stack()
 for(rep in 0:(s_c2@simul@Replicates-1)){
@@ -847,7 +1019,8 @@ for(rep in 0:(s_c2@simul@Replicates-1)){
 }
 # average over all layers
 heatmaps_mean &lt;- stackApply(heatmaps_stack, indices=1, fun=mean)</code></pre>
-<p>We create a non-linear color scale, in which the color changes more rapidly for small numbers of visits than higher ones:</p>
+<p>We create a non-linear color scale, in which the color changes more
+rapidly for small numbers of visits than higher ones:</p>
 <pre class="r"><code># create exponential color scale
 res &lt;- 20
 exp &lt;- 3
@@ -858,18 +1031,30 @@ levelplot(heatmaps_mean,
           col.regions=hcl.colors(res, &quot;Inferno&quot;, rev = T),
           at = my.at, margin=F, scales=list(draw=FALSE))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
-<p>Note that individuals cannot cross the landscape boundaries, so that their paths tend to follow and sometimes accumulate along the borders. To avoid simulation artifacts resulting from this behaviour, there should be sufficient space between relevant habitat patches and the landscape boundaries.</p>
-<p>Last, let’s overlay the averaged heatmap on the landscape background. Here, you can nicely see that the movement in the landscape depends a lot on the landscape context and the costs associated to each landcover type.</p>
+<p>Note that individuals cannot cross the landscape boundaries, so that
+their paths tend to follow and sometimes accumulate along the borders.
+To avoid simulation artifacts resulting from this behaviour, there
+should be sufficient space between relevant habitat patches and the
+landscape boundaries.</p>
+<p>Last, let’s overlay the averaged heatmap on the landscape background.
+Here, you can nicely see that the movement in the landscape depends a
+lot on the landscape context and the costs associated to each landcover
+type.</p>
 <pre class="r"><code>bg() + levelplot(heatmaps_mean, 
                  col.regions=hcl.colors(res, &quot;Inferno&quot;, rev = T, alpha=.8),
                  at=my.at, margin=F, scales=list(draw=FALSE))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 </div>
 <div id="references" class="section level1 unnumbered">
-<h1>References</h1>
-<div id="refs" class="references">
-<div id="ref-Bocedi2014">
-<p>Bocedi, G., S.C.F. Palmer, G. Pe’er, R.K. Heikkinen, Y.G. Matsinos, K. Watts, and J.M.J. Travis. 2014. “RangeShifter: A Platform for Modelling Spatial Eco-Evolutionary Dynamics and Species’ Responses to Environmental Changes.” <em>Methods in Ecology and Evolution</em> 5 (4): 388–96. <a href="https://doi.org/10.1111/2041-210X.12162">https://doi.org/10.1111/2041-210X.12162</a>.</p>
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bocedi2014" class="csl-entry">
+Bocedi, G., S. C. F. Palmer, G. Pe’er, R. K. Heikkinen, Y. G. Matsinos,
+K. Watts, and J. M. J. Travis. 2014. <span>“RangeShifter: A Platform for
+Modelling Spatial Eco-Evolutionary Dynamics and Species’ Responses to
+Environmental Changes.”</span> <em>Methods in Ecology and Evolution</em>
+5 (4): 388–96. <a
+href="https://doi.org/10.1111/2041-210X.12162">https://doi.org/10.1111/2041-210X.12162</a>.
 </div>
 </div>
 </div>
@@ -913,7 +1098,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -922,6 +1107,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')

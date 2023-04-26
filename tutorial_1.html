@@ -13,27 +13,41 @@
 
 <title>Tutorial 1: Range expansion, long-distance dispersal and environmental stochasticity</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -46,30 +60,28 @@ if (window.hljs) {
 
 
 
+
+
 <style type="text/css">
-h1 {
-  font-size: 34px;
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
 }
-h1.title {
-  font-size: 38px;
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
 }
-h2 {
-  font-size: 30px;
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
 }
-h3 {
-  font-size: 24px;
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
 }
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
+div.csl-indent {
+  margin-left: 2em;
 }
 </style>
 
@@ -81,10 +93,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -101,40 +109,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -162,7 +146,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -174,7 +158,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -184,11 +168,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -200,13 +201,12 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -214,16 +214,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -326,7 +319,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -340,7 +333,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -356,7 +349,7 @@ div.tocify {
   <a href="installing.html">Installing RangeShiftR</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     RangeShiftR tutorials
      
     <span class="caret"></span>
@@ -413,22 +406,41 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
-<h1 class="title toc-ignore">Tutorial 1: Range expansion, long-distance dispersal and environmental stochasticity</h1>
+<h1 class="title toc-ignore">Tutorial 1: Range expansion, long-distance
+dispersal and environmental stochasticity</h1>
 
 </div>
 
 
-<p>This is an example of how <code>RangeShiftR</code> can be used at national scale for modelling species range dynamics <span class="citation">(Bocedi et al. 2014)</span>. We model a hypothetical grassland species distributed initially in the South-West of England, and assume that from the start of the simulation the species is free to expand its range. This could be the case for alien species that naturally start to expand after having gone through an establishment phase, an alien or native species that have been released from natural enemies or competitors, or a species for which a previously prohibiting climate has become suitable.</p>
-<p>We assume that we have data about the current species distribution and use it as a starting point. The objective is to investigate how different assumptions about the dispersal ability of the species and about temporal environmental stochasticity can affect the modelled range expansion. We start with the basic setting of a single dispersal kernel and no environmental stochasticity.</p>
-<div id="simulating-range-expansions" class="section level1">
-<h1><span class="header-section-number">1</span> Simulating range expansions</h1>
-<div id="create-an-rs-directory" class="section level2">
-<h2><span class="header-section-number">1.1</span> Create an RS directory</h2>
-<p>The directory in which we run <code>RangeShiftR</code> needs to have a certain folder structure. It should contain three sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’. We can create them from R:</p>
+<p>This is an example of how <code>RangeShiftR</code> can be used at
+national scale for modelling species range dynamics <span
+class="citation">(Bocedi et al. 2014)</span>. We model a hypothetical
+grassland species distributed initially in the South-West of England,
+and assume that from the start of the simulation the species is free to
+expand its range. This could be the case for alien species that
+naturally start to expand after having gone through an establishment
+phase, an alien or native species that have been released from natural
+enemies or competitors, or a species for which a previously prohibiting
+climate has become suitable.</p>
+<p>We assume that we have data about the current species distribution
+and use it as a starting point. The objective is to investigate how
+different assumptions about the dispersal ability of the species and
+about temporal environmental stochasticity can affect the modelled range
+expansion. We start with the basic setting of a single dispersal kernel
+and no environmental stochasticity.</p>
+<div id="simulating-range-expansions" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Simulating range
+expansions</h1>
+<div id="create-an-rs-directory" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Create an RS
+directory</h2>
+<p>The directory in which we run <code>RangeShiftR</code> needs to have
+a certain folder structure. It should contain three sub-folders named
+‘Inputs’, ‘Outputs’ and ‘Output_Maps’. We can create them from R:</p>
 <pre class="r"><code>library(RangeShiftR)
 library(raster)
 library(RColorBrewer)
@@ -444,21 +456,34 @@ dirpath = &quot;Tutorial_01/&quot;
 dir.create(paste0(dirpath,&quot;Inputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Outputs&quot;), showWarnings = TRUE)
 dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code></pre>
-<p>Copy the input files provided for exercise 1 into the ‘Inputs’ folder. The files can be downloaded <a href="files/Tutorial1_Inputs.zip">here</a>.</p>
+<p>Copy the input files provided for exercise 1 into the ‘Inputs’
+folder. The files can be downloaded <a
+href="files/Tutorial1_Inputs.zip">here</a>.</p>
 </div>
-<div id="landscape-parameters" class="section level2">
-<h2><span class="header-section-number">1.2</span> Landscape parameters</h2>
-<p>We use a land-cover map of Great Britain at 1km resolution. Six dominant aggregated habitat types were derived from LandCover Map 2007 <span class="citation">(Morton et al. 2011)</span>. The map, <em>UKmap_1km.txt</em>, is an ASCII raster in the standard text format, where each cell holds the code of its dominant habitat type. The habitat codes have to be given as sequential integer numbers, starting from one:</p>
+<div id="landscape-parameters" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Landscape
+parameters</h2>
+<p>We use a land-cover map of Great Britain at 1km resolution. Six
+dominant aggregated habitat types were derived from LandCover Map 2007
+<span class="citation">(Morton et al. 2011)</span>. The map,
+<em>UKmap_1km.txt</em>, is an ASCII raster in the standard text format,
+where each cell holds the code of its dominant habitat type. The habitat
+codes have to be given as sequential integer numbers, starting from
+one:</p>
 <ul>
 <li>1 = woodland (broadleaved and conifer)</li>
 <li>2 = arable</li>
 <li>3 = improved grassland</li>
-<li>4 = semi-natural grassland (acid, neutral and calcareous grassland)</li>
+<li>4 = semi-natural grassland (acid, neutral and calcareous
+grassland)</li>
 <li>5 = heath and bog</li>
 <li>6 = other (urban, water &amp; coastal habitats)</li>
 </ul>
-<p>Furthermore, we are provided with a map that defines the (initial) species distribution, named <em>Species_Distribution_10km.txt</em>. It is given at a coarser resolution of 10km.</p>
-<p>Let’s plot the landscape map and overlay it with the initial species distribution:</p>
+<p>Furthermore, we are provided with a map that defines the (initial)
+species distribution, named <em>Species_Distribution_10km.txt</em>. It
+is given at a coarser resolution of 10km.</p>
+<p>Let’s plot the landscape map and overlay it with the initial species
+distribution:</p>
 <pre class="r"><code>UKmap &lt;- raster(paste0(dirpath, &quot;Inputs/UKmap_1km.txt&quot;))
 SpDist &lt;- raster(paste0(dirpath, &quot;Inputs/Species_Distribution_10km.txt&quot;))
 values(SpDist)[values(SpDist) &lt; 1] &lt;- NA
@@ -467,7 +492,9 @@ values(SpDist)[values(SpDist) &lt; 1] &lt;- NA
 plot(UKmap, col=brewer.pal(n = 6, name = &quot;Spectral&quot;), axes=F)
 plot(rasterToPolygons(SpDist, dissolve=F), add=T)</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>For prettier mapping with a legend specifying the different land cover categories and a custom colour palette, we need a little workaround:</p>
+<p>For prettier mapping with a legend specifying the different land
+cover categories and a custom colour palette, we need a little
+workaround:</p>
 <pre class="r"><code># plot land cover map and highlight cells with initial species distribution - option 2 with categorical legend:
 UKmap.f &lt;- as.factor(UKmap)
 # add the land cover classes to the raster attribute table (RAT)
@@ -479,7 +506,24 @@ custom.pal &lt;- c(&quot;#1A9850&quot;, &quot;#91CF60&quot;, &quot;#D9EF8B&quot;
 levelplot(UKmap.f, margin=F, scales=list(draw=FALSE), col.regions=custom.pal)  +
   layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>In order to use the habitat and distribution maps in <code>RangeShiftR</code>, we need to set up a landscape module. It takes the path to the map files along with some other parameters, like their resolutions (given in meters) and the number of habitats. Additionally, we have to specify the demographic density dependence for our target species in each habitat type, which is given in individuals per hectare and provided to the argument <code>K_or_DensDep</code>. Care should be taken, since this value is used differently in the population models for overlapping and non-overlapping generations. In this example, we use a simple model with non-overlapping generations (see below), so that the given values are used as limiting carrying capacities <em>K</em> of each habitat type. We assume that the species can reproduce only in semi-natural grassland, which has the code <em>4</em>. Therefore, we set the carrying capacity for this habitat equal to <em>5 inds/ha</em> and all others to <em>0</em>, by defining a vector named <em>carrycap</em> that contains these numbers in the order of increasing habitat codes and that we give to the argument <code>K_or_DensDep</code> of the imported landscape module:</p>
+<p>In order to use the habitat and distribution maps in
+<code>RangeShiftR</code>, we need to set up a landscape module. It takes
+the path to the map files along with some other parameters, like their
+resolutions (given in meters) and the number of habitats. Additionally,
+we have to specify the demographic density dependence for our target
+species in each habitat type, which is given in individuals per hectare
+and provided to the argument <code>K_or_DensDep</code>. Care should be
+taken, since this value is used differently in the population models for
+overlapping and non-overlapping generations. In this example, we use a
+simple model with non-overlapping generations (see below), so that the
+given values are used as limiting carrying capacities <em>K</em> of each
+habitat type. We assume that the species can reproduce only in
+semi-natural grassland, which has the code <em>4</em>. Therefore, we set
+the carrying capacity for this habitat equal to <em>5 inds/ha</em> and
+all others to <em>0</em>, by defining a vector named <em>carrycap</em>
+that contains these numbers in the order of increasing habitat codes and
+that we give to the argument <code>K_or_DensDep</code> of the imported
+landscape module:</p>
 <pre class="r"><code># carrying capacitíes and landscape parameter object
 carrycap &lt;- c(0, 0, 0, 5, 0, 0)
 land &lt;- ImportedLandscape(LandscapeFile = &quot;UKmap_1km.txt&quot;, 
@@ -489,11 +533,23 @@ land &lt;- ImportedLandscape(LandscapeFile = &quot;UKmap_1km.txt&quot;,
                           SpDistFile = &quot;Species_Distribution_10km.txt&quot;, 
                           SpDistResolution = 10000)</code></pre>
 </div>
-<div id="species-parameters" class="section level2">
-<h2><span class="header-section-number">1.3</span> Species parameters</h2>
-<p>Next, we specify the species parameters for the demography and dispersal modules. In this first example, we choose the simplest model options for both: the population dynamics are described by a female-only model with non-overlapping generations. This has one compulsory argument, the maximum growth rate <em>Rmax</em>, that we set to <em>1.5</em>.</p>
+<div id="species-parameters" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Species
+parameters</h2>
+<p>Next, we specify the species parameters for the demography and
+dispersal modules. In this first example, we choose the simplest model
+options for both: the population dynamics are described by a female-only
+model with non-overlapping generations. This has one compulsory
+argument, the maximum growth rate <em>Rmax</em>, that we set to
+<em>1.5</em>.</p>
 <pre class="r"><code>demo &lt;- Demography(Rmax = 1.5)</code></pre>
-<p>The dispersal module comprises three sub-modules representing the three phases of dispersal: Emigration, Transport and Settlement. We assume a constant emigration probability of <em>0.1</em>. The transfer phase is modelled with a dispersal kernel, whose mean distance is set to <em>2,000m</em>. For the Settlement sub-module, we use the default options, which assume that an individual will die if it arrives in an unsuitable cell and settle if it’s suitable.</p>
+<p>The dispersal module comprises three sub-modules representing the
+three phases of dispersal: Emigration, Transport and Settlement. We
+assume a constant emigration probability of <em>0.1</em>. The transfer
+phase is modelled with a dispersal kernel, whose mean distance is set to
+<em>2,000m</em>. For the Settlement sub-module, we use the default
+options, which assume that an individual will die if it arrives in an
+unsuitable cell and settle if it’s suitable.</p>
 <pre class="r"><code>disp &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1), 
                    Transfer = DispersalKernel(Distances = 2000), 
                    Settlement = Settlement() )
@@ -501,17 +557,29 @@ land &lt;- ImportedLandscape(LandscapeFile = &quot;UKmap_1km.txt&quot;,
 # alternative notation:
 # disp &lt;-  Dispersal() + Emigration(EmigProb = 0.1) + DispersalKernel(Distances = 2000) + Settlement()</code></pre>
 </div>
-<div id="initialisation-parameters" class="section level2">
-<h2><span class="header-section-number">1.4</span> Initialisation parameters</h2>
-<p>In order to control the initial distribution of individuals in the landscape at year <em>0</em>, we set initialisation rules. We want to initialise all habitat cells that are located inside the <em>10km</em> x <em>10km</em> presence cells indicated by the loaded species distribution map; and we want each of those cells to be initialised at its respective carrying capacity. These options are encoded in numeric arguments; for a list of possible settings see the documentation:</p>
+<div id="initialisation-parameters" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> Initialisation
+parameters</h2>
+<p>In order to control the initial distribution of individuals in the
+landscape at year <em>0</em>, we set initialisation rules. We want to
+initialise all habitat cells that are located inside the <em>10km</em> x
+<em>10km</em> presence cells indicated by the loaded species
+distribution map; and we want each of those cells to be initialised at
+its respective carrying capacity. These options are encoded in numeric
+arguments; for a list of possible settings see the documentation:</p>
 <pre class="r"><code>?Initialise
 init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species distribution map
                    SpType = 0,   # = all suitable cells within all distribution presence cells
                    InitDens = 0) # = at carrying capacity</code></pre>
 </div>
-<div id="simulation-parameters" class="section level2">
-<h2><span class="header-section-number">1.5</span> Simulation parameters</h2>
-<p>Lastly, we set some basic simulation parameters, i.e. the simulation number, number of replicates and number of years to be simulated. Furthermore, we specify what file output will be generated. In this example, we choose to output the population, occupancy and range data for every 5 years.</p>
+<div id="simulation-parameters" class="section level2" number="1.5">
+<h2><span class="header-section-number">1.5</span> Simulation
+parameters</h2>
+<p>Lastly, we set some basic simulation parameters, i.e. the simulation
+number, number of replicates and number of years to be simulated.
+Furthermore, we specify what file output will be generated. In this
+example, we choose to output the population, occupancy and range data
+for every 5 years.</p>
 <pre class="r"><code>sim_0 &lt;- Simulation(Simulation = 0, 
                     Replicates = 20, 
                     Years = 100,
@@ -519,14 +587,18 @@ init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species dis
                     OutIntOcc = 5,
                     OutIntRange = 5)</code></pre>
 </div>
-<div id="parameter-master" class="section level2">
+<div id="parameter-master" class="section level2" number="1.6">
 <h2><span class="header-section-number">1.6</span> Parameter master</h2>
-<p>All settings we have made so far are contained in their respective module objects. They have to be combined to a parameter master object, which validates all parameter settings and is needed to run the simulation.</p>
+<p>All settings we have made so far are contained in their respective
+module objects. They have to be combined to a parameter master object,
+which validates all parameter settings and is needed to run the
+simulation.</p>
 <pre class="r"><code>s &lt;- RSsim(land = land, demog = demo, dispersal = disp, simul = sim_0, init = init)
 
 # alternative notation:
 # s &lt;- RSsim() + land + demo + disp + sim_0 + init</code></pre>
-<p>Before we run the simulation, let’s get an overview of the settings we have made by simply typing:</p>
+<p>Before we run the simulation, let’s get an overview of the settings
+we have made by simply typing:</p>
 <pre class="r"><code>s</code></pre>
 <pre><code>##  Batch # 1 
 ## 
@@ -578,19 +650,27 @@ init &lt;- Initialise(InitType = 1, # = initialisation from a loaded species dis
 ##    InitType = 1 : Initialisation from loaded species distribution map
 ##                   all presence cells/patches.
 ##    InitDens = 0 : At K_or_DensDep</code></pre>
-<p>At any stage, you can check for parameter validity of any module or the master.</p>
+<p>At any stage, you can check for parameter validity of any module or
+the master.</p>
 <pre class="r"><code>validateRSparams(s)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
-<p>If it returns <code>TRUE</code>, the parameters are valid. Also, before actually running the simulation, the <code>RSsim()</code> function (see next section) will always check the validity of all settings and give error messages in case something doesn’t match up.</p>
+<p>If it returns <code>TRUE</code>, the parameters are valid. Also,
+before actually running the simulation, the <code>RSsim()</code>
+function (see next section) will always check the validity of all
+settings and give error messages in case something doesn’t match up.</p>
 </div>
-<div id="run-the-simulation" class="section level2">
-<h2><span class="header-section-number">1.7</span> Run the simulation</h2>
-<p>Once all parameters are set and a parameter master object has been defined, we can run the simulations in the specified RS directory.</p>
+<div id="run-the-simulation" class="section level2" number="1.7">
+<h2><span class="header-section-number">1.7</span> Run the
+simulation</h2>
+<p>Once all parameters are set and a parameter master object has been
+defined, we can run the simulations in the specified RS directory.</p>
 <pre class="r"><code>RunRS(s, dirpath)</code></pre>
 </div>
-<div id="plot-results" class="section level2">
+<div id="plot-results" class="section level2" number="1.8">
 <h2><span class="header-section-number">1.8</span> Plot results</h2>
-<p>For convenience and for compliance with the RangeShifter Windows GUI, the <code>RangeShiftR</code> package contains a few plotting functions to inspect the population time series of the replicate simulations.</p>
+<p>For convenience and for compliance with the RangeShifter Windows GUI,
+the <code>RangeShiftR</code> package contains a few plotting functions
+to inspect the population time series of the replicate simulations.</p>
 <pre class="r"><code># read &#39;range&#39; output into a data frame
 range_df &lt;- readRange(s, dirpath)
 
@@ -604,7 +684,10 @@ par(mfrow=c(1,2))
 plotAbundance(range_df, rep=F, sd=T)
 plotOccupancy(range_df, rep=F, sd=T)</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
-<p>The population output file contains the local abundances for all populated cells in the recorded years for all replicates. We can convert this data frame into raster maps and plot the spatial abundance distribution.</p>
+<p>The population output file contains the local abundances for all
+populated cells in the recorded years for all replicates. We can convert
+this data frame into raster maps and plot the spatial abundance
+distribution.</p>
 <pre class="r"><code># read population output file into a data frame
 pop_df &lt;- readPop(s, dirpath)
 
@@ -626,7 +709,12 @@ levelplot(r_years_rep0[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), 
           col.regions=c(&#39;grey&#39;,rev(inferno(20)))) +
     layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p>We can make similar maps showing the average abundance over all replicate runs. For convenience, we define a small function for this, which we can re-use later. When calling this function, we can choose whether all replicates should be averaged (the default) or whether a specific replicate should be extracted. Also, we can optionally overlay a mask, e.g. the UK map.</p>
+<p>We can make similar maps showing the average abundance over all
+replicate runs. For convenience, we define a small function for this,
+which we can re-use later. When calling this function, we can choose
+whether all replicates should be averaged (the default) or whether a
+specific replicate should be extracted. Also, we can optionally overlay
+a mask, e.g. the UK map.</p>
 <pre class="r"><code>stack_pop &lt;- function(pop_df, ext, rep=NULL, mask=NULL){
   # This function takes the population data frame output from RangeShiftR and turns it into a raster stack of abundance maps.
   # If the ID of the Replicate (&quot;rep&quot;) is not provided, it will return the mean abundance over all replicates.
@@ -681,36 +769,47 @@ levelplot(r_years[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FALSE), 
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
 </div>
 </div>
-<div id="change-simulations" class="section level1">
+<div id="change-simulations" class="section level1" number="2">
 <h1><span class="header-section-number">2</span> Change simulations</h1>
-<p>We can easily change certain aspects of the simulations by changing the various modules. Here, we explore the different simulations as shown in Fig. 2 of <span class="citation">Bocedi et al. (2014)</span>. Firstly, we add long-distance dispersal. Secondly, we add environmental stochasticity without and with temporal autocorrelation.</p>
-<div id="add-rare-long-distance-dispersal" class="section level2">
-<h2><span class="header-section-number">2.1</span> Add rare long-distance dispersal</h2>
-<p>To explore the effect of rare long-distance dispersal events on the range expansion, we only need to change the dispersal module. More specifically, we define a new transfer sub-module with the option <em>DoubleKernel</em> enabled, to use the double negative exponential kernel (Mixed kernel). This means that in addition to the standard dispersal kernel, an individual has a certain probability of dispersing with a second - a long-distance - dispersal kernel.</p>
+<p>We can easily change certain aspects of the simulations by changing
+the various modules. Here, we explore the different simulations as shown
+in Fig. 2 of <span class="citation">Bocedi et al. (2014)</span>.
+Firstly, we add long-distance dispersal. Secondly, we add environmental
+stochasticity without and with temporal autocorrelation.</p>
+<div id="add-rare-long-distance-dispersal" class="section level2"
+number="2.1">
+<h2><span class="header-section-number">2.1</span> Add rare
+long-distance dispersal</h2>
+<p>To explore the effect of rare long-distance dispersal events on the
+range expansion, we only need to change the dispersal module. More
+specifically, we define a new transfer sub-module with the option
+<em>DoubleKernel</em> enabled, to use the double negative exponential
+kernel (Mixed kernel). This means that in addition to the standard
+dispersal kernel, an individual has a certain probability of dispersing
+with a second - a long-distance - dispersal kernel.</p>
 <pre class="r"><code># in the dispersal kernel sub-module, the distance parameters are now given as
 # Distances = c(MeanDistance-I, MeanDistance-II, probability of dispersing with Kernel-I)
-trans_long &lt;- DispersalKernel(DoubleKernel = T, Distances = matrix(c(2000, 10000, 0.99), ncol = 3)) </code></pre>
-<pre><code>## Warning in if (class(object@Distances) != &quot;matrix&quot;) {: Bedingung hat Länge &gt; 1
-## und nur das erste Element wird benutzt</code></pre>
-<pre class="r"><code>disp_long &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1),
+trans_long &lt;- DispersalKernel(DoubleKernel = T, Distances = matrix(c(2000, 10000, 0.99), ncol = 3)) 
+
+disp_long &lt;-  Dispersal(Emigration = Emigration(EmigProb = 0.1),
                         Transfer = trans_long,
                         Settlement = Settlement() )</code></pre>
-<pre><code>## Warning in if (class(object@Distances) != &quot;matrix&quot;) {: Bedingung hat Länge &gt; 1
-## und nur das erste Element wird benutzt</code></pre>
-<p>Moreover we change the simulation number to <em>1</em> in the corresponding parameter object, in order to avoid overwriting the previous output.</p>
+<p>Moreover we change the simulation number to <em>1</em> in the
+corresponding parameter object, in order to avoid overwriting the
+previous output.</p>
 <pre class="r"><code>sim_1 &lt;- Simulation(Simulation = 1, 
                     Replicates = 20, 
                     Years = 100,
                     OutIntPop = 5,
                     OutIntOcc = 5,
                     OutIntRange = 5)</code></pre>
-<p>Finally, the new modules are added to the old parameter master to define a new one, <em>s_long</em>.</p>
+<p>Finally, the new modules are added to the old parameter master to
+define a new one, <em>s_long</em>.</p>
 <pre class="r"><code>s_long &lt;- s + disp_long + sim_1</code></pre>
-<pre><code>## Warning in if (class(object@Distances) != &quot;matrix&quot;) {: Bedingung hat Länge &gt; 1
-## und nur das erste Element wird benutzt</code></pre>
 <p>With this, run the new simulation:</p>
 <pre class="r"><code>RunRS(s_long, dirpath)</code></pre>
-<p>We can now compare the result plots. The number of occupied cells as well as the total abundance is much higher in this scenario.</p>
+<p>We can now compare the result plots. The number of occupied cells as
+well as the total abundance is much higher in this scenario.</p>
 <pre class="r"><code># Get range results
 range_df_long &lt;- readRange(s_long, dirpath)
 
@@ -728,7 +827,11 @@ r_years_long &lt;- stack_pop(pop_df_long, ext_long, mask=UKmap)
 levelplot(r_years_long[[&#39;mean.NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_long$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20)))) +
   layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
-<p>When comparing the maps of mean abundance between the first and second scenario, these look quite similar. One reason might be that successful long-distance dispersal is highly stochastic and, thus, high occupancy only occurs for a few but not for all runs. So, let’s try and map only the replicate run with the highest occupancy.</p>
+<p>When comparing the maps of mean abundance between the first and
+second scenario, these look quite similar. One reason might be that
+successful long-distance dispersal is highly stochastic and, thus, high
+occupancy only occurs for a few but not for all runs. So, let’s try and
+map only the replicate run with the highest occupancy.</p>
 <pre class="r"><code># Which replicate had highest occupancy?
 head(subset(range_df_long,Year==95)[order(subset(range_df_long,Year==95)$NOccupCells,decreasing=T),])</code></pre>
 <pre><code>##     Rep Year RepSeason  NInds NOccupCells Occup.Suit  min_X  max_X min_Y  max_Y
@@ -749,12 +852,24 @@ names(r_years_long_1)</code></pre>
 <pre class="r"><code>levelplot(r_years_long_1[[&#39;NInd.90&#39;]], margin=F, scales=list(draw=FALSE), at=c(0,seq(1,max(pop_df_long$NInd),length=20)), col.regions=c(&#39;grey&#39;,rev(inferno(20))))  +
   layer(sp.polygons(rasterToPolygons(SpDist, dissolve=F), fill=NA, col=&#39;red&#39;))</code></pre>
 <p><img src="tutorial_1_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
-<p>We can see that there is a chance for the population to spread to the north and establish in a broader range. However, only some replicates show this.</p>
+<p>We can see that there is a chance for the population to spread to the
+north and establish in a broader range. However, only some replicates
+show this.</p>
 </div>
-<div id="add-temporal-environmental-stochasticity" class="section level2">
-<h2><span class="header-section-number">2.2</span> Add temporal environmental stochasticity</h2>
-<p>Lastly, we incorporate temporal environmental stochasticity, which is recognized to be fundamental for both ecological and evolutionary processes and is expected to increase in frequency and become more auto-correlated with climate change.</p>
-<p>The options for the environmental stochasticity are set in the Simulation parameters object. For this example we use <em>global</em> (referring to the spatial extent) stochasticity in <em>growth rate</em>. We explore two types of stochasticity: temporally uncorrelated (white noise) and positively correlated (red noise), by setting the autocorrelation coefficient <em>ac</em>:</p>
+<div id="add-temporal-environmental-stochasticity"
+class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Add temporal
+environmental stochasticity</h2>
+<p>Lastly, we incorporate temporal environmental stochasticity, which is
+recognized to be fundamental for both ecological and evolutionary
+processes and is expected to increase in frequency and become more
+auto-correlated with climate change.</p>
+<p>The options for the environmental stochasticity are set in the
+Simulation parameters object. For this example we use <em>global</em>
+(referring to the spatial extent) stochasticity in <em>growth rate</em>.
+We explore two types of stochasticity: temporally uncorrelated (white
+noise) and positively correlated (red noise), by setting the
+autocorrelation coefficient <em>ac</em>:</p>
 <pre class="r"><code> # for white noise
 sim_2 &lt;- Simulation(Simulation = 2, 
                     Replicates = 20, 
@@ -846,13 +961,21 @@ levelplot(r_years_envstoch_red_1[[&#39;NInd.90&#39;]], margin=F, scales=list(dra
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
-<h1>References</h1>
-<div id="refs" class="references">
-<div id="ref-Bocedi2014">
-<p>Bocedi, G., S.C.F. Palmer, G. Pe’er, R.K. Heikkinen, Y.G. Matsinos, K. Watts, and J.M.J. Travis. 2014. “RangeShifter: A Platform for Modelling Spatial Eco-Evolutionary Dynamics and Species’ Responses to Environmental Changes.” <em>Methods in Ecology and Evolution</em> 5 (4): 388–96. <a href="https://doi.org/10.1111/2041-210X.12162">https://doi.org/10.1111/2041-210X.12162</a>.</p>
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bocedi2014" class="csl-entry">
+Bocedi, G., S. C. F. Palmer, G. Pe’er, R. K. Heikkinen, Y. G. Matsinos,
+K. Watts, and J. M. J. Travis. 2014. <span>“RangeShifter: A Platform for
+Modelling Spatial Eco-Evolutionary Dynamics and Species’ Responses to
+Environmental Changes.”</span> <em>Methods in Ecology and Evolution</em>
+5 (4): 388–96. <a
+href="https://doi.org/10.1111/2041-210X.12162">https://doi.org/10.1111/2041-210X.12162</a>.
 </div>
-<div id="ref-Morton2011">
-<p>Morton, D., C. Rowland, C. Wood, L. Meek, C. Marston, G. Smith, R. Wadsworth, and I.. Simpson. 2011. “Final Report for Lcm2007 - the New Uk Land Cover Map.” Countryside Survey Technical Report No 11/07. NERC/Centre for Ecology &amp; Hydrology.</p>
+<div id="ref-Morton2011" class="csl-entry">
+Morton, D., C. Rowland, C. Wood, L. Meek, C. Marston, G. Smith, R.
+Wadsworth, and I.. Simpson. 2011. <span>“Final Report for LCM2007 - the
+New UK Land Cover Map.”</span> Countryside Survey Technical Report No
+11/07. NERC/Centre for Ecology &amp; Hydrology.
 </div>
 </div>
 </div>
@@ -878,7 +1001,7 @@ levelplot(r_years_envstoch_red_1[[&#39;NInd.90&#39;]], margin=F, scales=list(dra
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -896,7 +1019,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -905,6 +1028,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')
