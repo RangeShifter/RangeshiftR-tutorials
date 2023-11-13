@@ -13,7 +13,7 @@
 
 <title>Overview: General introduction to RangeShiftR</title>
 
-<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,12 +29,16 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
 <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -394,6 +398,10 @@ RangeShiftR</h1>
 </div>
 
 
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
 <p>In this overview, we quickly go through the main functionality of the
 <em>RangeShiftR</em> R-package in order to get a first overview of the
 basic structure.</p>
@@ -471,7 +479,7 @@ typing:</p>
 ## 
 ## *****
 ## ***** Simulation completed 
-## ***** Outputs folder: ../Tutorials/Overview/Outputs/
+## ***** Outputs folder: Overview/Outputs/
 ## *****</code></pre>
 <pre><code>## $Errors
 ## [1] 0</code></pre>
@@ -720,7 +728,7 @@ post-processing and plotting of results, it may also be desirable to
 further process the results yourself. As a simple example for such a
 workflow, let’s plot the spatial distribution of abundance. For doing
 so, we load the data from the population output files and process it
-using the <code>raster</code> package:</p>
+using the <code>terra</code> package:</p>
 <pre class="r"><code># read population output file into a dataframe
 pop_df &lt;- readPop(s, dirpath)
 
@@ -731,11 +739,12 @@ res &lt;- 10
 # Make stack of different raster layers for each year and for only one repetition (Rep==0):
 pop_wide_rep0 &lt;- reshape(subset(pop_df,Rep==0)[,c(&#39;Year&#39;,&#39;x&#39;,&#39;y&#39;,&#39;NInd&#39;)], timevar=&#39;Year&#39;, v.names=c(&#39;NInd&#39;), idvar=c(&#39;x&#39;,&#39;y&#39;), direction=&#39;wide&#39;)
 
-# use raster package to make a raster from the data frame
-library(raster)
-stack_years_rep0 &lt;- rasterFromXYZ(pop_wide_rep0)
+# use terra package to make a raster from the data frame and viridis for colouring
+library(terra)
+library(viridis)
+stack_years_rep0 &lt;- terra::rast(pop_wide_rep0, type=&quot;xyz&quot;)
 names(stack_years_rep0) &lt;- c(&#39;Year.0&#39;, &#39;Year.50&#39;)
-spplot(stack_years_rep0, zlim = c(0,7))</code></pre>
+terra::plot(stack_years_rep0, range = c(0,7), col = magma(14), type=&quot;continuous&quot;)</code></pre>
 <p><img src="overview_0_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 </div>
 

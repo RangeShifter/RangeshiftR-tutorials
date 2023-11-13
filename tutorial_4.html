@@ -13,7 +13,7 @@
 
 <title>Tutorial 4: Evolution of dispersal during range shifting</title>
 
-<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,12 +29,16 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
 <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -416,6 +420,10 @@ range shifting</h1>
 </div>
 
 
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
 <p>In this tutorial, we will revisit the third example provided in <span
 class="citation">Bocedi et al. (2014)</span>. We will use the same
 parameters as the original publication and the accompanying tutorial
@@ -456,10 +464,8 @@ directory</h2>
 <p>First of all, load the package and set the relative path from your
 current working directory to the RS directory.</p>
 <pre class="r"><code>library(RangeShiftR)
-library(raster)
+library(terra)
 library(RColorBrewer)
-library(rasterVis)
-library(latticeExtra)
 library(viridis)
 library(grid)
 library(gridExtra)
@@ -679,25 +685,32 @@ of the emigration probability trait are listed in the column named
 <pre class="r"><code># load individuals file for replicate 7 (not that the files names start counting with 0):
 inds_rep07 &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch1_Sim0_Land1_Rep6_Inds.txt&quot;), header = T)
 
-ext &lt;- extent(0, 50, 0, 700)
-inds_stack &lt;- stack()
+ext &lt;- terra::ext(0, 50, 0, 700)
+inds_stack &lt;- terra::rast()
 for(year in seq(0,1250,by = 50)){
     inds_sub &lt;- subset.data.frame(inds_rep07, Year==year)
     inds_sub &lt;- aggregate(EP ~ X + Y, data = inds_sub, mean)
     inds_sub[,1:2] &lt;- inds_sub[,1:2]+0.5
-    inds_r &lt;- raster::rasterFromXYZ(inds_sub)
-    inds_r &lt;- extend(inds_r, ext)
-    names(inds_r) &lt;- paste0(&quot;y&quot;,year)
-    inds_stack &lt;- addLayer(inds_stack, inds_r)
+    inds_r &lt;- terra::rast(inds_sub, type=&quot;xyz&quot;)
+    inds_r &lt;- terra::extend(inds_r, ext)
+    names(inds_r) &lt;- year
+    inds_stack &lt;- c(inds_stack, inds_r)
 }</code></pre>
 <p>Plot the maps:</p>
-<pre class="r"><code>levelplot(inds_stack,
-          col.regions=hcl.colors(20, palette = &quot;viridis&quot;, rev = TRUE),
-          between = list(x=0),
-          names.attr = as.character(seq(0,1250,by = 50)),
-          scales=list(x=list(draw=F)), 
-          par.strip.text=list(cex=.6)
-)</code></pre>
+<pre class="r"><code>plot(inds_stack,
+          col=hcl.colors(20, palette = &quot;viridis&quot;, rev = TRUE),
+          mar=c(0,0,0,0),
+          legend=F, # we will plot the legend later
+          axes=F, 
+          pax=list(side=2),
+          box=T,
+          nc= 26,# plot all layers in one row
+          maxnl = 26,
+          type=&quot;continuous&quot;,
+          cex.main = 0.8
+)
+# add a costum legend
+legend(x=&quot;bottomright&quot;, legend = c(round(max(values(inds_stack),na.rm=T),2),&quot;&quot;,&quot;&quot;,&quot;&quot;,round(max(values(inds_stack),na.rm=T)/2,2),&quot;&quot;,&quot;&quot;,&quot;&quot;,0.0), fill=hcl.colors(9, palette = &quot;viridis&quot;, rev = F),bty=&quot;o&quot;, horiz=F, border=NA, cex=0.8, y.intersp = 0.5)</code></pre>
 <p><img src="tutorial_4_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>In equilibrium conditions, when the potential range is stationary,
 selection against dispersal prevails across the species’ range except
@@ -716,24 +729,31 @@ environmental change.</p>
 <p>We can also map the mean dispersal distances per cell, which can be
 extracted from the individuals output file under the column name
 <em>DistMoved</em>. It gives similar results:</p>
-<pre class="r"><code>inds_stack &lt;- stack()
+<pre class="r"><code>inds_stack &lt;- terra::rast()
 for(year in seq(0,1250,by = 50)){
     inds_sub &lt;- subset.data.frame(inds_rep07, Year==year)
     inds_sub &lt;- aggregate(DistMoved ~ X + Y, data = inds_sub, mean)
     inds_sub[,1:2] &lt;- inds_sub[,1:2]+0.5
-    inds_r &lt;- raster::rasterFromXYZ(inds_sub)
-    inds_r &lt;- extend(inds_r, ext)
-    names(inds_r) &lt;- paste0(&quot;y&quot;,year)
-    inds_stack &lt;- addLayer(inds_stack, inds_r)
+    inds_r &lt;- terra::rast(inds_sub, type=&quot;xyz&quot;)
+    inds_r &lt;- terra::extend(inds_r, ext)
+    names(inds_r) &lt;- year
+    inds_stack &lt;- c(inds_stack, inds_r)
 }
-levelplot(inds_stack,
-          at=seq(0,300,length.out=20),
-          col.regions=hcl.colors(20, palette = &quot;viridis&quot;, rev = TRUE),
-          between = list(x=0), 
-          names.attr = as.character(seq(0,1250,by = 50)),
-          scales=list(x=list(draw=F)),
-          par.strip.text=list(cex=.6)
-)</code></pre>
+plot(inds_stack,
+          breaks=seq(0,300,length.out=20),
+          col=hcl.colors(20, palette = &quot;viridis&quot;, rev = TRUE),
+          mar=c(0,0,0,0),
+          legend=F, # we will plot the legend later
+          axes=F, 
+          pax=list(side=2),
+          box=T,
+          nc= 26,# plot all layers in one row
+          maxnl = 26,
+          type=&quot;continuous&quot;,
+          cex.main = 0.8
+)
+# add a costum legend
+legend(x=&quot;bottomright&quot;, legend = c(300,&quot;&quot;,&quot;&quot;,&quot;&quot;,150,&quot;&quot;,&quot;&quot;,&quot;&quot;,0), fill=hcl.colors(9, palette = &quot;viridis&quot;, rev = F),bty=&quot;o&quot;, horiz=F, border=NA, cex=0.8, y.intersp = 0.5)</code></pre>
 <p><img src="tutorial_4_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>To yield a summary of the trait evolution, we can simply use the
 aggregated information stored in the ‘mean traits by rows’ output file.
@@ -758,7 +778,7 @@ for(i in 1:length(years)) {
 }
 legend(&quot;topleft&quot;, leg.txt, col = cols, lwd = 1.5)</code></pre>
 <p><img src="tutorial_4_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<p>We see that the population moves towards norther^ latitudes (higher
+<p>We see that the population moves towards northern latitudes (higher
 <em>y</em>) with increasing time. During range shifting (here, years
 <em>650</em> and <em>800</em>), the emigration probabilities are
 generally higher than before (year <em>500</em>) and after (year

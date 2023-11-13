@@ -13,7 +13,7 @@
 
 <title>Tutorial 2: Landscape-scale connectivity, matrix permeability and dispersal behaviour</title>
 
-<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,12 +29,16 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
 <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -416,6 +420,10 @@ matrix permeability and dispersal behaviour</h1>
 </div>
 
 
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
 <p>In this second example, <code>RangeShiftR</code> is used at the
 landscape scale to model functional connectivity of a woodland network
 for a hypothetical woodland species. The aims are:</p>
@@ -460,10 +468,8 @@ directory</h2>
 <p>We need to set up the folder structure again with the three
 sub-folders named ‘Inputs’, ‘Outputs’ and ‘Output_Maps’.</p>
 <pre class="r"><code>library(RangeShiftR)
-library(raster)
+library(terra)
 library(RColorBrewer)
-library(rasterVis)
-library(latticeExtra)
 library(viridis)
 library(grid)
 library(gridExtra)
@@ -502,23 +508,23 @@ swamp</li>
 <li>6 = improved grasslands, arable, water</li>
 <li>7 = roads, buildings</li>
 </ul>
-<pre class="r"><code>landsc &lt;- raster(paste0(dirpath, &quot;Inputs/landscape_10m_batch.txt&quot;))
+<pre class="r"><code>landsc &lt;- terra::rast(paste0(dirpath, &quot;Inputs/landscape_10m_batch.txt&quot;))
 
 # Plot land cover map and highlight cells with initial species distribution - option 2 with categorical legend:
 landsc.f &lt;- as.factor(landsc)
 # add the land cover classes to the raster attribute table
-rat &lt;- levels(landsc.f)[[1]]
+rat &lt;- levels(landsc.f)[[1]][-2]
 rat[[&quot;landcover&quot;]] &lt;- c(&quot;semi-natural broad-leaved woodland&quot;, &quot;planted/felled broad-leaved and mixed woodland&quot;, &quot;heathland, marshy grassland&quot;, &quot;unimproved grassland&quot;, &quot;planted/felled coniferous woodland&quot;, &quot;improved grasslands, arable, water&quot;, &quot;roads, buildings&quot;)
 levels(landsc.f) &lt;- rat
 
-levelplot(landsc.f, margin=F, scales=list(draw=FALSE), col.regions=brewer.pal(n = 7, name = &quot;Spectral&quot;))</code></pre>
+plot(landsc.f, axes = F, col=brewer.pal(n = 7, name = &quot;Spectral&quot;))</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>The second text file, <em>woodland_1ha_patchIDs.txt</em>, contains
 the patch-matrix landscape. It has the same extent and resolution as the
 land-type map, and each cell contains a unique patch ID that indicates
 to which patch it belongs. Patch number <em>0</em> designates the matrix
 patch, i.e. all unsuitable habitat.</p>
-<pre class="r"><code>patch &lt;- raster(paste0(dirpath, &quot;Inputs/woodland_1ha_patchIDs.txt&quot;))
+<pre class="r"><code>patch &lt;- terra::rast(paste0(dirpath, &quot;Inputs/woodland_1ha_patchIDs.txt&quot;))
 
 # We can have a glimpse at how many cells the different patches contain:
 table(values(patch))</code></pre>
@@ -534,17 +540,17 @@ table(values(patch))</code></pre>
 ##     44     45     46     47     48     49     50 
 ##    547    116    225    675    189    110    301</code></pre>
 <pre class="r"><code># Plot the patches in different colours:
-levelplot(patch, margin=F, scales=list(draw=FALSE), at=0:50, colorkey=F,
-          col.regions = c(&#39;black&#39;,rep(brewer.pal(n = 12, name = &quot;Paired&quot;),5))
+plot(patch, axes=F, legend=F,
+          col = c(&#39;black&#39;,rep(brewer.pal(n = 12, name = &quot;Paired&quot;),5))
           ) </code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>The last text file, <em>patch30.txt</em>, is a map that specifies the
 patches that contain the initial distribution of the species. In our
 case, this is only the patch with ID <em>30</em>.</p>
-<pre class="r"><code>patch30 &lt;- raster(paste0(dirpath, &quot;Inputs/patch30.txt&quot;))
+<pre class="r"><code>patch30 &lt;- terra::rast(paste0(dirpath, &quot;Inputs/patch30.txt&quot;))
 
 # Look at initial patch:
-plot(patch30)</code></pre>
+plot(patch30, type=&quot;continuous&quot;)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>We are ready to set up the landscape parameter object with these
 maps, their respective resolutions, and the demographic density
@@ -685,16 +691,19 @@ scheme was also used in Fig. 3a of <span class="citation">Bocedi et al.
 values(patch30)[values(patch30)&lt;1] &lt;- NA
 values(patch)[values(patch)&lt;1] &lt;- NA
 
-levelplot(landsc, margin=F, scales=list(draw=FALSE),at=seq(.5,7.5,by=1), colorkey=F,
-        col.regions = rev(brewer.pal(n = 7, name = &quot;Greys&quot;) )) +
-    levelplot(patch, margin=F, scales=list(draw=FALSE), col.regions=&quot;green4&quot;) +
-    layer(sp.polygons(rasterToPolygons(patch30, dissolve=T), fill=NA, col=&#39;red&#39;,lwd=2))</code></pre>
+plot(landsc, axes=F,breaks=seq(.5,7.5,by=1),
+        col = rev(brewer.pal(n = 7, name = &quot;Greys&quot;) ), legend=F)
+plot(patch, axes=F, col=&quot;green4&quot;, legend=F, add=T) 
+plot(as.polygons(patch30, dissolve=T), col=NA, border=&#39;red&#39;,lwd=2, add=T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <pre class="r"><code># Store underlying landscape map display for later:
 bg &lt;- function(main=NULL){
-    levelplot(landsc, margin=F, scales=list(draw=FALSE),at=seq(.5,7.5,by=1), colorkey=F,
-                col.regions = rev(brewer.pal(n = 7, name = &quot;Greys&quot;) ), main=main)
-}</code></pre>
+    plot(landsc, axes=F, breaks=seq(.5,7.5,by=1), legend=F,
+                col = rev(brewer.pal(n = 7, name = &quot;Greys&quot;) ), main=ifelse(is.null(main),&quot;&quot;,main))
+}
+
+# as well as the extent of the landscape:
+e &lt;- ext(landsc)</code></pre>
 <p>To reproduce Fig. 3b of <span class="citation">Bocedi et al.
 (2014)</span>, we map the mean occupancy probability for each patch in
 year <em>100</em> (left panel in the paper) as well as the mean time to
@@ -703,33 +712,33 @@ replicates. We can use the built-in function
 <code>ColonisationStats()</code> for this. It calculates the mean
 occupancy probability of given years as well as the time to colonisation
 for all replicates:</p>
-<pre class="r"><code>col_stats_a &lt;- ColonisationStats(s, dirpath, years = 100, maps = T)
-
-# mean occupancy probability in year 100
+<pre class="r"><code>col_stats_a &lt;- ColonisationStats(s, dirpath, years = 100, maps = T)</code></pre>
+<pre><code>## Warning: [rast] the first raster was empty and was ignored</code></pre>
+<pre class="r"><code># mean occupancy probability in year 100
 head(col_stats_a$occ_prob)</code></pre>
 <pre><code>##   patch  100
-## 1    15 0.30
-## 2    17 0.25
+## 1    15 0.10
+## 2    17 0.10
 ## 3    18 0.00
-## 4    20 0.30
+## 4    20 0.15
 ## 5    23 1.00
 ## 6    24 1.00</code></pre>
 <pre class="r"><code># time to colonisation
 head(col_stats_a$col_time)</code></pre>
 <pre><code>##   patch rep.0 rep.1 rep.2 rep.3 rep.4 rep.5 rep.6 rep.7 rep.8 rep.9 rep.10
-## 1    15    57    NA    NA    NA    NA    NA    44    24    94    NA     NA
-## 2    17    48    NA    NA    NA    NA    NA    NA    71    90    NA     NA
-## 3    18    81    NA    NA    NA    NA    NA    NA    NA    NA    NA     NA
-## 4    20    31    NA    NA    NA    NA    NA    76     8    56    NA     NA
-## 5    23    21    48    59    35    30    63    71    67    67    38     45
-## 6    24    10    20    41    16     6    40     5    29    50    19     21
+## 1    15    NA    NA    NA    NA    NA    NA    69    NA    NA    63     NA
+## 2    17    NA    NA    NA    NA    NA    75    NA    NA    NA    NA     NA
+## 3    18    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA     NA
+## 4    20    89    NA    NA    NA    49    NA    NA    NA    NA    49     NA
+## 5    23    35    39    34    46    25    37    35    47    64    35     23
+## 6    24     9    23    15    29     3    11     1    28    36    20     12
 ##   rep.11 rep.12 rep.13 rep.14 rep.15 rep.16 rep.17 rep.18 rep.19
-## 1     77     80     98     NA     NA     NA     NA     NA     NA
-## 2     33     77     NA     NA     NA     NA     75     NA     NA
-## 3     NA     NA     NA     NA     NA     NA     NA     NA     NA
-## 4     50     65     86     NA     NA     54     NA     NA     NA
-## 5     37     51     54     26     47     33     77     36     41
-## 6     20     35     36      9     30     12     26      3     21</code></pre>
+## 1     NA     NA     44     NA     NA     NA     80     NA     NA
+## 2     43     80     45     NA     NA     NA     86     NA     NA
+## 3     NA     NA     87     NA     NA     NA     NA     NA     NA
+## 4     NA     NA     19     NA     35     44     60     52     NA
+## 5     28     43     24     55     84     33     42     37     50
+## 6     14     17      6     39     24     16     25     17     36</code></pre>
 <p>For mapping the results, we can use the optional raster output: If
 enabled, the function <code>ColonisationStats()</code> returns a raster
 stack with the mean occupancy probabilities of the given years as well
@@ -737,28 +746,19 @@ as a raster with the mean time to colonisation over all replicates. We
 plot these maps on top of our landscape:</p>
 <pre class="r"><code># map occupancy probability
 mycol_occprob &lt;- colorRampPalette(c(&#39;blue&#39;,&#39;orangered&#39;,&#39;gold&#39;))
-levelplot(col_stats_a$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))</code></pre>
+plot(col_stats_a$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(10), type=&quot;continuous&quot;)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<pre class="r"><code># map occupancy probability on landscape background. For this, we first define a colorkey function
-col.key &lt;- function(mycol, at, space=&#39;bottom&#39;,pos=0.05, height=0.6, width=1) {
-    key &lt;- draw.colorkey(
-        list(space=space, at=at, height=height, width=width,
-         col=mycol)
-    )
-    key$framevp$y &lt;- unit(pos, &quot;npc&quot;)
-    return(key)
-}
-
-bg() + levelplot(col_stats_a$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
+<pre class="r"><code># map occupancy probability on landscape background
+bg() 
+plot(col_stats_a$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(10), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-2.png" width="672" /></p>
 <pre class="r"><code># map colonisation time
 mycol_coltime &lt;- colorRampPalette(c(&#39;orangered&#39;,&#39;gold&#39;,&#39;yellow&#39;,&#39;PowderBlue&#39;,&#39;LightSeaGreen&#39;))
-levelplot(col_stats_a$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))</code></pre>
+plot(col_stats_a$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-3.png" width="672" /></p>
 <pre class="r"><code># map colonisation time on landscape background
-bg() + levelplot(col_stats_a$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
+bg() 
+plot(col_stats_a$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-19-4.png" width="672" /></p>
 </div>
 </div>
@@ -793,15 +793,15 @@ s_b &lt;- s + disp_b + sim_b</code></pre>
 RunRS(s_b, dirpath)</code></pre>
 <p>Now, let’s post-process the simulation results and plot the maps.</p>
 <pre class="r"><code># Get colonisation stats
-col_stats_b &lt;- ColonisationStats(s_b, dirpath, years = 100, maps = T)
-
-# Map occupancy probabilities:
-bg() + levelplot(col_stats_b$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
+col_stats_b &lt;- ColonisationStats(s_b, dirpath, years = 100, maps = T)</code></pre>
+<pre><code>## Warning: [rast] the first raster was empty and was ignored</code></pre>
+<pre class="r"><code># Map occupancy probabilities:
+bg() 
+plot(col_stats_b$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(11), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <pre class="r"><code># map colonisation time + background
-bg() + levelplot(col_stats_b$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
+bg() 
+plot(col_stats_b$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
 <p>From both the visualisation and the results, we see that relaxing the
 mate-finding rules substantially increased the number of occupied
@@ -868,15 +868,15 @@ s_c &lt;- RSsim(batchnum = 3, land = land_c, demog = demo_c, dispersal = disp_c,
 <pre class="r"><code>RunRS(s_c, dirpath)</code></pre>
 <p>Process the output and plot the occupancy maps:</p>
 <pre class="r"><code># Get colonisation stats
-col_stats_c &lt;- ColonisationStats(s_c, dirpath, years = 100, maps = T)
-
-# Map occupancy probabilities:
-bg() + levelplot(col_stats_c$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
+col_stats_c &lt;- ColonisationStats(s_c, dirpath, years = 100, maps = T)</code></pre>
+<pre><code>## Warning: [rast] the first raster was empty and was ignored</code></pre>
+<pre class="r"><code># Map occupancy probabilities:
+bg() 
+plot(col_stats_c$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(11), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <pre class="r"><code># Map colonisation time + background
-bg() + levelplot(col_stats_c$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
+bg()
+plot(col_stats_c$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-25-2.png" width="672" /></p>
 <p>As we see from the results, the asexual model without mate finding as
 settlement rule leads to a drastic increase in the overall occupancy of
@@ -914,15 +914,15 @@ s_d &lt;- s + disp_d + sim_d</code></pre>
 <pre class="r"><code>RunRS(s_d, dirpath)</code></pre>
 <p>Process and map results:</p>
 <pre class="r"><code># Get colonisation stats
-col_stats_d &lt;- ColonisationStats(s_d, dirpath, years = 100, maps = T)
-
-# Map occupancy probabilities:
-bg() + levelplot(col_stats_d$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11)))</code></pre>
+col_stats_d &lt;- ColonisationStats(s_d, dirpath, years = 100, maps = T)</code></pre>
+<pre><code>## Warning: [rast] the first raster was empty and was ignored</code></pre>
+<pre class="r"><code># Map occupancy probabilities:
+bg()
+plot(col_stats_d$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(11), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <pre class="r"><code># map colonisation time + background
-bg() + levelplot(col_stats_d$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11))))</code></pre>
+bg()
+plot(col_stats_d$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-28-2.png" width="672" /></p>
 <p>We see that such small changes in the per-step mortality, in
 interaction with the landscape structure, make a big difference in the
@@ -934,23 +934,36 @@ network.</p>
 comparison</h1>
 <p>Let’s plot all maps next to each other.</p>
 <pre class="r"><code># Plot occupancy probabilities for all scenarios
-occ_a &lt;- bg(main=&quot;Scenario A&quot;) + levelplot(col_stats_a$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-occ_b &lt;- bg(main=&quot;Scenario B&quot;) + levelplot(col_stats_b$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-occ_c &lt;- bg(main=&quot;Scenario C&quot;) + levelplot(col_stats_c$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
-occ_d &lt;- bg(main=&quot;Scenario D&quot;) + levelplot(col_stats_d$map_occ_prob, margin=F, scales=list(draw=FALSE), at=seq(0,1,length=11), col.regions=mycol_occprob(11))
+par(mfrow=c(2,2))
 
-grid.arrange(occ_a,occ_b,occ_c,occ_d, ncol=2)
-grid.draw(col.key(mycol_occprob(11),at=seq(0,1,length=11), space=&#39;right&#39;,pos=0.5))</code></pre>
+bg(main=&quot;Scenario A&quot;) 
+plot(col_stats_a$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(11), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)
+
+bg(main=&quot;Scenario B&quot;)
+plot(col_stats_b$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(11), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)
+
+bg(main=&quot;Scenario C&quot;)
+plot(col_stats_c$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(11), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)
+
+bg(main=&quot;Scenario D&quot;)
+plot(col_stats_d$map_occ_prob, axes=F, range=c(0,1), col=mycol_occprob(11), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <pre class="r"><code># Plot colonisation times for all scenarios
-col_a &lt;- bg(main=&quot;Scenario A&quot;) + levelplot(col_stats_a$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-col_b &lt;- bg(main=&quot;Scenario B&quot;) + levelplot(col_stats_b$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-col_c &lt;- bg(main=&quot;Scenario C&quot;) + levelplot(col_stats_c$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
-col_d &lt;- bg(main=&quot;Scenario D&quot;) + levelplot(col_stats_d$map_col_time, margin=F, scales=list(draw=FALSE), at=c(-9,seq(-.001,100,length=11)), col.regions=c(&#39;blue&#39;,mycol_coltime(11)))
+par(mfrow=c(2,2))
+bg(main=&quot;Scenario A&quot;)
+plot(col_stats_a$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)
 
-grid.arrange(col_a,col_b,col_c,col_d, ncol=2)
-grid.draw(col.key(c(&#39;blue&#39;,mycol_coltime(11)), c(-9,seq(-.001,100,length=11)), space=&#39;right&#39;,pos=0.5))</code></pre>
+bg(main=&quot;Scenario B&quot;)
+plot(col_stats_b$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)
+
+bg(main=&quot;Scenario C&quot;)
+plot(col_stats_c$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)
+
+bg(main=&quot;Scenario D&quot;)
+plot(col_stats_d$map_col_time, axes=F, breaks=c(-9,seq(-9,100,length=11)), col=c(&#39;blue&#39;,mycol_coltime(20)), type=&quot;continuous&quot;, plg=list(x=&quot;bottom&quot;, ext=c(e$xmin+400, e$xmax-400, e$ymin-150, e$ymin-50)), add =T)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-29-2.png" width="672" /></p>
+<pre class="r"><code># reset plot layout
+par(mfrow=c(1,1))</code></pre>
 </div>
 <div id="dispersal-heatmap" class="section level1" number="7">
 <h1><span class="header-section-number">7</span> Dispersal heatmap</h1>
@@ -997,8 +1010,8 @@ step ended. Thus, the resulting dispersal heatmap can be used to assess
 those parts of the landscape matrix that are frequently used for
 dispersal, whether it was successful or not.</p>
 <p>Let’s first look at one replicate only and plot it:</p>
-<pre class="r"><code>levelplot(raster(paste0(dirpath,&quot;Output_Maps/Batch3_Sim4_Land1_Rep1_Visits.txt&quot;)),
-          par.settings=BTCTheme(), colorkey=T, margin=F, scales=list(draw=FALSE))</code></pre>
+<pre class="r"><code>plot(terra::rast(paste0(dirpath,&quot;Output_Maps/Batch3_Sim4_Land1_Rep1_Visits.txt&quot;)),
+          col=magma(9), axes=F)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 <p>The matrix around the initial patch and the first colonised patches
 appears thoroughly explored. Further away from the initial patch, the
@@ -1009,16 +1022,17 @@ colonisation of empty patches are different for each replicate. In order
 to take into account this variance, we average over all replicates and
 plot the resulting heatmap:</p>
 <pre class="r"><code># create a raster stack with all replicates as layers
-heatmaps_stack &lt;- stack()
+heatmaps_stack &lt;- rast()
 for(rep in 0:(s_c2@simul@Replicates-1)){
-    heatmaps_stack &lt;- addLayer(heatmaps_stack, 
-                               paste0(dirpath, &quot;Output_Maps/Batch&quot;, 
+    heatmaps_stack &lt;- c(heatmaps_stack, 
+                               terra::rast(paste0(dirpath, &quot;Output_Maps/Batch&quot;, 
                                       s_c2@control@batchnum, &quot;_Sim&quot;, 
                                       s_c2@simul@Simulation, &quot;_Land&quot;, 
-                                      s_c2@land@LandNum,&quot;_Rep&quot;,rep ,&quot;_Visits.txt&quot;))
-}
-# average over all layers
-heatmaps_mean &lt;- stackApply(heatmaps_stack, indices=1, fun=mean)</code></pre>
+                                      s_c2@land@LandNum,&quot;_Rep&quot;,rep ,&quot;_Visits.txt&quot;)))
+}</code></pre>
+<pre><code>## Warning: [rast] the first raster was empty and was ignored</code></pre>
+<pre class="r"><code># average over all layers
+heatmaps_mean &lt;- mean(heatmaps_stack)</code></pre>
 <p>We create a non-linear color scale, in which the color changes more
 rapidly for small numbers of visits than higher ones:</p>
 <pre class="r"><code># create exponential color scale
@@ -1027,9 +1041,9 @@ exp &lt;- 3
 lim &lt;- max(values(heatmaps_mean),na.rm = T)
 my.at &lt;- seq(1,lim^(1/exp),length.out=res)^exp
 
-levelplot(heatmaps_mean,
-          col.regions=hcl.colors(res, &quot;Inferno&quot;, rev = T),
-          at = my.at, margin=F, scales=list(draw=FALSE))</code></pre>
+plot(heatmaps_mean,
+          col=hcl.colors(res, &quot;Inferno&quot;, rev = T),
+          breaks = my.at, axes=F, type=&quot;continuous&quot;)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <p>Note that individuals cannot cross the landscape boundaries, so that
 their paths tend to follow and sometimes accumulate along the borders.
@@ -1040,9 +1054,10 @@ landscape boundaries.</p>
 Here, you can nicely see that the movement in the landscape depends a
 lot on the landscape context and the costs associated to each landcover
 type.</p>
-<pre class="r"><code>bg() + levelplot(heatmaps_mean, 
-                 col.regions=hcl.colors(res, &quot;Inferno&quot;, rev = T, alpha=.8),
-                 at=my.at, margin=F, scales=list(draw=FALSE))</code></pre>
+<pre class="r"><code>bg()
+plot(heatmaps_mean, 
+                 col=hcl.colors(res, &quot;Inferno&quot;, rev = T, alpha=.8),
+          breaks = my.at, axes=F, type=&quot;continuous&quot;, add=T, legend=F)</code></pre>
 <p><img src="tutorial_2_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 </div>
 <div id="references" class="section level1 unnumbered">
