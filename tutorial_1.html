@@ -13,7 +13,7 @@
 
 <title>Tutorial 1: Range expansion, long-distance dispersal and environmental stochasticity</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -39,8 +39,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -71,6 +71,7 @@ if (window.hljs) {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging div.csl-entry {
   margin-left:2em;
@@ -844,20 +845,13 @@ occupancy only occurs for a few but not for all runs. So, let’s try and
 map only the replicate run with the highest occupancy.</p>
 <pre class="r"><code># Which replicate had highest occupancy?
 head(subset(range_df_long,Year==95)[order(subset(range_df_long,Year==95)$NOccupCells,decreasing=T),])</code></pre>
-<pre><code>##     Rep Year RepSeason   NInds NOccupCells Occup.Suit  min_X  max_X min_Y
-## 20    0   95         0 1117897        3181  0.1338520 211000 569000 45000
-## 104   4   95         0  935708        2936  0.1235430 211000 569000 45000
-## 83    3   95         0  820045        2633  0.1107930 211000 569000 58000
-## 356  16   95         0  783999        2490  0.1047760 211000 569000 45000
-## 125   5   95         0  729725        2129  0.0895855 211000 569000 37000
-## 272  12   95         0  648651        2089  0.0879024 211000 569000 45000
-##      max_Y
-## 20  296000
-## 104 292000
-## 83  284000
-## 356 282000
-## 125 262000
-## 272 263000</code></pre>
+<pre><code>##     Rep Year RepSeason  NInds NOccupCells Occup.Suit  min_X  max_X min_Y  max_Y
+## 314  14   95         0 869231        2793  0.1175260 211000 569000 45000 299000
+## 188   8   95         0 766644        2314  0.0973701 211000 623000 45000 299000
+## 125   5   95         0 775571        2310  0.0972018 211000 569000 45000 278000
+## 104   4   95         0 650042        2081  0.0875657 211000 569000 45000 266000
+## 335  15   95         0 663910        1976  0.0831475 195000 569000 45000 260000
+## 398  18   95         0 643567        1919  0.0807490 211000 569000 45000 277000</code></pre>
 <pre class="r"><code>rep_x = subset(range_df_long,Year==95)$Rep[which.max(subset(range_df_long,Year==95)$NOccupCells)]
 
 r_years_long_1 &lt;- stack_pop(pop_df_long, ext_long, rep=rep_x, mask=UKmap)
@@ -979,7 +973,8 @@ plot(as.polygons(SpDist, dissolve=F), col=NA, border=&#39;red&#39;, add=TRUE)</c
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 <div id="ref-Bocedi2014" class="csl-entry">
 Bocedi, G., S. C. F. Palmer, G. Pe’er, R. K. Heikkinen, Y. G. Matsinos,
 K. Watts, and J. M. J. Travis. 2014. <span>“RangeShifter: A Platform for

@@ -13,7 +13,7 @@
 
 <title>Tutorial 3: Dynamic landscapes and movement paths</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -39,8 +39,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -71,6 +71,7 @@ if (window.hljs) {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging div.csl-entry {
   margin-left:2em;
@@ -770,9 +771,7 @@ how to get the occupancy probabilities for given years.)</p>
 <p>The function returns a list with the numeric results and the
 maps:</p>
 <pre class="r"><code>col &lt;- ColonisationStats(s, dirpath, maps=T)</code></pre>
-<pre><code>## Warning: [rast] the first raster was empty and was ignored
-
-## Warning: [rast] the first raster was empty and was ignored</code></pre>
+<pre><code>## Warning: [rast] the first raster was empty and was ignored</code></pre>
 <pre class="r"><code>names(col)</code></pre>
 <pre><code>## [1] &quot;occ_prob&quot;     &quot;col_time&quot;     &quot;map_occ_prob&quot; &quot;map_col_time&quot;</code></pre>
 <p>Let’s plot the mean occupancy probability in the last recorded year,
@@ -855,23 +854,22 @@ that counting starts at zero):</p>
 steps &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch12_Sim1_Land1_Rep1_MovePaths.txt&quot;), header = T)
 head(steps)</code></pre>
 <pre><code>##   Year IndID Step   x   y Status
-## 1    0     4    0 100 123      0
-## 2    0     4    1 100 124      1
-## 3    0    10    0  92 118      0
-## 4    0    10    1  92 119      1
-## 5    0    17    0  93 123      0
-## 6    0    17    1  93 122      1</code></pre>
-<p>The SMS paths files list for each output year all currently
-dispersing individuals with all steps taken by them during this year.
-From this file we can easily extract how many steps individuals took
-during dispersal.</p>
+## 1    0     9    0 110 121      0
+## 2    0     9    1 109 122      1
+## 3    0    33    0 112 124      0
+## 4    0    33    1 111 123      1
+## 5    0    52    0 107 120      0
+## 6    0    52    1 106 120      1</code></pre>
+<p>The SMS paths files list for each output year (every 10th year) all
+currently dispersing individuals with all steps taken by them during
+this year. From this file we can easily extract how many steps
+individuals took during dispersal in one year.</p>
 <pre class="r"><code># we ask how often a step was logged per individual
 hist(c(table(steps$IndID)),xlab=&#39;Number of steps&#39;,main=&#39;Steps per dispersing individual&#39;)</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
-<p>We see that many individuals disperse more than 20 steps, meaning
-that they did not settle within the first year. Quite a few of them even
-reach the overall maximum number of steps <code>MaxSteps</code>, which
-is set to <em>80</em> in this example.</p>
+<p>We observe that most individuals disperse for 20 steps within one
+year. Note that the natal cell is also included in the MovePaths output,
+so an individual taking 20 steps will be recorded 21 times in total.</p>
 <p>To reconstruct the individual paths, we need the status information
 of each step from the last column of the SMS path files. This variable
 codes for 9 different possible states:</p>
@@ -903,16 +901,16 @@ steps_10 &lt;- subset(steps, IndID %in% Inds)
 # look at first individual with a starting path
 (steps_i &lt;- subset(steps_10, IndID == subset(steps_10, Step == 0)[1,&quot;IndID&quot;]))</code></pre>
 <pre><code>##      Year IndID Step  x  y Status
-## 165     0   867    0 25 82      0
-## 166     0   867    1 24 82      1
-## 532     0   867    2 23 82      1
-## 994     0   867    3 22 82      1
-## 1213    0   867    4 21 82      1
-## 1377    0   867    5 20 82      1
-## 1543    0   867    6 19 82      1
-## 1959    0   867    7 19 81      1
-## 2012    0   867    8 19 80      1
-## 2377    0   867    8 19 80      7</code></pre>
+## 7165   20 19169    0 42 48      0
+## 7166   20 19169    1 41 49      1
+## 7329   20 19169    2 40 50      1
+## 7484   20 19169    3 39 51      1
+## 7625   20 19169    4 38 52      1
+## 7841   20 19169    5 38 53      1
+## 8075   20 19169    6 37 53      1
+## 8224   20 19169    7 36 53      1
+## 8274   20 19169    8 35 54      1
+## 8488   20 19169    8 35 54      7</code></pre>
 <p>This list of steps begins with the starting cell in the natal patch
 (status 0), followed by 8 SMS steps that record the intermediate cells,
 and ends with the dispersal outcome; in this case the individual died
@@ -923,17 +921,17 @@ direction, not the actual position in meters.</p>
 with a step number above the maximum number of steps per year
 (<code>MaxStepsYear</code>):</p>
 <pre class="r"><code>(steps_i &lt;- subset(steps, IndID == subset(steps_10, Step &gt; 20)[1,&quot;IndID&quot;]) )</code></pre>
-<pre><code>##      Year IndID Step   x   y Status
-## 8484   20 16815   21 214 109      1
-## 8693   20 16815   22 213 108      1
-## 8964   20 16815   23 214 108      1
-## 9133   20 16815   24 213 107      1
-## 9169   20 16815   25 212 107      1
-## 9442   20 16815   26 211 108      1
-## 9534   20 16815   27 212 109      1
-## 9690   20 16815   28 211 110      1
-## 9854   20 16815   29 211 111      1
-## 9935   20 16815   29 211 111      7</code></pre>
+<pre><code>##      Year IndID Step x  y Status
+## 4741   10  6599   61 7 36      1
+## 4934   10  6599   62 7 35      1
+## 5060   10  6599   63 6 35      1
+## 5224   10  6599   64 6 34      1
+## 5374   10  6599   65 5 33      1
+## 5445   10  6599   66 4 32      1
+## 5565   10  6599   67 3 32      1
+## 5687   10  6599   68 2 31      1
+## 5772   10  6599   69 1 30      1
+## 5943   10  6599   70 0 29      4</code></pre>
 <p>This list doesn’t start with with status 0, so we know that this
 event has begun already in an earlier year and is now being continued.
 This happens if an individual is forced to wait until the next year to
@@ -941,8 +939,8 @@ continue dispersal because it reached the maximum yearly number of steps
 (<code>MaxStepsYear</code>). This outcome will be denoted by status 3 at
 the end of the previous year. During the wait time, the individual is
 subject to annual survival and might die from demographic mortality
-(status 8). In above case, settlement terminates again unsuccessfully
-(status 7).</p>
+(status 8). In above case, settlement terminates successfully (status
+4).</p>
 <p>Now that we know how to interpret the data, let’s plot some
 trajectories. Since a single dispersal event can be allowed to span
 multiple years and because we haven’t recorded the SMS steps of every
@@ -1035,10 +1033,10 @@ successfully with settlement is lower than the number of dispersal
 events that ended unsuccessfully with death.</p>
 <pre class="r"><code># successful dispersal events recorded during simulation
 sum(steps$Status==4)</code></pre>
-<pre><code>## [1] 617</code></pre>
+<pre><code>## [1] 672</code></pre>
 <pre class="r"><code># unsuccessful dispersal events
 sum(steps$Status &gt;4)</code></pre>
-<pre><code>## [1] 868</code></pre>
+<pre><code>## [1] 775</code></pre>
 <p>Obviously, the above plots and numbers only summarise the dispersal
 paths of a single replicate run.</p>
 <p>To summarise the dispersal pathways and outcomes over all replicate
@@ -1098,15 +1096,15 @@ nyear_blocks &lt;- diff(year_blocks_end)
 steps_sum &lt;- sapply(1:ncol(steps_sum),FUN=function(i){steps_sum[,i]/nyear_blocks[i]})
 colnames(steps_sum) &lt;- landnames
 (steps_sum &lt;- data.frame(status = seq.int(0,7) , steps_sum))</code></pre>
-<pre><code>##   status map_01.asc map_02.asc map_03.asc map_04.asc
-## 1      0  11.025625  10.440000  14.761667   9.619167
-## 2      1 370.513125 379.318333 452.391667 366.485000
-## 3      2   0.000000   0.000000   0.000000   0.000000
-## 4      3   9.594375   9.693333  13.285000   9.383333
-## 5      4   3.286875   3.876667   3.691667   3.293333
-## 6      5   0.000000   0.000000   0.000000   0.000000
-## 7      6   1.239375   1.243333   1.366667   1.388333
-## 8      7   2.778750   2.881667   3.765000   2.865000</code></pre>
+<pre><code>##   status map_01.asc  map_02.asc map_03.asc map_04.asc
+## 1      0  11.273125  10.9966667  15.641667  10.516667
+## 2      1 338.780000 368.5683333 461.561667 365.473333
+## 3      2   0.000000   0.0000000   0.000000   0.000000
+## 4      3  13.740625  14.4750000  18.760000  14.693333
+## 5      4   3.263750   4.0100000   4.043333   3.380000
+## 6      5   0.000000   0.0000000   0.000000   0.000000
+## 7      6   0.714375   0.9666667   1.046667   1.018333
+## 8      7   2.566875   3.0650000   3.886667   2.934167</code></pre>
 <p>This data frame contains the mean (over replicates as well as years)
 counts of the different dispersal status codes for the time periods of
 the four maps.</p>
@@ -1144,7 +1142,7 @@ range_df_disp &lt;- range_df_disp[range_df_disp$Year %in% unique(steps$Year),]
                                                      Year&gt;=year_blocks_end[i] &amp; Year&lt;year_blocks_end[i+1], 
                                                      select = disp_stages))}))</code></pre>
 <pre><code>## disp_stages disp_stages disp_stages disp_stages 
-##    1925.875    2152.967    2045.433    2041.017</code></pre>
+##    1994.756    2265.883    2170.017    2174.967</code></pre>
 <pre class="r"><code># get relative number of individuals (per 1000 individuals) starting to disperse
 plot_steps_sum[plot_steps_sum$status==0,-1] &lt;- plot_steps_sum[plot_steps_sum$status==0,-1]/disp_pop*1000
 
@@ -1195,12 +1193,12 @@ lengths for the four time periods:</p>
 <pre class="r"><code>pathlen &lt;- SMSpathLengths(s,dirpath)
 head(pathlen)</code></pre>
 <pre><code>##   Map_1 Map_2 Map_3 Map_4
-## 1  0.50  0.15  1.10  0.45
-## 2  1.40  0.45  2.00  0.95
-## 3  2.90  1.25  2.60  1.90
-## 4  3.75  1.30  2.25  2.05
-## 5  3.50  1.70  2.50  2.75
-## 6  2.85  1.25  2.95  3.25</code></pre>
+## 1  0.45  0.35  1.65  0.25
+## 2  1.45  0.60  1.95  0.70
+## 3  2.25  1.20  1.60  2.20
+## 4  3.35  1.30  2.60  2.55
+## 5  4.75  1.65  2.65  3.25
+## 6  5.20  1.70  3.05  2.80</code></pre>
 <p>This gives a data frame with the frequency of the possible path
 lengths (measured in number of steps) for each time period in the
 columns. Let’s plot:</p>
@@ -1446,7 +1444,8 @@ still see a faster colonisaton in scenario 1 than in 2.</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 <div id="ref-Sciaini2018" class="csl-entry">
 Sciaini, Marco, Matthias Fritsch, Cedric Scherer, and Craig Eric
 Simpkins. 2018. <span>“<span>NLMR</span> and Landscapetools: An
