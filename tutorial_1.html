@@ -372,11 +372,35 @@ div.tocify {
     <li>
       <a href="tutorial_3.html">3. Dynamic landscapes &amp; SMS paths</a>
     </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Former versions
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="tutorial_4.html">4. Evolution of dispersal</a>
+      <a href="installing_v2.0.html">RangeShiftR v1.1.2 (based on RangeShifter 2.0)</a>
     </li>
     <li>
-      <a href="appendix_tutorial_3.html">Appendix A3. Create dynamic landscapes</a>
+      <a href="overview_0_v2.0.html">0. General package introduction v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_1_v2.0.html">1. Range expansion v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_2_v2.0.html">2. Patch connectivity v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_3_v2.0.html">3. Dynamic landscapes &amp; SMS paths v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_4_v2.0.html">4. Evolution of dispersal v1.1.2</a>
+    </li>
+    <li>
+      <a href="appendix_tutorial_3_v2.0.html">Appendix A3. Create dynamic landscapes v1.1.2</a>
     </li>
   </ul>
 </li>
@@ -649,9 +673,12 @@ we have made by simply typing:</p>
 ## 
 ##   Settlement:
 ##    Settlement conditions:
-##      [,1]
-## [1,]    0
-##    FindMate = FALSE 
+## [1] 0
+##    FindMate =
+## [1] FALSE
+## 
+##  Management: 
+##  [1] FALSE
 ## 
 ##  Initialisation: 
 ##    InitType = 1 : Initialisation from loaded species distribution map
@@ -845,13 +872,20 @@ occupancy only occurs for a few but not for all runs. So, let’s try and
 map only the replicate run with the highest occupancy.</p>
 <pre class="r"><code># Which replicate had highest occupancy?
 head(subset(range_df_long,Year==95)[order(subset(range_df_long,Year==95)$NOccupCells,decreasing=T),])</code></pre>
-<pre><code>##     Rep Year RepSeason  NInds NOccupCells Occup.Suit  min_X  max_X min_Y  max_Y
-## 314  14   95         0 869231        2793  0.1175260 211000 569000 45000 299000
-## 188   8   95         0 766644        2314  0.0973701 211000 623000 45000 299000
-## 125   5   95         0 775571        2310  0.0972018 211000 569000 45000 278000
-## 104   4   95         0 650042        2081  0.0875657 211000 569000 45000 266000
-## 335  15   95         0 663910        1976  0.0831475 195000 569000 45000 260000
-## 398  18   95         0 643567        1919  0.0807490 211000 569000 45000 277000</code></pre>
+<pre><code>##     Rep Year RepSeason   NInds NOccupCells Occup.Suit  min_X  max_X min_Y
+## 188   8   95         0 1006467        2984  0.1255630 211000 569000 45000
+## 146   6   95         0  924054        2688  0.1131080 211000 569000 45000
+## 293  13   95         0  805350        2616  0.1100780 211000 569000 45000
+## 125   5   95         0  815442        2440  0.1026720 211000 569000 37000
+## 398  18   95         0  707371        2125  0.0894172 195000 569000 45000
+## 83    3   95         0  614513        2094  0.0881128 211000 569000 45000
+##      max_Y
+## 188 319000
+## 146 286000
+## 293 293000
+## 125 272000
+## 398 260000
+## 83  285000</code></pre>
 <pre class="r"><code>rep_x = subset(range_df_long,Year==95)$Rep[which.max(subset(range_df_long,Year==95)$NOccupCells)]
 
 r_years_long_1 &lt;- stack_pop(pop_df_long, ext_long, rep=rep_x, mask=UKmap)

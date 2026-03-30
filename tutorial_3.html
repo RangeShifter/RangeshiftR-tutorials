@@ -372,11 +372,35 @@ div.tocify {
     <li>
       <a href="tutorial_3.html">3. Dynamic landscapes &amp; SMS paths</a>
     </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Former versions
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="tutorial_4.html">4. Evolution of dispersal</a>
+      <a href="installing_v2.0.html">RangeShiftR v1.1.2 (based on RangeShifter 2.0)</a>
     </li>
     <li>
-      <a href="appendix_tutorial_3.html">Appendix A3. Create dynamic landscapes</a>
+      <a href="overview_0_v2.0.html">0. General package introduction v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_1_v2.0.html">1. Range expansion v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_2_v2.0.html">2. Patch connectivity v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_3_v2.0.html">3. Dynamic landscapes &amp; SMS paths v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_4_v2.0.html">4. Evolution of dispersal v1.1.2</a>
+    </li>
+    <li>
+      <a href="appendix_tutorial_3_v2.0.html">Appendix A3. Create dynamic landscapes v1.1.2</a>
     </li>
   </ul>
 </li>
@@ -464,8 +488,7 @@ dir.create(paste0(dirpath,&quot;Output_Maps&quot;), showWarnings = TRUE)</code><
 folder. The files can be downloaded <a
 href="files/Tutorial3_Inputs.zip">here</a>. All dynamic landscapes from
 Tutorial 3 were created using the package <code>NLMR</code> <span
-class="citation">(Sciaini et al. 2018)</span> as shown in the <a
-href="appendix_tutorial_3.html">appendix</a>.</p>
+class="citation">(Sciaini et al. 2018)</span>.</p>
 </div>
 </div>
 <div id="road-scenario" class="section level1" number="2">
@@ -479,10 +502,7 @@ show some possible ways to analyse the optional SMS paths output.</p>
 <em>map_04.asc</em>) that represent different time steps in which a
 landscape mosaic of woodland and grassland patches in an agricultural
 matrix gets increasingly disturbed by woodland clearing and the
-construction of a road. For the code used to create these habitat maps
-and their corresponding patch maps, see the <a
-href="appendix_tutorial_3.html">appendix</a>. However, this code has not
-been updated to terra yet and still depends on raster.</p>
+construction of a road.</p>
 <p>We choose land type <em>2</em> to be the matrix and the others
 (<em>1</em>,<em>3</em>,<em>4</em>) to be different forms of habitat. The
 road is denoted by its own code <em>5</em> and will be assigned higher
@@ -785,8 +805,8 @@ simulation.</p>
 patches:</p>
 <pre class="r"><code>plot(col$map_col_time)</code></pre>
 <p><img src="tutorial_3_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<p>The lighter the color, the earlier a patch was colonised during the
-simulation. The initial patches appear in light gray and the matrix in
+<p>The darker the color, the earlier a patch was colonised during the
+simulation. The initial patches appear in dark blue and the matrix in
 white. We find that larger patches tend to get colonised earlier than
 smaller ones.</p>
 </div>
@@ -854,12 +874,12 @@ that counting starts at zero):</p>
 steps &lt;- read.table(paste0(dirpath,&quot;Outputs/Batch12_Sim1_Land1_Rep1_MovePaths.txt&quot;), header = T)
 head(steps)</code></pre>
 <pre><code>##   Year IndID Step   x   y Status
-## 1    0     9    0 110 121      0
-## 2    0     9    1 109 122      1
-## 3    0    33    0 112 124      0
-## 4    0    33    1 111 123      1
-## 5    0    52    0 107 120      0
-## 6    0    52    1 106 120      1</code></pre>
+## 1    0     3    0 102 115      0
+## 2    0     3    1 101 116      1
+## 3    0    18    0 101 124      0
+## 4    0    18    1 102 123      1
+## 5    0    28    0 101 114      0
+## 6    0    28    1 100 115      1</code></pre>
 <p>The SMS paths files list for each output year (every 10th year) all
 currently dispersing individuals with all steps taken by them during
 this year. From this file we can easily extract how many steps
@@ -901,16 +921,16 @@ steps_10 &lt;- subset(steps, IndID %in% Inds)
 # look at first individual with a starting path
 (steps_i &lt;- subset(steps_10, IndID == subset(steps_10, Step == 0)[1,&quot;IndID&quot;]))</code></pre>
 <pre><code>##      Year IndID Step  x  y Status
-## 7165   20 19169    0 42 48      0
-## 7166   20 19169    1 41 49      1
-## 7329   20 19169    2 40 50      1
-## 7484   20 19169    3 39 51      1
-## 7625   20 19169    4 38 52      1
-## 7841   20 19169    5 38 53      1
-## 8075   20 19169    6 37 53      1
-## 8224   20 19169    7 36 53      1
-## 8274   20 19169    8 35 54      1
-## 8488   20 19169    8 35 54      7</code></pre>
+## 223     0  2341    0 76 55      0
+## 224     0  2341    1 75 54      1
+## 604     0  2341    2 75 53      1
+## 850     0  2341    3 74 52      1
+## 1096    0  2341    4 73 51      1
+## 1342    0  2341    5 72 50      1
+## 1587    0  2341    6 71 51      1
+## 1827    0  2341    7 72 51      1
+## 2067    0  2341    8 71 50      1
+## 2306    0  2341    8 71 50      7</code></pre>
 <p>This list of steps begins with the starting cell in the natal patch
 (status 0), followed by 8 SMS steps that record the intermediate cells,
 and ends with the dispersal outcome; in this case the individual died
@@ -921,17 +941,17 @@ direction, not the actual position in meters.</p>
 with a step number above the maximum number of steps per year
 (<code>MaxStepsYear</code>):</p>
 <pre class="r"><code>(steps_i &lt;- subset(steps, IndID == subset(steps_10, Step &gt; 20)[1,&quot;IndID&quot;]) )</code></pre>
-<pre><code>##      Year IndID Step x  y Status
-## 4741   10  6599   61 7 36      1
-## 4934   10  6599   62 7 35      1
-## 5060   10  6599   63 6 35      1
-## 5224   10  6599   64 6 34      1
-## 5374   10  6599   65 5 33      1
-## 5445   10  6599   66 4 32      1
-## 5565   10  6599   67 3 32      1
-## 5687   10  6599   68 2 31      1
-## 5772   10  6599   69 1 30      1
-## 5943   10  6599   70 0 29      4</code></pre>
+<pre><code>##      Year IndID Step   x   y Status
+## 4879   10  7930   41 129 117      1
+## 5074   10  7930   42 130 116      1
+## 5206   10  7930   43 130 115      1
+## 5334   10  7930   44 130 116      1
+## 5461   10  7930   45 130 115      1
+## 5585   10  7930   46 130 114      1
+## 5708   10  7930   47 131 113      1
+## 5829   10  7930   48 132 113      1
+## 5948   10  7930   49 133 113      1
+## 6065   10  7930   49 133 113      7</code></pre>
 <p>This list doesn’t start with with status 0, so we know that this
 event has begun already in an earlier year and is now being continued.
 This happens if an individual is forced to wait until the next year to
@@ -1033,10 +1053,10 @@ successfully with settlement is lower than the number of dispersal
 events that ended unsuccessfully with death.</p>
 <pre class="r"><code># successful dispersal events recorded during simulation
 sum(steps$Status==4)</code></pre>
-<pre><code>## [1] 672</code></pre>
+<pre><code>## [1] 671</code></pre>
 <pre class="r"><code># unsuccessful dispersal events
 sum(steps$Status &gt;4)</code></pre>
-<pre><code>## [1] 775</code></pre>
+<pre><code>## [1] 828</code></pre>
 <p>Obviously, the above plots and numbers only summarise the dispersal
 paths of a single replicate run.</p>
 <p>To summarise the dispersal pathways and outcomes over all replicate
@@ -1097,14 +1117,14 @@ steps_sum &lt;- sapply(1:ncol(steps_sum),FUN=function(i){steps_sum[,i]/nyear_blo
 colnames(steps_sum) &lt;- landnames
 (steps_sum &lt;- data.frame(status = seq.int(0,7) , steps_sum))</code></pre>
 <pre><code>##   status map_01.asc  map_02.asc map_03.asc map_04.asc
-## 1      0  11.273125  10.9966667  15.641667  10.516667
-## 2      1 338.780000 368.5683333 461.561667 365.473333
+## 1      0  11.105625  11.0600000  15.900000  10.176667
+## 2      1 331.918750 374.0466667 464.033333 362.268333
 ## 3      2   0.000000   0.0000000   0.000000   0.000000
-## 4      3  13.740625  14.4750000  18.760000  14.693333
-## 5      4   3.263750   4.0100000   4.043333   3.380000
+## 4      3  13.453750  14.8416667  18.971667  14.551667
+## 5      4   3.077500   3.9950000   3.905000   3.385000
 ## 6      5   0.000000   0.0000000   0.000000   0.000000
-## 7      6   0.714375   0.9666667   1.046667   1.018333
-## 8      7   2.566875   3.0650000   3.886667   2.934167</code></pre>
+## 7      6   0.760000   0.8733333   1.011667   1.038333
+## 8      7   2.564375   3.0616667   3.915000   2.921667</code></pre>
 <p>This data frame contains the mean (over replicates as well as years)
 counts of the different dispersal status codes for the time periods of
 the four maps.</p>
@@ -1142,7 +1162,7 @@ range_df_disp &lt;- range_df_disp[range_df_disp$Year %in% unique(steps$Year),]
                                                      Year&gt;=year_blocks_end[i] &amp; Year&lt;year_blocks_end[i+1], 
                                                      select = disp_stages))}))</code></pre>
 <pre><code>## disp_stages disp_stages disp_stages disp_stages 
-##    1994.756    2265.883    2170.017    2174.967</code></pre>
+##    1972.519    2257.683    2157.067    2148.608</code></pre>
 <pre class="r"><code># get relative number of individuals (per 1000 individuals) starting to disperse
 plot_steps_sum[plot_steps_sum$status==0,-1] &lt;- plot_steps_sum[plot_steps_sum$status==0,-1]/disp_pop*1000
 
@@ -1193,12 +1213,12 @@ lengths for the four time periods:</p>
 <pre class="r"><code>pathlen &lt;- SMSpathLengths(s,dirpath)
 head(pathlen)</code></pre>
 <pre><code>##   Map_1 Map_2 Map_3 Map_4
-## 1  0.45  0.35  1.65  0.25
-## 2  1.45  0.60  1.95  0.70
-## 3  2.25  1.20  1.60  2.20
-## 4  3.35  1.30  2.60  2.55
-## 5  4.75  1.65  2.65  3.25
-## 6  5.20  1.70  3.05  2.80</code></pre>
+## 1  0.50  0.10  1.85   0.4
+## 2  1.75  0.75  1.55   1.2
+## 3  2.70  1.05  2.55   1.6
+## 4  3.65  1.25  3.15   1.8
+## 5  4.05  1.05  2.80   2.4
+## 6  4.95  1.65  3.25   4.1</code></pre>
 <p>This gives a data frame with the frequency of the possible path
 lengths (measured in number of steps) for each time period in the
 columns. Let’s plot:</p>

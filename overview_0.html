@@ -349,11 +349,35 @@ div.tocify {
     <li>
       <a href="tutorial_3.html">3. Dynamic landscapes &amp; SMS paths</a>
     </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Former versions
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="tutorial_4.html">4. Evolution of dispersal</a>
+      <a href="installing_v2.0.html">RangeShiftR v1.1.2 (based on RangeShifter 2.0)</a>
     </li>
     <li>
-      <a href="appendix_tutorial_3.html">Appendix A3. Create dynamic landscapes</a>
+      <a href="overview_0_v2.0.html">0. General package introduction v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_1_v2.0.html">1. Range expansion v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_2_v2.0.html">2. Patch connectivity v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_3_v2.0.html">3. Dynamic landscapes &amp; SMS paths v1.1.2</a>
+    </li>
+    <li>
+      <a href="tutorial_4_v2.0.html">4. Evolution of dispersal v1.1.2</a>
+    </li>
+    <li>
+      <a href="appendix_tutorial_3_v2.0.html">Appendix A3. Create dynamic landscapes v1.1.2</a>
     </li>
   </ul>
 </li>
@@ -427,8 +451,8 @@ number="1.1">
 working example</h2>
 <p>Load the package by typing:</p>
 <pre class="r"><code>library(RangeShiftR)</code></pre>
-<pre><code>## RangeshiftR version 1.1.2 (26.09.2025)
-## Copyright (C) 2020-2025 Anne-Kathleen Malchow, Greta Bocedi, Stephen C.F. Palmer, Justin M.J. Travis, Jette Wolff, Damaris Zurell
+<pre><code>## RangeshiftR version 3.0.0 (24.03.2026)
+## Copyright (C) 2020-2026 Anne-Kathleen Malchow, Greta Bocedi, Stephen C.F. Palmer, Justin M.J. Travis, Jette Wolff, Damaris Zurell
 ## 
 ## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 ## You are welcome to redistribute it and/or modify it under certain conditions;
@@ -452,28 +476,30 @@ typing:</p>
 ## Control Parameters checked
 ## 
 ## Run Simulation(s) with random seed ...
+## ReadLandParamsR() done
+## ReadParametersR() done.
+## ReadEmigrationR() done.
+## ReadTransferR() done.
+## ReadSettlementR() done.
+## ReadInitialisationR() done.
 ## 
 ## Running simulation nr. 1
-## 
-## starting replicate 0
 ## RunModel(): completed initialisation 
-## starting year 0...
-## starting year 1...
-## starting year 2...
-## starting year 3...
-## starting year 10...
-## starting year 20...
-## starting year 30...
-## 
-## starting replicate 1
+## Starting year 0...
+## Starting year 1...
+## Starting year 2...
+## Starting year 3...
+## Starting year 10...
+## Starting year 20...
+## Starting year 30...
 ## RunModel(): completed initialisation 
-## starting year 0...
-## starting year 1...
-## starting year 2...
-## starting year 3...
-## starting year 10...
-## starting year 20...
-## starting year 30...
+## Starting year 0...
+## Starting year 1...
+## Starting year 2...
+## Starting year 3...
+## Starting year 10...
+## Starting year 20...
+## Starting year 30...
 ## 
 ## ***** Elapsed time: 1 seconds
 ## 
@@ -529,9 +555,12 @@ as some log files - in the ‘Outputs’ folder.</p>
 ## 
 ##   Settlement:
 ##    Settlement conditions:
-##      [,1]
-## [1,]    0
-##    FindMate = FALSE 
+## [1] 0
+##    FindMate =
+## [1] FALSE
+## 
+##  Management: 
+##  [1] FALSE
 ## 
 ##  Initialisation: 
 ##    InitType = 0 : Free initialisation 
@@ -546,10 +575,11 @@ are:</p>
 <li>Demography</li>
 <li>Dispersal</li>
 <li>Genetics</li>
+<li>Management</li>
 <li>Initialisation</li>
 </ul>
 <p>Here is a schematic overview of the module constructors and their
-relations: <img src="figures/func_overview.png"
+relations: <img src="figures/function_overview_3.0.png"
 alt="RangeshiftR function overview" /></p>
 <p>In the following, we go through some of the most relevant aspects of
 each module.</p>
@@ -643,21 +673,36 @@ settlement condition so that a female individual, that arrives in an
 unsuitable cell, will wait for another time step and disperse again,
 while the males will die if arriving in an unsuitable cell:</p>
 <pre class="r"><code>disp &lt;-  disp + Settlement(SexDep = T, 
-                           Settle = matrix(c(0,1,1,0), nrow = 2))</code></pre>
+                           Settle = matrix(c(0,1,1,0), nrow = 2),
+                           FindMate = matrix(c(1,0,F,F), nrow = 2))</code></pre>
 <p>The dispersal traits of every phase can be set to vary between
 individuals (<code>IndVar = TRUE</code>). This also makes the dispersal
 traits heritable and thus allows for evolution, for example, evolving
 emigration probability:</p>
-<pre class="r"><code>disp2 &lt;-  disp + Emigration(IndVar = TRUE,
-                            EmigProb = matrix(c(.7,.1), nrow = 1),
-                            TraitScaleFactor = c(.1))</code></pre>
+<pre class="r"><code>disp2 &lt;-  disp + Emigration(IndVar = TRUE)</code></pre>
+<p>In case of inter-individual variability in dispersal traits, these
+parameters need to be defined in the Genetics module. For our example,
+we need to define the EmigrationGenes and the genetics.</p>
 </div>
 <div id="genetics" class="section level2" number="2.5">
 <h2><span class="header-section-number">2.5</span> Genetics</h2>
 <p>The genetics module controls the heritability and evolution of traits
 and is needed if inter-individual variability is enabled
-(<code>IndVar = TRUE</code>) for at least one dispersal trait.</p>
-<pre class="r"><code>gene &lt;- Genetics(NLoci = 3, ProbMutn = .05)</code></pre>
+(<code>IndVar = TRUE</code>) e.g. for at least one dispersal trait.</p>
+<pre class="r"><code>emig_gene &lt;- EmigrationTraits(Positions = list(&quot;random&quot;),
+    NbOfPositions = 5,
+    ExpressionType = &quot;additive&quot;,
+    InitialAlleleDistribution = &quot;normal&quot;,
+    InitialAlleleParameters = matrix(c(0.7,0.1), nrow=1),
+    IsInherited = FALSE,
+    MutationDistribution = &quot;normal&quot;,
+    MutationParameters = matrix(c(0.5,0.2), nrow=1),
+    MutationRate = 0.0001,
+    OutputValues = FALSE
+)
+gene &lt;- Genetics(GenomeSize = 10, Traits = Traits(EmigrationGenes = emig_gene))</code></pre>
+<p>Genetics can simulate neutral loci, genetic loads and/or dispersal
+trait evolution.</p>
 </div>
 <div id="initialisation" class="section level2" number="2.6">
 <h2><span class="header-section-number">2.6</span> Initialisation</h2>
@@ -684,7 +729,7 @@ init</code></pre>
 <p>After all settings have been made in their respective modules, we are
 ready to combine them to a parameter master object, which is needed to
 run the simulation.</p>
-<pre class="r"><code>s &lt;- RSsim(simul = sim, land = land, demog = demo, dispersal = disp, gene = gene, init = init)
+<pre class="r"><code>s &lt;- RSsim(simul = sim, land = land, demog = demo, dispersal = disp2, gene = gene, init = init)
 
 # Alternative notation:
 # s &lt;- RSsim() + land + demo + disp + sim + init + gene</code></pre>
