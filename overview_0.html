@@ -451,8 +451,8 @@ number="1.1">
 working example</h2>
 <p>Load the package by typing:</p>
 <pre class="r"><code>library(RangeShiftR)</code></pre>
-<pre><code>## RangeshiftR version 3.0.0 (24.03.2026)
-## Copyright (C) 2020-2026 Anne-Kathleen Malchow, Greta Bocedi, Stephen C.F. Palmer, Justin M.J. Travis, Jette Wolff, Damaris Zurell
+<pre><code>## RangeshiftR version 3.0.0 (22.04.2026)
+## Copyright (C) 2020-2026 Anne-Kathleen Malchow, Greta Bocedi, Stephen C.F. Palmer, Justin M.J. Travis, Jette Wolff, Théo Pannetier, Roslyn Henry, Damaris Zurell
 ## 
 ## This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
 ## You are welcome to redistribute it and/or modify it under certain conditions;
@@ -578,9 +578,14 @@ are:</p>
 <li>Management</li>
 <li>Initialisation</li>
 </ul>
-<p>Here is a schematic overview of the module constructors and their
-relations: <img src="figures/function_overview_3.0.png"
-alt="RangeshiftR function overview" /></p>
+Here is a schematic overview of the module constructors and their
+relations:
+<div class="figure">
+<img src="figures/function_overview_3.0.png" alt="*RangeshiftR function overview*" width="412" />
+<p class="caption">
+<em>RangeshiftR function overview</em>
+</p>
+</div>
 <p>In the following, we go through some of the most relevant aspects of
 each module.</p>
 <div id="simulation" class="section level2" number="2.1">
@@ -673,7 +678,7 @@ settlement condition so that a female individual, that arrives in an
 unsuitable cell, will wait for another time step and disperse again,
 while the males will die if arriving in an unsuitable cell:</p>
 <pre class="r"><code>disp &lt;-  disp + Settlement(SexDep = T, 
-                           Settle = matrix(c(0,1,1,0), nrow = 2),
+                           Settle = matrix(c(1,0,1,0), nrow = 2),
                            FindMate = matrix(c(1,0,F,F), nrow = 2))</code></pre>
 <p>The dispersal traits of every phase can be set to vary between
 individuals (<code>IndVar = TRUE</code>). This also makes the dispersal
